@@ -1,0 +1,17 @@
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/drawer_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <FrameLayout
+        android:id="@+id/activity_main_fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/grey" />
+
+    <include
+        android:id="@+id/left_drawer"
+        layout="@layout/left_side_menu" />
+
+</android.support.v4.widget.DrawerLayout>
+

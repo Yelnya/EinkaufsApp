@@ -1,0 +1,57 @@
+<resources>
+    <!--Base-->
+    <string name="app_name">EinkaufsApp</string>
+    <string name="action_settings">Settings</string>
+
+    <!--Left Side Menu-->
+    <string name="leftsidemenu_open">Open Left Side Menu</string>
+    <string name="leftsidemenu_close">Close Left Side Menu</string>
+    <string name="leftsidemenu_current_shoppinglist">Aktuelle Liste</string>
+    <string name="leftsidemenu_historic_shoppinglists">Erledigte Einkäufe</string>
+    <string name="leftsidemenu_statistics">Statistik</string>
+    <string name="leftsidemenu_about">Über</string>
+    <string name="leftsidemenu_exit">Beenden</string>
+
+    <!--Toolbar-->
+    <string name="toolbar_edit_iv_cd">Icon Edit</string>
+    <string name="toolbar_delete_iv_cd">Icon Delete</string>
+
+    <!--Current List-->
+    <string name="editText_hint_product">Produktname</string>
+    <string name="button_add_product">+</string>
+    <string name="editText_errorMessage">Das Feld darf nicht leer sein.</string>
+    <string name="cab_delete">Einträge löschen</string>
+    <string name="cab_change">Eintrag ändern</string>
+    <string name="cab_checked_string">ausgewählt</string>
+    <string name="currentList_noproductinlist_tv">Es sind noch keine Einträge in Ihrer Einkaufsliste vorhanden. Fügen Sie ein Produkt hinzu, indem Sie oben den Namen und die Kategorie des Produkts eintragen und dann auf das + Symbol klicken. </string>
+    <string name="currentList_howtouse_tv">HINWEIS: \nWenn Sie kurz auf ein Produkt in Ihrer Liste klicken, markieren Sie es als erledigt. Klicken Sie lang auf ein Produkt, so können Sie es bearbeiten. Wenn Sie auf den Knopf \"Einkauf abschliessen\" klicken, speichern Sie den Einkauf in ihre \"Erledigten Einkäufe\" und beginnen eine neue Einkaufsliste. </string>
+
+    <!--Buttons-->
+    <string name="currentList_finish_currentlist_btn">Einkauf abschliessen</string>
+
+    <!--Categories-->
+    <string-array
+        name="categories_array">
+        <item>Fisch</item>
+        <item>Fleisch und Wurst</item>
+        <item>Getränke</item>
+        <item>Gewürze und Saucen</item>
+        <item>Grundnahrungsmittel</item>
+        <item>Konserven</item>
+        <item>Milchprodukte</item>
+        <item>Obst und Gemüse</item>
+        <item>Tiefkühlwaren</item>
+        <item>Sonstiges</item>
+    </string-array>
+
+    <!--Alert Dialogs-->
+    <string name="dialog_title">Listeneintrag ändern</string>
+    <string name="dialog_title_product">Name:</string>
+    <string name="dialog_title_category">Kategorie:</string>
+    <string name="dialog_title_delete">Löschen</string>
+    <string name="dialog_message_delete">Wollen Sie das Produkt wirklich aus der Liste löschen?</string>
+    <string name="dialog_button_change_positive">Ändern</string>
+    <string name="dialog_button_delete_positive">Löschen</string>
+    <string name="dialog_button_negative">Abbrechen</string>
+
+</resources>

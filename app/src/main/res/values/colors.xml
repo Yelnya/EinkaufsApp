@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="grey">#ccc</color>
+    <color name="grey_dark">#808080</color>
+    <color name="red">#af002c</color>
+    <color name="grey_light">#ececec</color>
+    <color name="white">#fff</color>
+    <color name="black">#000</color>
+    <color name="dark_purple">#612c5f</color>
+    <color name="purple">#ba66b7</color>
+    <color name="light_purple">#dccee6</color>
+
+    <!--categories-->
+    <color name="bread">#1Afdbf07</color>
+    <color name="cheese">#1Afdf081</color>
+    <color name="fish">#1A03a8f2</color>
+    <color name="foundation">#1A3f50b4</color>
+    <color name="natural_food">#1A4bae4f</color>
+    <color name="soda_bottle">#1A00fd61</color>
+    <color name="strawberry">#1Af24236</color>
+    <color name="tin_can">#1A00b69e</color>
+    <color name="winter">#1A98f1fd</color>
+    <color name="year_of_the_pig">#1Acc94a8</color>
+</resources>

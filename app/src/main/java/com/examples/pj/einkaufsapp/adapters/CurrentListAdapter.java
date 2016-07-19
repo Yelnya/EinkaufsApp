@@ -16,8 +16,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.examples.pj.einkaufsapp.R;
-import com.examples.pj.einkaufsapp.dbentities.ShoppingMemo;
-import com.examples.pj.einkaufsapp.dbentities.ShoppingMemoDataSource;
+import com.examples.pj.einkaufsapp.dbentities.ProductItem;
+import com.examples.pj.einkaufsapp.dbentities.ProductItemDataSource;
 import com.examples.pj.einkaufsapp.interfaces.ChangeToolbarInterface;
 import com.examples.pj.einkaufsapp.util.SharedPreferencesManager;
 
@@ -40,14 +40,14 @@ public class CurrentListAdapter extends BaseAdapter<CurrentListAdapter.Arraylist
 
     private final Context context;
     Activity contextActivity;
-    private final ShoppingMemoDataSource dataSource;
+    private final ProductItemDataSource dataSource;
     private final SharedPreferencesManager sharedPreferencesManager;
     private final ChangeToolbarInterface changeToolbarInterface;
     private boolean editDeleteToolbarActive;
-    private List<ShoppingMemo> itemsList;
-    private ShoppingMemo itemClicked;
+    private List<ProductItem> itemsList;
+    private ProductItem itemClicked;
 
-    public CurrentListAdapter(List<ShoppingMemo> itemsList, Context context, ShoppingMemoDataSource dataSource, SharedPreferencesManager sharedPreferencesManager, ChangeToolbarInterface changeToolbarInterface, boolean editDeleteToolbarActive) {
+    public CurrentListAdapter(List<ProductItem> itemsList, Context context, ProductItemDataSource dataSource, SharedPreferencesManager sharedPreferencesManager, ChangeToolbarInterface changeToolbarInterface, boolean editDeleteToolbarActive) {
         this.itemsList = itemsList;
         this.context = context;
         this.dataSource = dataSource;
@@ -87,7 +87,7 @@ public class CurrentListAdapter extends BaseAdapter<CurrentListAdapter.Arraylist
 
         if (viewType == LIST_ITEMS) {
             ArraylistViewHolder viewHolder = (ArraylistViewHolder) holder;
-            ShoppingMemo item = itemsList.get(position);
+            ProductItem item = itemsList.get(position);
             getIconMatchingCategory(item, viewHolder.categoryIconIv, viewHolder.itemContainerLl);
             viewHolder.productNameTv.setText(item.getProduct());
             // Hier prüfen, ob Eintrag abgehakt ist. Falls ja, Text durchstreichen
@@ -147,15 +147,15 @@ public class CurrentListAdapter extends BaseAdapter<CurrentListAdapter.Arraylist
         Collections.sort(itemsList, new CurrentListCategoryComparator());
 
         Log.d(LOG_TAG, "----------------- SORTED LIST ------------------");
-        for (ShoppingMemo product : itemsList) {
+        for (ProductItem product : itemsList) {
             Log.d(LOG_TAG, "Sorted: " + product.toNiceString());
         }
     }
 
-    public void changeProductChecked(ShoppingMemo item) {
-        // Hier den checked-Wert des Memo-Objekts umkehren, bspw. von true auf false
-//        dataSource.updateShoppingMemo(item.getId(), item.getProduct(), item.getCategory(), item.getBought(), false);
-        ShoppingMemo updatedItem = dataSource.updateShoppingMemo(item.getId(), item.getProduct(), item.getCategory(), item.getBought(), !item.isDone(), item.isFavourite());
+    public void changeProductChecked(ProductItem item) {
+        // Hier den checked-Wert des productItem-Objekts umkehren, bspw. von true auf false
+//        dataSource.updateProductItem(item.getId(), item.getProduct(), item.getCategory(), item.getBought(), false);
+        ProductItem updatedItem = dataSource.updateProductItem(item.getId(), item.getProduct(), item.getCategory(), item.getBought(), !item.isDone(), item.isFavourite());
         itemsList.remove(item);
         itemsList.add(updatedItem);
         sortListCategoryAndAlphabetical();
@@ -165,7 +165,7 @@ public class CurrentListAdapter extends BaseAdapter<CurrentListAdapter.Arraylist
         notifyDataSetChanged(); //refresh List View
     }
 
-    public void getIconMatchingCategory(ShoppingMemo item, ImageView iv, LinearLayout ll) {
+    public void getIconMatchingCategory(ProductItem item, ImageView iv, LinearLayout ll) {
         String[] stringArray = context.getResources().getStringArray(R.array.categories_array);
 
         if (item.getCategory().equals(stringArray[0])) {    //Fisch
@@ -221,7 +221,7 @@ public class CurrentListAdapter extends BaseAdapter<CurrentListAdapter.Arraylist
         @OnClick(R.id.item_container)
         public void onProductClick() {
             int pos = getAdapterPosition();
-            ShoppingMemo product = itemsList.get(pos);
+            ProductItem product = itemsList.get(pos);
             changeProductChecked(product);
         }
 
@@ -229,17 +229,17 @@ public class CurrentListAdapter extends BaseAdapter<CurrentListAdapter.Arraylist
         public boolean onProductLongClick() {
 
             int pos = getAdapterPosition();
-            ShoppingMemo selectedItem = itemsList.get(pos);
+            ProductItem selectedItem = itemsList.get(pos);
             editDeleteToolbarActive = (!editDeleteToolbarActive);   //toggle if EditDelete Toolbar is active or not
             changeToolbarInterface.showEditAndDeleteIcon(editDeleteToolbarActive); //only show EditDelete Toolbar if it is not active right now. Otherwise change back to normal Toolbar
 
             setItemClicked(selectedItem);
 
             //Overlay für Löschen von ListItems: ContextualActionBar
-//            final ListView shoppingMemosListView = (ListView) getActivity().findViewById(R.id.currentlist_recycler_view);
-//            shoppingMemosListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
+//            final ListView productItemListView = (ListView) getActivity().findViewById(R.id.currentlist_recycler_view);
+//            productItemsListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
 //
-//            shoppingMemosListView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
+//            productItemsListView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
 //
 //                int selCount = 0;
 //
@@ -252,8 +252,8 @@ public class CurrentListAdapter extends BaseAdapter<CurrentListAdapter.Arraylist
 //                    } else {
 //                        selCount--;
 //                    }
-//                    ShoppingMemo memo = (ShoppingMemo) currentShoppingListView.getItemAtPosition(position);
-//                    String selectedItem = memo.getProduct();
+//                    ProductItem productItem = (ProductItem) currentShoppingListView.getItemAtPosition(position);
+//                    String selectedItem = productItem.getProduct();
 //                    String cabTitle = selectedItem + " " + getString(R.string.cab_checked_string);
 //                    mode.setTitle(cabTitle);
 //                    mode.invalidate();
@@ -285,21 +285,21 @@ public class CurrentListAdapter extends BaseAdapter<CurrentListAdapter.Arraylist
 //                @Override
 //                public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
 //                    boolean returnValue = true;
-//                    SparseBooleanArray touchedShoppingMemosPositions = shoppingMemosListView.getCheckedItemPositions();
+//                    SparseBooleanArray touchedProductItemsPositions = productItemsListView.getCheckedItemPositions();
 //
 //                    switch (item.getItemId()) {
 //                        case R.id.cab_delete:
-//                            for (int i = 0; i < touchedShoppingMemosPositions.size(); i++) {
-//                                boolean isDone = touchedShoppingMemosPositions.valueAt(i);
+//                            for (int i = 0; i < touchedProductItemsPositions.size(); i++) {
+//                                boolean isDone = touchedProductItemsPositions.valueAt(i);
 //                                if (isDone) {
-//                                    int postitionInListView = touchedShoppingMemosPositions.keyAt(i);
-//                                    ShoppingMemo shoppingMemo = (ShoppingMemo) shoppingMemosListView.getItemAtPosition(postitionInListView);
-//                                    Log.d(LOG_TAG, "Position im ListView: " + postitionInListView + " Inhalt: " + shoppingMemo.toString());
-//                                    currentList.remove(shoppingMemo);
+//                                    int postitionInListView = touchedProductItemsPositions.keyAt(i);
+//                                    ProductItem productItem = (ProductItem) productItemsListView.getItemAtPosition(postitionInListView);
+//                                    Log.d(LOG_TAG, "Position im ListView: " + postitionInListView + " Inhalt: " + productItem.toString());
+//                                    currentList.remove(productItem);
 //                                    sortListCategoryAndAlphabetical();
 //                                    sharedPreferencesManager.saveCurrentShoppingListToLocalStore(currentList);
 //
-////                                dataSource.deleteShoppingMemo(shoppingMemo);
+////                                dataSource.deleteProductItem(productItem);
 //                                }
 //                            }
 //                            showAllListEntries();
@@ -308,15 +308,15 @@ public class CurrentListAdapter extends BaseAdapter<CurrentListAdapter.Arraylist
 //
 //                        case R.id.cab_change:
 //                            Log.d(LOG_TAG, "Eintrag ändern");
-//                            for (int i = 0; i < touchedShoppingMemosPositions.size(); i++) {
-//                                boolean isDone = touchedShoppingMemosPositions.valueAt(i);
+//                            for (int i = 0; i < touchedProductItemsPositions.size(); i++) {
+//                                boolean isDone = touchedProductItemsPositions.valueAt(i);
 //                                if (isDone) {
-//                                    int postitionInListView = touchedShoppingMemosPositions.keyAt(i);
-//                                    ShoppingMemo shoppingMemo = (ShoppingMemo) shoppingMemosListView.getItemAtPosition(postitionInListView);
-//                                    Log.d(LOG_TAG, "Position im ListView: " + postitionInListView + " Inhalt: " + shoppingMemo.toString());
+//                                    int postitionInListView = touchedProductItemsPositions.keyAt(i);
+//                                    ProductItem productItem = (ProductItem) productItemsListView.getItemAtPosition(postitionInListView);
+//                                    Log.d(LOG_TAG, "Position im ListView: " + postitionInListView + " Inhalt: " + productItem.toString());
 //
-//                                    AlertDialog editShoppingMemoDialog = createEditShoppingMemoDialog(shoppingMemo);
-//                                    editShoppingMemoDialog.show();
+//                                    AlertDialog editProductItemDialog = createEditProductItemDialog(productItem);
+//                                    editProductItemDialog.show();
 //                                }
 //                            }
 //                            mode.finish();
@@ -360,14 +360,14 @@ public class CurrentListAdapter extends BaseAdapter<CurrentListAdapter.Arraylist
     // COMPARATORS FOR LIST SORTING
     //---------------------------------------------------------------
 
-    public class CurrentListAlphabeticalComparator implements Comparator<ShoppingMemo> {
-        public int compare(ShoppingMemo left, ShoppingMemo right) {
+    public class CurrentListAlphabeticalComparator implements Comparator<ProductItem> {
+        public int compare(ProductItem left, ProductItem right) {
             return left.getProduct().compareTo(right.getProduct());
         }
     }
 
-    public class CurrentListCategoryComparator implements Comparator<ShoppingMemo> {
-        public int compare(ShoppingMemo left, ShoppingMemo right) {
+    public class CurrentListCategoryComparator implements Comparator<ProductItem> {
+        public int compare(ProductItem left, ProductItem right) {
             return left.getCategory().compareTo(right.getCategory());
         }
     }
@@ -389,11 +389,11 @@ public class CurrentListAdapter extends BaseAdapter<CurrentListAdapter.Arraylist
     // GETTER AND SETTER
     //---------------------------------------------------------------
 
-    public ShoppingMemo getItemClicked() {
+    public ProductItem getItemClicked() {
         return itemClicked;
     }
 
-    public void setItemClicked(ShoppingMemo itemClicked) {
+    public void setItemClicked(ProductItem itemClicked) {
         this.itemClicked = itemClicked;
     }
 

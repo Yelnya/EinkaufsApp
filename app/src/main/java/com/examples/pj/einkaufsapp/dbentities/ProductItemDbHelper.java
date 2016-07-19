@@ -7,10 +7,10 @@ import android.util.Log;
 
 // DER HELFER
 // Definieren der Eigenschaften der Datenbank
-// -> ShoppingMemoDbHelper – Sie ist eine Hilfsklasse mit deren Hilfe wir die SQLite-Datenbank erstellen lassen. Sie enthält weiterhin wichtige Konstanten, die wir für die Arbeit mit der Datenbank benötigen, wie den Tabellennamen, die Datenbankversion oder die Namen der Spalten.
-public class ShoppingMemoDbHelper extends SQLiteOpenHelper {
+// -> ProductItemDbHelper – Sie ist eine Hilfsklasse mit deren Hilfe wir die SQLite-Datenbank erstellen lassen. Sie enthält weiterhin wichtige Konstanten, die wir für die Arbeit mit der Datenbank benötigen, wie den Tabellennamen, die Datenbankversion oder die Namen der Spalten.
+public class ProductItemDbHelper extends SQLiteOpenHelper {
 
-    private static final String LOG_TAG = ShoppingMemoDbHelper.class.getSimpleName();
+    private static final String LOG_TAG = ProductItemDbHelper.class.getSimpleName();
 
     public static final String DB_NAME = "shopping_list.db";
     public static final int DB_VERSION = 6;
@@ -35,7 +35,7 @@ public class ShoppingMemoDbHelper extends SQLiteOpenHelper {
 
     public static final String SQL_DROP = "DROP TABLE IF EXISTS " + TABLE_SHOPPING_LIST;
 
-    public ShoppingMemoDbHelper(Context context) {
+    public ProductItemDbHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
         Log.d(LOG_TAG, "DbHelper hat die Datenbank: " + getDatabaseName() + " erzeugt.");
     }

@@ -1,8 +1,8 @@
 package com.examples.pj.einkaufsapp.dbentities;
 
 // DAS OBJEKT
-// -> ShoppingMemo – Instanzen dieser Klasse können die Daten eines SQLite-Datensatzes aufnehmen. Sie repräsentieren die Datensätze im Code. Wir werden mit Objekten dieser Klasse den ListView füllen .
-public class ShoppingMemo {
+// -> ProductItem – Instanzen dieser Klasse können die Daten eines SQLite-Datensatzes aufnehmen. Sie repräsentieren die Datensätze im Code. Wir werden mit Objekten dieser Klasse den ListView füllen .
+public class ProductItem {
 
     private long id;
     private String product;
@@ -12,7 +12,7 @@ public class ShoppingMemo {
     private boolean favourite;
 
 
-    public ShoppingMemo(long id, String product, String category, int bought, boolean done, boolean favourite) {
+    public ProductItem(long id, String product, String category, int bought, boolean done, boolean favourite) {
         this.id = id;
         this.product = product;
         this.category = category;
@@ -71,7 +71,7 @@ public class ShoppingMemo {
 
     @Override
     public String toString() {
-        return "ShoppingMemo{" +
+        return "ProductItem{" +
                 "id=" + id +
                 ", product='" + product + '\'' +
                 ", category='" + category + '\'' +

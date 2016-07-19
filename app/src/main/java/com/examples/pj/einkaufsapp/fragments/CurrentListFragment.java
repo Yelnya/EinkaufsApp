@@ -1,16 +1,15 @@
 package com.examples.pj.einkaufsapp.fragments;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -18,17 +17,17 @@ import android.widget.Spinner;
 
 import com.examples.pj.einkaufsapp.R;
 import com.examples.pj.einkaufsapp.adapters.CurrentListAdapter;
-import com.examples.pj.einkaufsapp.dbentities.ShoppingMemo;
-import com.examples.pj.einkaufsapp.dbentities.ShoppingMemoDataSource;
+import com.examples.pj.einkaufsapp.dbentities.ProductItem;
+import com.examples.pj.einkaufsapp.dbentities.ProductItemDataSource;
 import com.examples.pj.einkaufsapp.interfaces.ChangeToolbarInterface;
 import com.examples.pj.einkaufsapp.util.SharedPreferencesManager;
+import com.examples.pj.einkaufsapp.util.StringUtils;
+import com.examples.pj.einkaufsapp.util.ViewUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import butterknife.Bind;
 import butterknife.OnClick;
@@ -44,11 +43,11 @@ public class CurrentListFragment extends BaseFragment implements ChangeToolbarIn
     RecyclerView currentListRv;
 
     private Context context;
-    private ShoppingMemoDataSource dataSource;
+    private ProductItemDataSource dataSource;
     private SharedPreferencesManager sharedPreferencesManager;
-    private List<ShoppingMemo> currentList;         //items on current shopping list stored in SP
+    private List<ProductItem> currentList;         //items on current shopping list stored in SP
     private String selectedCategory;
-    private List<ShoppingMemo> shoppingMemoList;    //all items ever stored in DB
+    private List<ProductItem> productItemList;    //all items ever stored in DB
     boolean existingProductFound;
     boolean existingProductInCurrentListFound;
     private CurrentListAdapter currentListAdapter;
@@ -108,20 +107,17 @@ public class CurrentListFragment extends BaseFragment implements ChangeToolbarIn
         super.onActivityCreated(savedInstanceState);
 
         context = getActivity();
-
-        //Shared Preferences
-        SharedPreferences SPRfile = getAttachedActivity().getSharedPreferences("SLSPfile", 0);
-        SharedPreferences.Editor editor = SPRfile.edit();
-        sharedPreferencesManager = new SharedPreferencesManager(SPRfile, editor);
+        if (sharedPreferencesManager == null) {
+            sharedPreferencesManager = SharedPreferencesManager.initSharedPreferences((Activity) context);
+        }
 
         //Database
-        dataSource = new ShoppingMemoDataSource(context);
+        dataSource = new ProductItemDataSource(context);
         dataSource.open(); //open connection to db
 
-        shoppingMemoList = new ArrayList<>();
+        productItemList = new ArrayList<>();
         currentList = sharedPreferencesManager.loadCurrentShoppingListFromLocalStore();
-        currentList = sharedPreferencesManager.loadCurrentShoppingListFromLocalStore();
-        initializeShoppingMemosListView();
+        initializeProductItemsListView();
     }
 
     @Override
@@ -137,7 +133,7 @@ public class CurrentListFragment extends BaseFragment implements ChangeToolbarIn
     @Override
     public void onPause() {
         super.onPause();
-        dataSource.close(); //Verbindung zur Datenbank geschlossen
+        dataSource.close(); //close db connection
     }
 
     @Override
@@ -147,13 +143,152 @@ public class CurrentListFragment extends BaseFragment implements ChangeToolbarIn
         showEditAndDeleteIconInToolbar = false;
         setToolbarEditAndDeleteIcon(showEditAndDeleteIconInToolbar);
 
-        dataSource.open(); //Verbindung zur Datenbank öffnen
+        dataSource.open(); //open db connection
 
         currentList = sharedPreferencesManager.loadCurrentShoppingListFromLocalStore(); //get local List
-        shoppingMemoList.clear();
-        shoppingMemoList = dataSource.getAllShoppingMemos();    //get General List
+        productItemList.clear();
+        productItemList = dataSource.getAllProductItems();    //get General List
 
         // Spinner with Array Adapter writes Selection to "selectedCategory"
+        drawCategorySpinner();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
+
+    //---------------------------------------------------------------
+    // Butter Knife Methods
+    //---------------------------------------------------------------
+
+    @OnClick(R.id.button_add_product)
+    public void onPlusButtonClick() {
+        if (currentList == null) {
+            currentList = new ArrayList<>();
+        }
+        addNewProductToListIfValid();
+    }
+
+    @OnClick(R.id.toolbarDeleteIv)
+    public void onToolbarDeleteClick() {
+        System.out.println("TrashBin clicked");
+        ProductItem clickedItem = currentListAdapter.getItemClicked(); //get item clicked from Adapter
+        ProductItem matchingItemInLocalList = null;
+        for (ProductItem item : currentList) { //find item and delete it from local list
+            if (item.getId() == (clickedItem.getId())) {
+                matchingItemInLocalList = item;
+                break;
+            }
+        }
+        createReallyDeleteDialog(matchingItemInLocalList);
+    }
+
+    @OnClick(R.id.toolbarEditIv)
+    public void onToolbarEditClick() {
+        System.out.println("EditIcon clicked");
+        ProductItem clickedItem = currentListAdapter.getItemClicked(); //get item clicked from Adapter
+        ProductItem matchingItemInLocalList = null;
+        for (ProductItem item : currentList) { //find item and delete it from local list
+            if (item.getId() == (clickedItem.getId())) {
+                matchingItemInLocalList = item;
+                break;
+            }
+        }
+        createEditProductItemDialog(matchingItemInLocalList);
+    }
+
+    public void addNewProductToListIfValid() {
+        ProductItem currentProductObject;
+        String currentProductName = "";
+        currentProductName = editTextProduct.getText().toString().trim();   //filter empty strings except for space
+
+        if (!"".equals(currentProductName) && !currentProductName.isEmpty()) {  //check if input contains characters
+            boolean specialCharacterFound = StringUtils.stringContainsSpecialCharacters(currentProductName);
+
+            if (!specialCharacterFound) {      //only if there are no special characters in input
+                currentProductName = editTextProduct.getText().toString().substring(0, 1).toUpperCase() + editTextProduct.getText().toString().substring(1);
+                long currentProductID = 0;
+                Log.d(LOG_TAG, "Contents of SQLITE DB: " + productItemList.toString());
+                existingProductFound = false;
+                existingProductInCurrentListFound = false;
+                //check if entered productName (lower case) already is stored in SQLiteDB
+                for (ProductItem product : productItemList) {
+                    if (product.getProduct().toLowerCase().equals(currentProductName.toLowerCase())) {
+                        currentProductObject = product;
+                        //if product is NOT in list already: add to currentList
+                        for (ProductItem currentProduct : currentList) {
+                            if (currentProduct.getProduct().equals(currentProductObject.getProduct())) {
+                                existingProductInCurrentListFound = true;
+                                break;
+                            }
+                        }
+                        if (!existingProductInCurrentListFound) {
+                            currentList.add(currentProductObject);
+                            currentList = sortListCategoryAndAlphabetical(currentList);
+
+                            sharedPreferencesManager.saveCurrentShoppingListToLocalStore(currentList);
+                        } else {
+                            toast("Produkt befindet sich schon in der Liste");
+                        }
+
+                        Log.d(LOG_TAG, "Added existing product to list: " + currentProductName);
+                        existingProductFound = true;
+                        break;
+                    }
+                }
+                if (!existingProductFound) {
+                    currentProductID = dataSource.getHighestID() + 1; //if no, get highest ID in DB and +1
+                    currentProductObject = new ProductItem(currentProductID, currentProductName, selectedCategory, 0, false, false); //create new object
+                    currentList.add(currentProductObject);
+                    currentList = sortListCategoryAndAlphabetical(currentList);
+                    sharedPreferencesManager.saveCurrentShoppingListToLocalStore(currentList);
+
+                    dataSource.createProductItem(currentProductName, selectedCategory);    //add product to general list
+                    Log.d(LOG_TAG, "Added new product to list: " + currentProductName);
+                }
+                //store currentList to SP
+                sharedPreferencesManager.saveCurrentShoppingListToLocalStore(currentList);
+                //LOG output
+                Log.d(LOG_TAG, "-------------------LOCAL LIST ENTRIES -----------------------");
+                for (ProductItem product : currentList) {
+                    Log.d(LOG_TAG, "LocalProduct: " + product.toString());
+                }
+                editTextProduct.setText("");
+
+                //Hide Softkeyboard and refresh list
+                ViewUtils.hideKeyboard((Activity) context);
+                currentListAdapter.notifyDataSetChanged();   //Anzeigen aller Datenbank Einträge in der ListView
+            } else {
+                editTextProduct.setError(getString(R.string.editText_errorMessage));    //if string contains special characters, set error message
+            }
+        } else {
+            editTextProduct.setError(getString(R.string.editText_errorMessage));    //if empty string, set error message
+        }
+    }
+
+    //---------------------------------------------------------------
+    // Other Methods
+    //---------------------------------------------------------------
+
+    private void toolbarBackToNormal() {
+        showEditAndDeleteIconInToolbar = false;
+        toolbarTitle = toolbarTitleFragment;
+        setToolbarEditAndDeleteIcon(showEditAndDeleteIconInToolbar);
+        currentListAdapter.setEditDeleteToolbarActive(false);
+    }
+
+    private void initializeProductItemsListView() {
+        currentListAdapter = new CurrentListAdapter(currentList, context, dataSource, sharedPreferencesManager, this, showEditAndDeleteIconInToolbar);
+        final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        currentListRv.setLayoutManager(linearLayoutManager);
+        currentListRv.setAdapter(currentListAdapter);
+        currentListRv.setHasFixedSize(true);
+        currentListRv.setVisibility(View.VISIBLE);
+    }
+
+    public void drawCategorySpinner() {
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(context,
                 R.array.categories_array, R.layout.spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -172,162 +307,10 @@ public class CurrentListFragment extends BaseFragment implements ChangeToolbarIn
         });
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-    }
-
-    //---------------------------------------------------------------
-    // Butter Knife Methods
-    //---------------------------------------------------------------
-    @OnClick(R.id.button_add_product)
-    public void onPlusButtonClick() {
-        if (currentList == null) {
-            currentList = new ArrayList<>();
-        }
-        ShoppingMemo currentProductObject;
-        String currentProductName = "";
-        currentProductName = editTextProduct.getText().toString().trim();   //filter empty strings except for space
-
-        if (!"".equals(currentProductName) && !currentProductName.isEmpty()) {  //check if input contains characters
-            Pattern pattern = Pattern.compile("[^A-Za-z ]");      //check string if input contains special characters
-            Matcher matcher = pattern.matcher(currentProductName);
-            boolean matchFound = false;
-            for (int i = 0; i < currentProductName.length(); i++) {
-                if (matcher.find(i)) {
-                    matchFound = true;
-                    break;
-                }
-            }
-
-            if (!matchFound) {      //only if there are no special characters in input
-                currentProductName = editTextProduct.getText().toString().substring(0, 1).toUpperCase() + editTextProduct.getText().toString().substring(1);
-                long currentProductID = 0;
-                Log.d(LOG_TAG, "Contents of SQLITE DB: " + shoppingMemoList.toString());
-                existingProductFound = false;
-                existingProductInCurrentListFound = false;
-                //check if entered productName (lower case) already is stored in SQLiteDB
-                for (ShoppingMemo product : shoppingMemoList) {
-                    if (product.getProduct().toLowerCase().equals(currentProductName.toLowerCase())) {
-                        currentProductObject = product;
-                        //if product is NOT in list already: add to currentList
-                        for (ShoppingMemo currentProduct : currentList) {
-                            if (currentProduct.getProduct().equals(currentProductObject.getProduct())) {
-                                existingProductInCurrentListFound = true;
-                                break;
-                            }
-                        }
-                        if (!existingProductInCurrentListFound) {
-                            currentList.add(currentProductObject);
-                            sortListCategoryAndAlphabetical();
-                            sharedPreferencesManager.saveCurrentShoppingListToLocalStore(currentList);
-                        } else {
-                            toast("Produkt befindet sich schon in der Liste");
-                        }
-
-                        Log.d(LOG_TAG, "Added existing product to list: " + currentProductName);
-                        existingProductFound = true;
-                        break;
-                    }
-                }
-                if (!existingProductFound) {
-                    currentProductID = dataSource.getHighestID() + 1; //if no, get highest ID in DB and +1
-                    currentProductObject = new ShoppingMemo(currentProductID, currentProductName, selectedCategory, 0, false, false); //create new object
-                    currentList.add(currentProductObject);
-                    sortListCategoryAndAlphabetical();
-                    sharedPreferencesManager.saveCurrentShoppingListToLocalStore(currentList);
-
-                    dataSource.createShoppingMemo(currentProductName, selectedCategory);    //add product to general list
-                    Log.d(LOG_TAG, "Added new product to list: " + currentProductName);
-                }
-                //store currentList to SP
-                sharedPreferencesManager.saveCurrentShoppingListToLocalStore(currentList);
-                //LOG output
-                Log.d(LOG_TAG, "-------------------LOCAL LIST ENTRIES -----------------------");
-                for (ShoppingMemo product : currentList) {
-                    Log.d(LOG_TAG, "LocalProduct: " + product.toString());
-                }
-                editTextProduct.setText("");
-
-                //Hide Softkeyboard and refresh list
-                hideKeyboard();
-                currentListAdapter.notifyDataSetChanged();   //Anzeigen aller Datenbank Einträge in der ListView
-            } else {
-                editTextProduct.setError(getString(R.string.editText_errorMessage));    //if string contains special characters, set error message
-            }
-        } else {
-            editTextProduct.setError(getString(R.string.editText_errorMessage));    //if empty string, set error message
-        }
-
-    }
-
-    @OnClick(R.id.toolbarDeleteIv)
-    public void onToolbarDeleteClick() {
-        System.out.println("TrashBin clicked");
-        ShoppingMemo clickedItem = currentListAdapter.getItemClicked(); //get item clicked from Adapter
-        ShoppingMemo matchingItemInLocalList = null;
-        for (ShoppingMemo item : currentList) { //find item and delete it from local list
-            if (item.getId() == (clickedItem.getId())) {
-                matchingItemInLocalList = item;
-                break;
-            }
-        }
-        createReallyDeleteDialog(matchingItemInLocalList);
-    }
-
-    @OnClick(R.id.toolbarEditIv)
-    public void onToolbarEditClick() {
-        System.out.println("EditIcon clicked");
-        ShoppingMemo clickedItem = currentListAdapter.getItemClicked(); //get item clicked from Adapter
-        ShoppingMemo matchingItemInLocalList = null;
-        for (ShoppingMemo item : currentList) { //find item and delete it from local list
-            if (item.getId() == (clickedItem.getId())) {
-                matchingItemInLocalList = item;
-                break;
-            }
-        }
-        createEditShoppingMemoDialog(matchingItemInLocalList);
-    }
-
-    //---------------------------------------------------------------
-    // Other Methods
-    //---------------------------------------------------------------
-
-    private void toolbarBackToNormal() {
-        showEditAndDeleteIconInToolbar = false;
-        toolbarTitle = toolbarTitleFragment;
-        setToolbarEditAndDeleteIcon(showEditAndDeleteIconInToolbar);
-        currentListAdapter.setEditDeleteToolbarActive(false);
-    }
-
-    private void initializeShoppingMemosListView() {
-        currentListAdapter = new CurrentListAdapter(currentList, context, dataSource, sharedPreferencesManager, this, showEditAndDeleteIconInToolbar);
-        final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
-        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        currentListRv.setLayoutManager(linearLayoutManager);
-        currentListRv.setAdapter(currentListAdapter);
-        currentListRv.setHasFixedSize(true);
-        currentListRv.setVisibility(View.VISIBLE);
-    }
-
-    //hide keyboard
-    private void hideKeyboard() {
-        //Hide Softkeyboard
-        InputMethodManager inputMethodManager;
-        inputMethodManager = (InputMethodManager) getActivity().getSystemService(getActivity().INPUT_METHOD_SERVICE);
-        if (getActivity().getCurrentFocus() != null) {
-            inputMethodManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(), 0);
-        }
-    }
-
-    public void sortListCategoryAndAlphabetical() {
-        Collections.sort(currentList, new CurrentListAlphabeticalComparator());
-        Collections.sort(currentList, new CurrentListCategoryComparator());
-
-        Log.d(LOG_TAG, "----------------- SORTED LIST ------------------");
-        for (ShoppingMemo product : currentList) {
-            Log.d(LOG_TAG, "Sorted: " + product.toNiceString());
-        }
+    public List<ProductItem> sortListCategoryAndAlphabetical(List<ProductItem> list) {
+        Collections.sort(list, new CurrentListAlphabeticalComparator());
+        Collections.sort(list, new CurrentListCategoryComparator());
+        return list;
     }
 
     //---------------------------------------------------------------
@@ -345,26 +328,10 @@ public class CurrentListFragment extends BaseFragment implements ChangeToolbarIn
     }
 
     //---------------------------------------------------------------
-    // COMPARATORS FOR LIST SORTING
-    //---------------------------------------------------------------
-
-    public class CurrentListAlphabeticalComparator implements Comparator<ShoppingMemo> {
-        public int compare(ShoppingMemo left, ShoppingMemo right) {
-            return left.getProduct().compareTo(right.getProduct());
-        }
-    }
-
-    public class CurrentListCategoryComparator implements Comparator<ShoppingMemo> {
-        public int compare(ShoppingMemo left, ShoppingMemo right) {
-            return left.getCategory().compareTo(right.getCategory());
-        }
-    }
-
-    //---------------------------------------------------------------
     // ALERT DIALOGS
     //---------------------------------------------------------------
 
-    public void createReallyDeleteDialog(final ShoppingMemo itemToDelete) {
+    public void createReallyDeleteDialog(final ProductItem itemToDelete) {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
         // set title and message
         alertDialogBuilder.setTitle(itemToDelete.getProduct())
@@ -390,17 +357,17 @@ public class CurrentListFragment extends BaseFragment implements ChangeToolbarIn
                 });
         AlertDialog alertDialog = alertDialogBuilder.create();
         alertDialog.show();
-        hideKeyboard();
+        ViewUtils.hideKeyboard((Activity) context);
     }
 
-    private void createEditShoppingMemoDialog(final ShoppingMemo itemToChange) {
+    private void createEditProductItemDialog(final ProductItem itemToChange) {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
         // set title and message
         alertDialogBuilder.setTitle("Ändern");
 
         //layout for alert dialog
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        View dialogsView = inflater.inflate(R.layout.dialog_edit_shopping_memo, null);
+        View dialogsView = inflater.inflate(R.layout.dialog_edit_product_item, null);
 
         final EditText editTextNewProduct = (EditText) dialogsView.findViewById(R.id.editText_new_product);
         editTextNewProduct.setText(itemToChange.getProduct());
@@ -439,14 +406,14 @@ public class CurrentListFragment extends BaseFragment implements ChangeToolbarIn
                         String product = editTextNewProduct.getText().toString();
                         int bought = 0;
                         // update SQLite Entry
-                        ShoppingMemo updatedShoppingMemo = dataSource.updateShoppingMemo(itemToChange.getId(), product, selectedCategory, bought, itemToChange.isDone(), itemToChange.isFavourite());
+                        ProductItem updatedProductItem = dataSource.updateProductItem(itemToChange.getId(), product, selectedCategory, bought, itemToChange.isDone(), itemToChange.isFavourite());
                         // update local list
                         currentList.remove(itemToChange);
-                        currentList.add(updatedShoppingMemo);
-                        sortListCategoryAndAlphabetical();
+                        currentList.add(updatedProductItem);
+                        currentList = sortListCategoryAndAlphabetical(currentList);
                         sharedPreferencesManager.saveCurrentShoppingListToLocalStore(currentList); //store to SP
                         Log.d(LOG_TAG, "Alter Eintrag - ID: " + itemToChange.getId() + " Inhalt: " + itemToChange.toString());
-                        Log.d(LOG_TAG, "Neuer Eintrag - ID: " + updatedShoppingMemo.getId() + " Inhalt: " + updatedShoppingMemo.toString());
+                        Log.d(LOG_TAG, "Neuer Eintrag - ID: " + updatedProductItem.getId() + " Inhalt: " + updatedProductItem.toString());
 
                         sharedPreferencesManager.saveCurrentShoppingListToLocalStore(currentList); //save changed list to SP
                         currentListAdapter.notifyDataSetChanged();  //refresh Adapter View
@@ -463,6 +430,22 @@ public class CurrentListFragment extends BaseFragment implements ChangeToolbarIn
                 });
         AlertDialog alertDialog = alertDialogBuilder.create();
         alertDialog.show();
-        hideKeyboard();
+        ViewUtils.hideKeyboard((Activity) context);
+    }
+
+    //---------------------------------------------------------------
+    // COMPARATORS FOR LIST SORTING
+    //---------------------------------------------------------------
+
+    public class CurrentListAlphabeticalComparator implements Comparator<ProductItem> {
+        public int compare(ProductItem left, ProductItem right) {
+            return left.getProduct().compareTo(right.getProduct());
+        }
+    }
+
+    public class CurrentListCategoryComparator implements Comparator<ProductItem> {
+        public int compare(ProductItem left, ProductItem right) {
+            return left.getCategory().compareTo(right.getCategory());
+        }
     }
 }

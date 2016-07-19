@@ -1,8 +1,9 @@
 package com.examples.pj.einkaufsapp.util;
 
+import android.app.Activity;
 import android.content.SharedPreferences;
 
-import com.examples.pj.einkaufsapp.dbentities.ShoppingMemo;
+import com.examples.pj.einkaufsapp.dbentities.ProductItem;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -17,6 +18,12 @@ public class SharedPreferencesManager {
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
 
+    public static SharedPreferencesManager initSharedPreferences(Activity activity){
+        SharedPreferences SPRfile = activity.getSharedPreferences("SLSPfile", 0);
+        SharedPreferences.Editor editor = SPRfile.edit();
+        return new SharedPreferencesManager(SPRfile, editor);
+    }
+
     public SharedPreferencesManager(SharedPreferences sharedPreferences, SharedPreferences.Editor editor) {
         this.sharedPreferences = sharedPreferences;
         this.editor = editor;
@@ -26,15 +33,15 @@ public class SharedPreferencesManager {
     // CURRENT SHOPPING LIST
     //***************************************************************
 
-    public List<ShoppingMemo> loadCurrentShoppingListFromLocalStore() {
+    public List<ProductItem> loadCurrentShoppingListFromLocalStore() {
         String currentShoppingListString = sharedPreferences.getString(CURRENT_SHOPPING_LIST, null);
         Gson gson = new Gson();
-        Type type = new TypeToken<List<ShoppingMemo>>() {
+        Type type = new TypeToken<List<ProductItem>>() {
         }.getType();
         return gson.fromJson(currentShoppingListString, type);
     }
 
-    public void saveCurrentShoppingListToLocalStore(List<ShoppingMemo> shoppingList) {
+    public void saveCurrentShoppingListToLocalStore(List<ProductItem> shoppingList) {
         Gson gson = new Gson();
         String json = gson.toJson(shoppingList, LinkedList.class);
         editor.putString(CURRENT_SHOPPING_LIST, json);

@@ -21,9 +21,9 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.examples.pj.einkaufsapp.R;
-import com.examples.pj.einkaufsapp.dbentities.ShoppingMemo;
-import com.examples.pj.einkaufsapp.dbentities.ShoppingMemoDataSource;
-import com.examples.pj.einkaufsapp.dbentities.ShoppingMemoDbHelper;
+import com.examples.pj.einkaufsapp.dbentities.ProductItem;
+import com.examples.pj.einkaufsapp.dbentities.ProductItemDataSource;
+import com.examples.pj.einkaufsapp.dbentities.ProductItemDbHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,9 +32,9 @@ import java.util.List;
 //SQLite wird standardmässig nach DATA/data/PACKAGE_NAME/databases/FILENAME kopiert.
 //hier: /data/data/com.examples.pj.einkaufsapp/databases/shopping_list.db
 //verwendete Klassen:
-// -> ShoppingMemo – Instanzen dieser Klasse können die Daten eines SQLite-Datensatzes aufnehmen. Sie repräsentieren die Datensätze im Code. Wir werden mit Objekten dieser Klasse den ListView füllen .
-// -> ShoppingMemoDbHelper – Sie ist eine Hilfsklasse mit deren Hilfe wir die SQLite-Datenbank erstellen lassen. Sie enthält weiterhin wichtige Konstanten, die wir für die Arbeit mit der Datenbank benötigen, wie den Tabellennamen, die Datenbankversion oder die Namen der Spalten.
-// -> ShoppingMemoDataSource – Diese Klasse ist unser Data Access Object und für das Verwalten der Daten verantwortlich. Es unterhält die Datenbankverbindung und ist für das Hinzufügen, Auslesen und Löschen von Datensätzen zuständig. Außerdem wandelt es Datensätze in Java-Objekte für uns um, so dass der Code der Benutzeroberfläche nicht direkt mit den Datensätzen arbeiten muss.
+// -> ProductItem – Instanzen dieser Klasse können die Daten eines SQLite-Datensatzes aufnehmen. Sie repräsentieren die Datensätze im Code. Wir werden mit Objekten dieser Klasse den ListView füllen .
+// -> ProductItemDbHelper – Sie ist eine Hilfsklasse mit deren Hilfe wir die SQLite-Datenbank erstellen lassen. Sie enthält weiterhin wichtige Konstanten, die wir für die Arbeit mit der Datenbank benötigen, wie den Tabellennamen, die Datenbankversion oder die Namen der Spalten.
+// -> ProductItemDataSource – Diese Klasse ist unser Data Access Object und für das Verwalten der Daten verantwortlich. Es unterhält die Datenbankverbindung und ist für das Hinzufügen, Auslesen und Löschen von Datensätzen zuständig. Außerdem wandelt es Datensätze in Java-Objekte für uns um, so dass der Code der Benutzeroberfläche nicht direkt mit den Datensätzen arbeiten muss.
 
 // Öffnen der Datenquelle und Zugriff auf die Datenbank in der WelcomeFragment
 
@@ -44,10 +44,10 @@ public class StatisticFragment extends BaseFragment {
 
     private Context context;
     private final String toolbarTitle = "Statistiken";
-    private ShoppingMemoDataSource dataSource;
-    private ListView mShoppingMemosListView;
+    private ProductItemDataSource dataSource;
+    private ListView mProductItemListView;
     private String selectedCategory;
-    private ShoppingMemoDbHelper databaseHelper;
+    private ProductItemDbHelper databaseHelper;
     private boolean showEditAndDeleteIconInToolbar;
     //================================================================================
     // Fragment Instantiation
@@ -100,10 +100,10 @@ public class StatisticFragment extends BaseFragment {
         context = this.getActivity();
 
         Log.d(LOG_TAG, "Das Datenquellen-Objekt wird angelegt.");
-        databaseHelper = new ShoppingMemoDbHelper(context);
-        dataSource = new ShoppingMemoDataSource(context);
+        databaseHelper = new ProductItemDbHelper(context);
+        dataSource = new ProductItemDataSource(context);
 
-        initializeShoppingMemosListView();
+        initializeProductItemsListView();
         activateAddButton();    // + Button
     }
 
@@ -146,12 +146,12 @@ public class StatisticFragment extends BaseFragment {
 
     //holen einer Liste mit allen Einträgen aus der DB
     private void showAllListEntries() {
-        List<ShoppingMemo> shoppingMemoList = dataSource.getAllShoppingMemos();
+        List<ProductItem> productItemList = dataSource.getAllProductItems();
 
-        ArrayAdapter<ShoppingMemo> adapter = (ArrayAdapter<ShoppingMemo>) mShoppingMemosListView.getAdapter();
+        ArrayAdapter<ProductItem> adapter = (ArrayAdapter<ProductItem>) mProductItemListView.getAdapter();
 
         adapter.clear();
-        adapter.addAll(shoppingMemoList);
+        adapter.addAll(productItemList);
         adapter.notifyDataSetChanged();
     }
 
@@ -191,7 +191,7 @@ public class StatisticFragment extends BaseFragment {
                 }
                 editTextProduct.setText("");
 
-                dataSource.createShoppingMemo(product, selectedCategory);
+                dataSource.createProductItem(product, selectedCategory);
                 //Hide Softkeyboard
                 hideKeyboard();
 
@@ -201,18 +201,18 @@ public class StatisticFragment extends BaseFragment {
     }
 
     //Alert Dialog
-    private AlertDialog createEditShoppingMemoDialog(final ShoppingMemo shoppingMemo) {
+    private AlertDialog createEditProductItemDialog(final ProductItem productItem) {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
 
-        View dialogsView = inflater.inflate(R.layout.dialog_edit_shopping_memo, null);
+        View dialogsView = inflater.inflate(R.layout.dialog_edit_product_item, null);
 
 //        final EditText editTextNewQuantity = (EditText) dialogsView.findViewById(R.id.editText_new_category);
-//        editTextNewQuantity.setText(String.valueOf(shoppingMemo.getQuantity()));
+//        editTextNewQuantity.setText(String.valueOf(productItem.getQuantity()));
 
         final EditText editTextNewProduct = (EditText) dialogsView.findViewById(R.id.editText_new_product);
-        editTextNewProduct.setText(shoppingMemo.getProduct());
+        editTextNewProduct.setText(productItem.getProduct());
 
         final Spinner spinner = (Spinner) dialogsView.findViewById(R.id.alert_spinner_category);
         // Create an ArrayAdapter using the string array and a default spinner layout
@@ -223,7 +223,7 @@ public class StatisticFragment extends BaseFragment {
         // Apply the adapter to the spinner
         spinner.setAdapter(adapter);
         for (int i= 0; i < spinner.getAdapter().getCount(); i++) {
-            if (spinner.getAdapter().getItem(i).toString().equals(shoppingMemo.getCategory())) {
+            if (spinner.getAdapter().getItem(i).toString().equals(productItem.getCategory())) {
                 spinner.setSelection(i);
             }
         }
@@ -246,10 +246,10 @@ public class StatisticFragment extends BaseFragment {
                         String product = editTextNewProduct.getText().toString();
                         int bought = 0;
                         // An dieser Stelle schreiben wir die geänderten Daten in die SQLite Datenbank
-                        ShoppingMemo updatedShoppingMemo = dataSource.updateShoppingMemo(shoppingMemo.getId(), product, selectedCategory, bought, shoppingMemo.isDone(), shoppingMemo.isFavourite());
+                        ProductItem updatedProductItem = dataSource.updateProductItem(productItem.getId(), product, selectedCategory, bought, productItem.isDone(), productItem.isFavourite());
 
-                        Log.d(LOG_TAG, "Alter Eintrag - ID: " + shoppingMemo.getId() + " Inhalt: " + shoppingMemo.toString());
-                        Log.d(LOG_TAG, "Neuer Eintrag - ID: " + updatedShoppingMemo.getId() + " Inhalt: " + updatedShoppingMemo.toString());
+                        Log.d(LOG_TAG, "Alter Eintrag - ID: " + productItem.getId() + " Inhalt: " + productItem.toString());
+                        Log.d(LOG_TAG, "Neuer Eintrag - ID: " + updatedProductItem.getId() + " Inhalt: " + updatedProductItem.toString());
 
                         showAllListEntries();
                         dialog.dismiss();
@@ -266,13 +266,13 @@ public class StatisticFragment extends BaseFragment {
     }
 
     //Initialisierung der ListView
-    private void initializeShoppingMemosListView() {
-        List<ShoppingMemo> emptyListForInitialization = new ArrayList<>();
+    private void initializeProductItemsListView() {
+        List<ProductItem> emptyListForInitialization = new ArrayList<>();
 
-        mShoppingMemosListView = (ListView) getActivity().findViewById(R.id.listview_shopping_memos);
+        mProductItemListView = (ListView) getActivity().findViewById(R.id.listview_product_items);
 
         // Erstellen des ArrayAdapters für der ListView
-        ArrayAdapter<ShoppingMemo> shoppingMemoArrayAdapter = new ArrayAdapter<ShoppingMemo>(
+        ArrayAdapter<ProductItem> productItemArrayAdapter = new ArrayAdapter<ProductItem>(
                 getActivity(),
                 android.R.layout.simple_list_item_multiple_choice,
                 emptyListForInitialization) {
@@ -283,12 +283,12 @@ public class StatisticFragment extends BaseFragment {
 
                 View view = super.getView(position, convertView, parent);
                 TextView textView = (TextView) view;
-                ShoppingMemo memo = (ShoppingMemo) mShoppingMemosListView.getItemAtPosition(position);
+                ProductItem productItem = (ProductItem) mProductItemListView.getItemAtPosition(position);
 
-                textView.setText(memo.toNiceString());
+                textView.setText(productItem.toNiceString());
 
                 // Hier prüfen, ob Eintrag abgehakt ist. Falls ja, Text durchstreichen
-                if (memo.isDone()) {
+                if (productItem.isDone()) {
                     textView.setPaintFlags(textView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
                     textView.setTextColor(Color.rgb(175, 175, 175));
                 } else {
@@ -299,17 +299,17 @@ public class StatisticFragment extends BaseFragment {
             }
         };
 
-        mShoppingMemosListView.setAdapter(shoppingMemoArrayAdapter);
+        mProductItemListView.setAdapter(productItemArrayAdapter);
 
-        mShoppingMemosListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        mProductItemListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                ShoppingMemo memo = (ShoppingMemo) adapterView.getItemAtPosition(position);
+                ProductItem productItem = (ProductItem) adapterView.getItemAtPosition(position);
 
-                // Hier den checked-Wert des Memo-Objekts umkehren, bspw. von true auf false
+                // Hier den checked-Wert des ProductItem-Objekts umkehren, bspw. von true auf false
                 // Dann ListView neu zeichnen mit showAllListEntries()
-                ShoppingMemo updatedShoppingMemo = dataSource.updateShoppingMemo(memo.getId(), memo.getProduct(), memo.getCategory(), memo.getBought(), (!memo.isDone()), memo.isFavourite());
-                Log.d(LOG_TAG, "Eintrag: " + updatedShoppingMemo.toString());
+                ProductItem updatedProductItem = dataSource.updateProductItem(productItem.getId(), productItem.getProduct(), productItem.getCategory(), productItem.getBought(), (!productItem.isDone()), productItem.isFavourite());
+                Log.d(LOG_TAG, "Eintrag: " + updatedProductItem.toString());
                 showAllListEntries();
             }
         });

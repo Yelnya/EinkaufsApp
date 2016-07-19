@@ -7,7 +7,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,6 +27,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import butterknife.Bind;
 import butterknife.OnClick;
@@ -185,62 +186,79 @@ public class CurrentListFragment extends BaseFragment implements ChangeToolbarIn
             currentList = new ArrayList<>();
         }
         ShoppingMemo currentProductObject;
-        //first letter upper case
-        String currentProductName = editTextProduct.getText().toString().substring(0, 1).toUpperCase() + editTextProduct.getText().toString().substring(1);
-        long currentProductID = 0;
-        if (TextUtils.isEmpty(currentProductName)) {
-            editTextProduct.setError(getString(R.string.editText_errorMessage));
-            return;
-        }
-        editTextProduct.setText("");
+        String currentProductName = "";
+        currentProductName = editTextProduct.getText().toString().trim();   //filter empty strings except for space
 
-        Log.d(LOG_TAG, "Contents of SQLITE DB: " + shoppingMemoList.toString());
-        existingProductFound = false;
-        existingProductInCurrentListFound = false;
-        //check if entered productName (lower case) already is stored in SQLiteDB
-        for (ShoppingMemo product : shoppingMemoList) {
-            if (product.getProduct().toLowerCase().equals(currentProductName.toLowerCase())) {
-                currentProductObject = product;
-                //if product is NOT in list already: add to currentList
-                for (ShoppingMemo currentProduct : currentList) {
-                    if (currentProduct.getProduct().equals(currentProductObject.getProduct())) {
-                        existingProductInCurrentListFound = true;
+        if (!"".equals(currentProductName) && !currentProductName.isEmpty()) {  //check if input contains characters
+            Pattern pattern = Pattern.compile("[^A-Za-z ]");      //check string if input contains special characters
+            Matcher matcher = pattern.matcher(currentProductName);
+            boolean matchFound = false;
+            for (int i = 0; i < currentProductName.length(); i++) {
+                if (matcher.find(i)) {
+                    matchFound = true;
+                    break;
+                }
+            }
+
+            if (!matchFound) {      //only if there are no special characters in input
+                currentProductName = editTextProduct.getText().toString().substring(0, 1).toUpperCase() + editTextProduct.getText().toString().substring(1);
+                long currentProductID = 0;
+                Log.d(LOG_TAG, "Contents of SQLITE DB: " + shoppingMemoList.toString());
+                existingProductFound = false;
+                existingProductInCurrentListFound = false;
+                //check if entered productName (lower case) already is stored in SQLiteDB
+                for (ShoppingMemo product : shoppingMemoList) {
+                    if (product.getProduct().toLowerCase().equals(currentProductName.toLowerCase())) {
+                        currentProductObject = product;
+                        //if product is NOT in list already: add to currentList
+                        for (ShoppingMemo currentProduct : currentList) {
+                            if (currentProduct.getProduct().equals(currentProductObject.getProduct())) {
+                                existingProductInCurrentListFound = true;
+                                break;
+                            }
+                        }
+                        if (!existingProductInCurrentListFound) {
+                            currentList.add(currentProductObject);
+                            sortListCategoryAndAlphabetical();
+                            sharedPreferencesManager.saveCurrentShoppingListToLocalStore(currentList);
+                        } else {
+                            toast("Produkt befindet sich schon in der Liste");
+                        }
+
+                        Log.d(LOG_TAG, "Added existing product to list: " + currentProductName);
+                        existingProductFound = true;
                         break;
                     }
                 }
-                if (!existingProductInCurrentListFound) {
+                if (!existingProductFound) {
+                    currentProductID = dataSource.getHighestID() + 1; //if no, get highest ID in DB and +1
+                    currentProductObject = new ShoppingMemo(currentProductID, currentProductName, selectedCategory, 0, false, false); //create new object
                     currentList.add(currentProductObject);
                     sortListCategoryAndAlphabetical();
                     sharedPreferencesManager.saveCurrentShoppingListToLocalStore(currentList);
-                } else {
-                    toast("Produkt befindet sich schon in der Liste");
+
+                    dataSource.createShoppingMemo(currentProductName, selectedCategory);    //add product to general list
+                    Log.d(LOG_TAG, "Added new product to list: " + currentProductName);
                 }
+                //store currentList to SP
+                sharedPreferencesManager.saveCurrentShoppingListToLocalStore(currentList);
+                //LOG output
+                Log.d(LOG_TAG, "-------------------LOCAL LIST ENTRIES -----------------------");
+                for (ShoppingMemo product : currentList) {
+                    Log.d(LOG_TAG, "LocalProduct: " + product.toString());
+                }
+                editTextProduct.setText("");
 
-                Log.d(LOG_TAG, "Added existing product to list: " + currentProductName);
-                existingProductFound = true;
-                break;
+                //Hide Softkeyboard and refresh list
+                hideKeyboard();
+                currentListAdapter.notifyDataSetChanged();   //Anzeigen aller Datenbank Einträge in der ListView
+            } else {
+                editTextProduct.setError(getString(R.string.editText_errorMessage));    //if string contains special characters, set error message
             }
+        } else {
+            editTextProduct.setError(getString(R.string.editText_errorMessage));    //if empty string, set error message
         }
-        if (!existingProductFound) {
-            currentProductID = dataSource.getHighestID() + 1; //if no, get highest ID in DB and +1
-            currentProductObject = new ShoppingMemo(currentProductID, currentProductName, selectedCategory, 0, false, false); //create new object
-            currentList.add(currentProductObject);
-            sortListCategoryAndAlphabetical();
-            sharedPreferencesManager.saveCurrentShoppingListToLocalStore(currentList);
 
-            dataSource.createShoppingMemo(currentProductName, selectedCategory);    //add product to general list
-            Log.d(LOG_TAG, "Added new product to list: " + currentProductName);
-        }
-        //store currentList to SP
-        sharedPreferencesManager.saveCurrentShoppingListToLocalStore(currentList);
-        //LOG output
-        Log.d(LOG_TAG, "-------------------LOCAL LIST ENTRIES -----------------------");
-        for (ShoppingMemo product : currentList) {
-            Log.d(LOG_TAG, "LocalProduct: " + product.toString());
-        }
-        //Hide Softkeyboard and refresh list
-        hideKeyboard();
-        currentListAdapter.notifyDataSetChanged();   //Anzeigen aller Datenbank Einträge in der ListView
     }
 
     @OnClick(R.id.toolbarDeleteIv)

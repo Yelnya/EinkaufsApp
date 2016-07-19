@@ -19,7 +19,7 @@
     <!--Current List-->
     <string name="editText_hint_product">Produktname</string>
     <string name="button_add_product">+</string>
-    <string name="editText_errorMessage">Das Feld darf nicht leer sein.</string>
+    <string name="editText_errorMessage">Das Feld darf nicht leer sein und keine Sonderzeichen enthalten.</string>
     <string name="cab_delete">Einträge löschen</string>
     <string name="cab_change">Eintrag ändern</string>
     <string name="cab_checked_string">ausgewählt</string>

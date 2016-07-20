@@ -32,6 +32,7 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.OnClick;
 
+/** CLASS: add, delete and edit the productItems in current List */
 public class CurrentListFragment extends BaseFragment implements ChangeToolbarInterface {
     public static final String LOG_TAG = CurrentListFragment.class.getSimpleName();
 
@@ -47,27 +48,29 @@ public class CurrentListFragment extends BaseFragment implements ChangeToolbarIn
     private SharedPreferencesManager sharedPreferencesManager;
     private List<ProductItem> currentList;         //items on current shopping list stored in SP
     private String selectedCategory;
-    private List<ProductItem> productItemList;    //all items ever stored in DB
+    private List<ProductItem> generalProductItemList;    //all items ever stored in DB
     boolean existingProductFound;
     boolean existingProductInCurrentListFound;
     private CurrentListAdapter currentListAdapter;
     private String toolbarTitle = "";
-    private final String toolbarTitleFragment = "Aktuelle Einkaufsliste";
-    private final String toolbarTitleEdit = "Löschen/Ändern";
+    private static final String TOOLBAR_TITLE_FRAGMENT = "Aktuelle Einkaufsliste";
+    private static final String TOOLBAR_TITLE_EDIT = "Löschen/Ändern";
     private boolean showEditAndDeleteIconInToolbar;
 
     //================================================================================
     // Fragment Instantiation
     //================================================================================
 
+    /** CONSTRUCTOR: standard */
     public CurrentListFragment() {
         super(LOG_TAG, true);   //influences Hamburger Icon HomeUp in Toolbar
     }
 
+    /** CreateInstance: processing bundle arguments
+     * @return fragment with arguments in bundle*/
     public static BaseFragment createInstance() {
         final BaseFragment fragment = new CurrentListFragment();
         final Bundle args = new Bundle();
-        //args.putParcelable(ARG_ROUTE, route);
         fragment.setArguments(args);
         return fragment;
     }
@@ -111,23 +114,12 @@ public class CurrentListFragment extends BaseFragment implements ChangeToolbarIn
             sharedPreferencesManager = SharedPreferencesManager.initSharedPreferences((Activity) context);
         }
 
-        //Database
-        dataSource = new ProductItemDataSource(context);
+        dataSource = new ProductItemDataSource(context);    //initializing database
         dataSource.open(); //open connection to db
 
-        productItemList = new ArrayList<>();
+        generalProductItemList = new ArrayList<>();
         currentList = sharedPreferencesManager.loadCurrentShoppingListFromLocalStore();
         initializeProductItemsListView();
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
     }
 
     @Override
@@ -139,29 +131,25 @@ public class CurrentListFragment extends BaseFragment implements ChangeToolbarIn
     @Override
     public void onResume() {
         super.onResume();
-        toolbarTitle = toolbarTitleFragment;
+        toolbarTitle = TOOLBAR_TITLE_FRAGMENT;
         showEditAndDeleteIconInToolbar = false;
         setToolbarEditAndDeleteIcon(showEditAndDeleteIconInToolbar);
 
         dataSource.open(); //open db connection
 
         currentList = sharedPreferencesManager.loadCurrentShoppingListFromLocalStore(); //get local List
-        productItemList.clear();
-        productItemList = dataSource.getAllProductItems();    //get General List
+        generalProductItemList.clear();
+        generalProductItemList = dataSource.getAllProductItems();    //get General List
 
         // Spinner with Array Adapter writes Selection to "selectedCategory"
         drawCategorySpinner();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
     }
 
     //---------------------------------------------------------------
     // Butter Knife Methods
     //---------------------------------------------------------------
 
+    /** OnClick: Adding new Product when button is clicked */
     @OnClick(R.id.button_add_product)
     public void onPlusButtonClick() {
         if (currentList == null) {
@@ -170,9 +158,10 @@ public class CurrentListFragment extends BaseFragment implements ChangeToolbarIn
         addNewProductToListIfValid();
     }
 
+    /** OnClick: Delete Product when Trashbin Icon in Toolbar is clicked */
     @OnClick(R.id.toolbarDeleteIv)
     public void onToolbarDeleteClick() {
-        System.out.println("TrashBin clicked");
+        Log.d(LOG_TAG, "TrashBin clicked");
         ProductItem clickedItem = currentListAdapter.getItemClicked(); //get item clicked from Adapter
         ProductItem matchingItemInLocalList = null;
         for (ProductItem item : currentList) { //find item and delete it from local list
@@ -184,9 +173,10 @@ public class CurrentListFragment extends BaseFragment implements ChangeToolbarIn
         createReallyDeleteDialog(matchingItemInLocalList);
     }
 
+    /** OnClick: Edit Product when Edit Icon in Toolbar is clicked */
     @OnClick(R.id.toolbarEditIv)
     public void onToolbarEditClick() {
-        System.out.println("EditIcon clicked");
+        Log.d(LOG_TAG, "EditIcon clicked");
         ProductItem clickedItem = currentListAdapter.getItemClicked(); //get item clicked from Adapter
         ProductItem matchingItemInLocalList = null;
         for (ProductItem item : currentList) { //find item and delete it from local list
@@ -198,9 +188,9 @@ public class CurrentListFragment extends BaseFragment implements ChangeToolbarIn
         createEditProductItemDialog(matchingItemInLocalList);
     }
 
+    /** addNewProductToListIfValid: check if entered string is valid, then add to current list */
     public void addNewProductToListIfValid() {
-        ProductItem currentProductObject;
-        String currentProductName = "";
+        String currentProductName;
         currentProductName = editTextProduct.getText().toString().trim();   //filter empty strings except for space
 
         if (!"".equals(currentProductName) && !currentProductName.isEmpty()) {  //check if input contains characters
@@ -208,57 +198,17 @@ public class CurrentListFragment extends BaseFragment implements ChangeToolbarIn
 
             if (!specialCharacterFound) {      //only if there are no special characters in input
                 currentProductName = editTextProduct.getText().toString().substring(0, 1).toUpperCase() + editTextProduct.getText().toString().substring(1);
-                long currentProductID = 0;
-                Log.d(LOG_TAG, "Contents of SQLITE DB: " + productItemList.toString());
+                Log.d(LOG_TAG, "Contents of SQLITE DB: " + generalProductItemList.toString());
                 existingProductFound = false;
                 existingProductInCurrentListFound = false;
                 //check if entered productName (lower case) already is stored in SQLiteDB
-                for (ProductItem product : productItemList) {
-                    if (product.getProduct().toLowerCase().equals(currentProductName.toLowerCase())) {
-                        currentProductObject = product;
-                        //if product is NOT in list already: add to currentList
-                        for (ProductItem currentProduct : currentList) {
-                            if (currentProduct.getProduct().equals(currentProductObject.getProduct())) {
-                                existingProductInCurrentListFound = true;
-                                break;
-                            }
-                        }
-                        if (!existingProductInCurrentListFound) {
-                            currentList.add(currentProductObject);
-                            currentList = sortListCategoryAndAlphabetical(currentList);
+                searchListForProductThenDecideToUpdate(currentProductName);
 
-                            sharedPreferencesManager.saveCurrentShoppingListToLocalStore(currentList);
-                        } else {
-                            toast("Produkt befindet sich schon in der Liste");
-                        }
 
-                        Log.d(LOG_TAG, "Added existing product to list: " + currentProductName);
-                        existingProductFound = true;
-                        break;
-                    }
-                }
-                if (!existingProductFound) {
-                    currentProductID = dataSource.getHighestID() + 1; //if no, get highest ID in DB and +1
-                    currentProductObject = new ProductItem(currentProductID, currentProductName, selectedCategory, 0, false, false); //create new object
-                    currentList.add(currentProductObject);
-                    currentList = sortListCategoryAndAlphabetical(currentList);
-                    sharedPreferencesManager.saveCurrentShoppingListToLocalStore(currentList);
 
-                    dataSource.createProductItem(currentProductName, selectedCategory);    //add product to general list
-                    Log.d(LOG_TAG, "Added new product to list: " + currentProductName);
-                }
-                //store currentList to SP
-                sharedPreferencesManager.saveCurrentShoppingListToLocalStore(currentList);
-                //LOG output
-                Log.d(LOG_TAG, "-------------------LOCAL LIST ENTRIES -----------------------");
-                for (ProductItem product : currentList) {
-                    Log.d(LOG_TAG, "LocalProduct: " + product.toString());
-                }
-                editTextProduct.setText("");
-
-                //Hide Softkeyboard and refresh list
+                editTextProduct.setText("");        //reset textView to blank
                 ViewUtils.hideKeyboard((Activity) context);
-                currentListAdapter.notifyDataSetChanged();   //Anzeigen aller Datenbank Einträge in der ListView
+                currentListAdapter.notifyDataSetChanged();   //refresh ListView
             } else {
                 editTextProduct.setError(getString(R.string.editText_errorMessage));    //if string contains special characters, set error message
             }
@@ -273,7 +223,7 @@ public class CurrentListFragment extends BaseFragment implements ChangeToolbarIn
 
     private void toolbarBackToNormal() {
         showEditAndDeleteIconInToolbar = false;
-        toolbarTitle = toolbarTitleFragment;
+        toolbarTitle = TOOLBAR_TITLE_FRAGMENT;
         setToolbarEditAndDeleteIcon(showEditAndDeleteIconInToolbar);
         currentListAdapter.setEditDeleteToolbarActive(false);
     }
@@ -288,6 +238,7 @@ public class CurrentListFragment extends BaseFragment implements ChangeToolbarIn
         currentListRv.setVisibility(View.VISIBLE);
     }
 
+    /** drawCategorySpinner: add category spinner to view */
     public void drawCategorySpinner() {
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(context,
                 R.array.categories_array, R.layout.spinner_item);
@@ -307,10 +258,60 @@ public class CurrentListFragment extends BaseFragment implements ChangeToolbarIn
         });
     }
 
+    /** sortListCategoryAndAlphabetical: sort items from currentList alphabetically
+     * @param list: currentList
+     * @return currentList, sorted alphabetically and referring to categories*/
     public List<ProductItem> sortListCategoryAndAlphabetical(List<ProductItem> list) {
         Collections.sort(list, new CurrentListAlphabeticalComparator());
         Collections.sort(list, new CurrentListCategoryComparator());
         return list;
+    }
+
+    private void searchListForProductThenDecideToUpdate(String currentProductName) {
+        ProductItem currentProductObject;
+        //search generalProductItemList: was product ever stored before?
+        for (ProductItem product : generalProductItemList) {
+            if (product.getProduct().equalsIgnoreCase(currentProductName)) {
+                currentProductObject = product;
+
+                //if found in general list -> search current list: if product is NOT in list already: add to currentList
+                for (ProductItem currentProduct : currentList) {
+                    if (currentProduct.getProduct().equals(currentProductObject.getProduct())) {
+                        existingProductInCurrentListFound = true;   //product already is in current list -> found duplicate
+                        break;
+                    }
+                }
+                if (!existingProductInCurrentListFound) {
+                    currentList.add(currentProductObject);  //if no duplicate found, add item to current list, refresh and store new list
+                    currentList = sortListCategoryAndAlphabetical(currentList);
+                    sharedPreferencesManager.saveCurrentShoppingListToLocalStore(currentList);
+                } else {
+                    toast("Produkt befindet sich schon in der Liste");  //found duplicate in list: inform user, but do nothing
+                }
+
+                Log.d(LOG_TAG, "Added existing product to list: " + currentProductName);
+                existingProductFound = true;
+                break;
+            }
+        }
+
+        if (!existingProductFound) {    //if no duplicate found, create new productItem and store in currentList and generalList
+            long currentProductID = dataSource.getHighestID() + 1; //new ID: get highest ID in DB and +1
+            currentProductObject = new ProductItem(currentProductID, currentProductName, selectedCategory, 0, false, false); //create new object
+            generalProductItemList.add(currentProductObject);   //update generalList
+            currentList.add(currentProductObject);  //update currentList
+            currentList = sortListCategoryAndAlphabetical(currentList);
+            sharedPreferencesManager.saveCurrentShoppingListToLocalStore(currentList);
+
+            dataSource.createProductItem(currentProductName, selectedCategory);    //add product to database
+            Log.d(LOG_TAG, "Added new product to list: " + currentProductName);
+        }
+
+        //LOG output
+        Log.d(LOG_TAG, "-------------------LOCAL LIST ENTRIES -----------------------");
+        for (ProductItem product : currentList) {
+            Log.d(LOG_TAG, "LocalProduct: " + product.toString());
+        }
     }
 
     //---------------------------------------------------------------
@@ -321,7 +322,7 @@ public class CurrentListFragment extends BaseFragment implements ChangeToolbarIn
     public void showEditAndDeleteIcon(boolean show) {
         // change Toolbar
         Log.d(LOG_TAG, "Show Edit and Delete Icons in Toolbar: " + show);
-        toolbarTitle = show ? toolbarTitleEdit : toolbarTitleFragment;
+        toolbarTitle = show ? TOOLBAR_TITLE_EDIT : TOOLBAR_TITLE_FRAGMENT;
         showEditAndDeleteIconInToolbar = show;
         setToolbarEditAndDeleteIcon(show);
         setToolbar();
@@ -331,6 +332,8 @@ public class CurrentListFragment extends BaseFragment implements ChangeToolbarIn
     // ALERT DIALOGS
     //---------------------------------------------------------------
 
+    /** createReallyDeleteDialog: create Alert Dialog Before Deleting Icon from current List
+     * @param itemToDelete the productItem selected by the user to be deleted */
     public void createReallyDeleteDialog(final ProductItem itemToDelete) {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
         // set title and message
@@ -362,8 +365,8 @@ public class CurrentListFragment extends BaseFragment implements ChangeToolbarIn
 
     private void createEditProductItemDialog(final ProductItem itemToChange) {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
-        // set title and message
-        alertDialogBuilder.setTitle("Ändern");
+
+        alertDialogBuilder.setTitle("Ändern");  //set title
 
         //layout for alert dialog
         LayoutInflater inflater = getActivity().getLayoutInflater();
@@ -372,21 +375,20 @@ public class CurrentListFragment extends BaseFragment implements ChangeToolbarIn
         final EditText editTextNewProduct = (EditText) dialogsView.findViewById(R.id.editText_new_product);
         editTextNewProduct.setText(itemToChange.getProduct());
 
-        //spinner
-        final Spinner spinner = (Spinner) dialogsView.findViewById(R.id.alert_spinner_category);
-        // Create an ArrayAdapter using the string array and a default spinner layout
+        // Category Spinner: Create an ArrayAdapter using the string array and a default spinner layout
+        final Spinner alertSpinner = (Spinner) dialogsView.findViewById(R.id.alert_spinner_category);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(context,
                 R.array.categories_array, android.R.layout.simple_spinner_item);
         // Specify the layout to use when the list of choices appears
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         // Apply the adapter to the spinner
-        spinner.setAdapter(adapter);
-        for (int i = 0; i < spinner.getAdapter().getCount(); i++) {
-            if (spinner.getAdapter().getItem(i).toString().equals(itemToChange.getCategory())) {
-                spinner.setSelection(i);
+        alertSpinner.setAdapter(adapter);
+        for (int i = 0; i < alertSpinner.getAdapter().getCount(); i++) {
+            if (alertSpinner.getAdapter().getItem(i).toString().equals(itemToChange.getCategory())) {
+                alertSpinner.setSelection(i);
             }
         }
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        alertSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 selectedCategory = parent.getItemAtPosition(position).toString();
@@ -407,17 +409,14 @@ public class CurrentListFragment extends BaseFragment implements ChangeToolbarIn
                         int bought = 0;
                         // update SQLite Entry
                         ProductItem updatedProductItem = dataSource.updateProductItem(itemToChange.getId(), product, selectedCategory, bought, itemToChange.isDone(), itemToChange.isFavourite());
-                        // update local list
-                        currentList.remove(itemToChange);
+                        currentList.remove(itemToChange); // update local list
                         currentList.add(updatedProductItem);
                         currentList = sortListCategoryAndAlphabetical(currentList);
                         sharedPreferencesManager.saveCurrentShoppingListToLocalStore(currentList); //store to SP
                         Log.d(LOG_TAG, "Alter Eintrag - ID: " + itemToChange.getId() + " Inhalt: " + itemToChange.toString());
                         Log.d(LOG_TAG, "Neuer Eintrag - ID: " + updatedProductItem.getId() + " Inhalt: " + updatedProductItem.toString());
-
                         sharedPreferencesManager.saveCurrentShoppingListToLocalStore(currentList); //save changed list to SP
                         currentListAdapter.notifyDataSetChanged();  //refresh Adapter View
-
                         toolbarBackToNormal();
                         dialog.dismiss();
                     }
@@ -437,13 +436,17 @@ public class CurrentListFragment extends BaseFragment implements ChangeToolbarIn
     // COMPARATORS FOR LIST SORTING
     //---------------------------------------------------------------
 
+    /** CurrentListAlphabeticalComparator: Helper class for alphabetical sorting */
     public class CurrentListAlphabeticalComparator implements Comparator<ProductItem> {
+        @Override
         public int compare(ProductItem left, ProductItem right) {
             return left.getProduct().compareTo(right.getProduct());
         }
     }
 
+    /** CurrentListAlphabeticalComparator: Helper class for sorting categories */
     public class CurrentListCategoryComparator implements Comparator<ProductItem> {
+        @Override
         public int compare(ProductItem left, ProductItem right) {
             return left.getCategory().compareTo(right.getCategory());
         }

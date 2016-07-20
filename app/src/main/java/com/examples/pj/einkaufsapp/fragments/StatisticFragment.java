@@ -1,5 +1,6 @@
 package com.examples.pj.einkaufsapp.fragments;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -11,7 +12,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -24,6 +24,7 @@ import com.examples.pj.einkaufsapp.R;
 import com.examples.pj.einkaufsapp.dbentities.ProductItem;
 import com.examples.pj.einkaufsapp.dbentities.ProductItemDataSource;
 import com.examples.pj.einkaufsapp.dbentities.ProductItemDbHelper;
+import com.examples.pj.einkaufsapp.util.ViewUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -192,8 +193,7 @@ public class StatisticFragment extends BaseFragment {
                 editTextProduct.setText("");
 
                 dataSource.createProductItem(product, selectedCategory);
-                //Hide Softkeyboard
-                hideKeyboard();
+                ViewUtils.hideKeyboard((Activity) context);
 
                 showAllListEntries();   //Anzeigen aller Datenbank Einträge in der ListView
             }
@@ -261,7 +261,7 @@ public class StatisticFragment extends BaseFragment {
                     }
                 });
 
-        hideKeyboard();
+        ViewUtils.hideKeyboard((Activity) context);
         return builder.create();
     }
 
@@ -313,14 +313,5 @@ public class StatisticFragment extends BaseFragment {
                 showAllListEntries();
             }
         });
-    }
-
-    private void hideKeyboard() {
-        //Hide Softkeyboard
-        InputMethodManager inputMethodManager;
-        inputMethodManager = (InputMethodManager) getActivity().getSystemService(getActivity().INPUT_METHOD_SERVICE);
-        if (getActivity().getCurrentFocus() != null) {
-            inputMethodManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(), 0);
-        }
     }
 }

@@ -134,7 +134,7 @@ public class StatisticFragment extends BaseFragment {
     //Beim Drücken des + Buttons
     private void activateAddButton() {
         Button buttonAddProduct = (Button) getActivity().findViewById(R.id.button_add_product);
-        final EditText editTextProduct = (EditText) getActivity().findViewById(R.id.editText_product);
+        final EditText editTextProduct = (EditText) getActivity().findViewById(R.id.autocompletetv_edittext_product);
 
         final Spinner spinner = (Spinner) getActivity().findViewById(R.id.spinner_category);
         // Create an ArrayAdapter using the string array and a default spinner layout

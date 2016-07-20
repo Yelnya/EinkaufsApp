@@ -17,6 +17,7 @@ import java.util.List;
 public class SharedPreferencesManager {
 
     private static final String CURRENT_SHOPPING_LIST = "CurrentShoppingList";
+    private static final String GENERAL_LIST = "GeneralList";
 
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;

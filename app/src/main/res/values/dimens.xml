@@ -36,4 +36,7 @@
     <dimen name="leftsidemenu_width">280dp</dimen>
     <dimen name="leftsidemenu_line_heigth">46dp</dimen>
     <dimen name="leftsidemenu_padding_top">28dp</dimen>
+
+    <!--Drop Down Menu Auto Complete-->
+    <dimen name="dropdown_heigth">220dp</dimen>
 </resources>

@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.Spinner;
 
@@ -32,16 +33,18 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.OnClick;
 
-/** CLASS: add, delete and edit the productItems in current List */
+/**
+ * CLASS: add, delete and edit the productItems in current List
+ */
 public class CurrentListFragment extends BaseFragment implements ChangeToolbarInterface {
     public static final String LOG_TAG = CurrentListFragment.class.getSimpleName();
 
     @Bind(R.id.spinner_category)
     Spinner spinner;
-    @Bind(R.id.editText_product)
-    EditText editTextProduct;
     @Bind(R.id.currentlist_recycler_view)
     RecyclerView currentListRv;
+    @Bind(R.id.autocompletetv_edittext_product)
+    AutoCompleteTextView multiAutoCompleteTextView;
 
     private Context context;
     private ProductItemDataSource dataSource;
@@ -61,13 +64,18 @@ public class CurrentListFragment extends BaseFragment implements ChangeToolbarIn
     // Fragment Instantiation
     //================================================================================
 
-    /** CONSTRUCTOR: standard */
+    /**
+     * CONSTRUCTOR: standard
+     */
     public CurrentListFragment() {
         super(LOG_TAG, true);   //influences Hamburger Icon HomeUp in Toolbar
     }
 
-    /** CreateInstance: processing bundle arguments
-     * @return fragment with arguments in bundle*/
+    /**
+     * CreateInstance: processing bundle arguments
+     *
+     * @return fragment with arguments in bundle
+     */
     public static BaseFragment createInstance() {
         final BaseFragment fragment = new CurrentListFragment();
         final Bundle args = new Bundle();
@@ -141,6 +149,14 @@ public class CurrentListFragment extends BaseFragment implements ChangeToolbarIn
         generalProductItemList.clear();
         generalProductItemList = dataSource.getAllProductItems();    //get General List
 
+        //auto complete list
+        List<String> productNamesGeneral = new ArrayList<>();
+        for (ProductItem item : generalProductItemList) {
+            productNamesGeneral.add(item.getProduct());
+        }
+        ArrayAdapter adapter = new ArrayAdapter(context, android.R.layout.simple_list_item_1, productNamesGeneral);
+        multiAutoCompleteTextView.setAdapter(adapter);
+
         // Spinner with Array Adapter writes Selection to "selectedCategory"
         drawCategorySpinner();
     }
@@ -149,7 +165,9 @@ public class CurrentListFragment extends BaseFragment implements ChangeToolbarIn
     // Butter Knife Methods
     //---------------------------------------------------------------
 
-    /** OnClick: Adding new Product when button is clicked */
+    /**
+     * OnClick: Adding new Product when button is clicked
+     */
     @OnClick(R.id.button_add_product)
     public void onPlusButtonClick() {
         if (currentList == null) {
@@ -158,7 +176,9 @@ public class CurrentListFragment extends BaseFragment implements ChangeToolbarIn
         addNewProductToListIfValid();
     }
 
-    /** OnClick: Delete Product when Trashbin Icon in Toolbar is clicked */
+    /**
+     * OnClick: Delete Product when Trashbin Icon in Toolbar is clicked
+     */
     @OnClick(R.id.toolbarDeleteIv)
     public void onToolbarDeleteClick() {
         Log.d(LOG_TAG, "TrashBin clicked");
@@ -173,7 +193,9 @@ public class CurrentListFragment extends BaseFragment implements ChangeToolbarIn
         createReallyDeleteDialog(matchingItemInLocalList);
     }
 
-    /** OnClick: Edit Product when Edit Icon in Toolbar is clicked */
+    /**
+     * OnClick: Edit Product when Edit Icon in Toolbar is clicked
+     */
     @OnClick(R.id.toolbarEditIv)
     public void onToolbarEditClick() {
         Log.d(LOG_TAG, "EditIcon clicked");
@@ -188,16 +210,18 @@ public class CurrentListFragment extends BaseFragment implements ChangeToolbarIn
         createEditProductItemDialog(matchingItemInLocalList);
     }
 
-    /** addNewProductToListIfValid: check if entered string is valid, then add to current list */
+    /**
+     * addNewProductToListIfValid: check if entered string is valid, then add to current list
+     */
     public void addNewProductToListIfValid() {
         String currentProductName;
-        currentProductName = editTextProduct.getText().toString().trim();   //filter empty strings except for space
+        currentProductName = multiAutoCompleteTextView.getText().toString().trim();   //filter empty strings except for space
 
         if (!"".equals(currentProductName) && !currentProductName.isEmpty()) {  //check if input contains characters
             boolean specialCharacterFound = StringUtils.stringContainsSpecialCharacters(currentProductName);
 
             if (!specialCharacterFound) {      //only if there are no special characters in input
-                currentProductName = editTextProduct.getText().toString().substring(0, 1).toUpperCase() + editTextProduct.getText().toString().substring(1);
+                currentProductName = multiAutoCompleteTextView.getText().toString().substring(0, 1).toUpperCase() + multiAutoCompleteTextView.getText().toString().substring(1);
                 Log.d(LOG_TAG, "Contents of SQLITE DB: " + generalProductItemList.toString());
                 existingProductFound = false;
                 existingProductInCurrentListFound = false;
@@ -205,15 +229,14 @@ public class CurrentListFragment extends BaseFragment implements ChangeToolbarIn
                 searchListForProductThenDecideToUpdate(currentProductName);
 
 
-
-                editTextProduct.setText("");        //reset textView to blank
+                multiAutoCompleteTextView.setText("");        //reset textView to blank
                 ViewUtils.hideKeyboard((Activity) context);
                 currentListAdapter.notifyDataSetChanged();   //refresh ListView
             } else {
-                editTextProduct.setError(getString(R.string.editText_errorMessage));    //if string contains special characters, set error message
+                multiAutoCompleteTextView.setError(getString(R.string.editText_errorMessage));    //if string contains special characters, set error message
             }
         } else {
-            editTextProduct.setError(getString(R.string.editText_errorMessage));    //if empty string, set error message
+            multiAutoCompleteTextView.setError(getString(R.string.editText_errorMessage));    //if empty string, set error message
         }
     }
 
@@ -238,7 +261,9 @@ public class CurrentListFragment extends BaseFragment implements ChangeToolbarIn
         currentListRv.setVisibility(View.VISIBLE);
     }
 
-    /** drawCategorySpinner: add category spinner to view */
+    /**
+     * drawCategorySpinner: add category spinner to view
+     */
     public void drawCategorySpinner() {
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(context,
                 R.array.categories_array, R.layout.spinner_item);
@@ -258,9 +283,12 @@ public class CurrentListFragment extends BaseFragment implements ChangeToolbarIn
         });
     }
 
-    /** sortListCategoryAndAlphabetical: sort items from currentList alphabetically
+    /**
+     * sortListCategoryAndAlphabetical: sort items from currentList alphabetically
+     *
      * @param list: currentList
-     * @return currentList, sorted alphabetically and referring to categories*/
+     * @return currentList, sorted alphabetically and referring to categories
+     */
     public List<ProductItem> sortListCategoryAndAlphabetical(List<ProductItem> list) {
         Collections.sort(list, new CurrentListAlphabeticalComparator());
         Collections.sort(list, new CurrentListCategoryComparator());
@@ -301,7 +329,7 @@ public class CurrentListFragment extends BaseFragment implements ChangeToolbarIn
             generalProductItemList.add(currentProductObject);   //update generalList
             currentList.add(currentProductObject);  //update currentList
             currentList = sortListCategoryAndAlphabetical(currentList);
-            sharedPreferencesManager.saveCurrentShoppingListToLocalStore(currentList);
+            sharedPreferencesManager.saveCurrentShoppingListToLocalStore(currentList);  //store locally
 
             dataSource.createProductItem(currentProductName, selectedCategory);    //add product to database
             Log.d(LOG_TAG, "Added new product to list: " + currentProductName);
@@ -332,8 +360,11 @@ public class CurrentListFragment extends BaseFragment implements ChangeToolbarIn
     // ALERT DIALOGS
     //---------------------------------------------------------------
 
-    /** createReallyDeleteDialog: create Alert Dialog Before Deleting Icon from current List
-     * @param itemToDelete the productItem selected by the user to be deleted */
+    /**
+     * createReallyDeleteDialog: create Alert Dialog Before Deleting Icon from current List
+     *
+     * @param itemToDelete the productItem selected by the user to be deleted
+     */
     public void createReallyDeleteDialog(final ProductItem itemToDelete) {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
         // set title and message
@@ -436,7 +467,9 @@ public class CurrentListFragment extends BaseFragment implements ChangeToolbarIn
     // COMPARATORS FOR LIST SORTING
     //---------------------------------------------------------------
 
-    /** CurrentListAlphabeticalComparator: Helper class for alphabetical sorting */
+    /**
+     * CurrentListAlphabeticalComparator: Helper class for alphabetical sorting
+     */
     public class CurrentListAlphabeticalComparator implements Comparator<ProductItem> {
         @Override
         public int compare(ProductItem left, ProductItem right) {
@@ -444,7 +477,9 @@ public class CurrentListFragment extends BaseFragment implements ChangeToolbarIn
         }
     }
 
-    /** CurrentListAlphabeticalComparator: Helper class for sorting categories */
+    /**
+     * CurrentListAlphabeticalComparator: Helper class for sorting categories
+     */
     public class CurrentListCategoryComparator implements Comparator<ProductItem> {
         @Override
         public int compare(ProductItem left, ProductItem right) {

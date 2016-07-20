@@ -1,7 +1,9 @@
 package com.examples.pj.einkaufsapp.adapters;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.support.v4.content.ContextCompat;
@@ -10,7 +12,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -20,6 +21,7 @@ import com.examples.pj.einkaufsapp.dbentities.ProductItem;
 import com.examples.pj.einkaufsapp.dbentities.ProductItemDataSource;
 import com.examples.pj.einkaufsapp.interfaces.ChangeToolbarInterface;
 import com.examples.pj.einkaufsapp.util.SharedPreferencesManager;
+import com.examples.pj.einkaufsapp.util.ViewUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -47,7 +49,7 @@ public class CurrentListAdapter extends BaseAdapter<CurrentListAdapter.Arraylist
     private final SharedPreferencesManager sharedPreferencesManager;
     private final ChangeToolbarInterface changeToolbarInterface;
     private boolean editDeleteToolbarActive;
-    private List<ProductItem> itemsList;
+    private List<ProductItem> currentList;
     private ProductItem itemClicked;
 
     /**
@@ -57,11 +59,11 @@ public class CurrentListAdapter extends BaseAdapter<CurrentListAdapter.Arraylist
      * @param changeToolbarInterface   for Edit / Delete Icons to show or not
      * @param dataSource               db
      * @param editDeleteToolbarActive  boolean -> edit / delete icons currently shown or not
-     * @param itemsList                currentList from Fragment
+     * @param currentList              currentList from Fragment
      * @param sharedPreferencesManager to store data locally
      */
-    public CurrentListAdapter(List<ProductItem> itemsList, Context context, ProductItemDataSource dataSource, SharedPreferencesManager sharedPreferencesManager, ChangeToolbarInterface changeToolbarInterface, boolean editDeleteToolbarActive) {
-        this.itemsList = itemsList;
+    public CurrentListAdapter(List<ProductItem> currentList, Context context, ProductItemDataSource dataSource, SharedPreferencesManager sharedPreferencesManager, ChangeToolbarInterface changeToolbarInterface, boolean editDeleteToolbarActive) {
+        this.currentList = currentList;
         this.context = context;
         this.dataSource = dataSource;
         this.sharedPreferencesManager = sharedPreferencesManager;
@@ -91,16 +93,16 @@ public class CurrentListAdapter extends BaseAdapter<CurrentListAdapter.Arraylist
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         int viewType = getItemViewType(position);
 
-        if (itemsList != null) {
-            itemsList.clear();
-            itemsList = sharedPreferencesManager.loadCurrentShoppingListFromLocalStore();
+        if (currentList != null) {
+            currentList.clear();
+            currentList = sharedPreferencesManager.loadCurrentShoppingListFromLocalStore();
         } else {
-            itemsList = new ArrayList<>();
+            currentList = new ArrayList<>();
         }
 
         if (viewType == LIST_ITEMS) {
             ArraylistViewHolder viewHolder = (ArraylistViewHolder) holder;
-            ProductItem item = itemsList.get(position);
+            ProductItem item = currentList.get(position);
             getIconMatchingCategory(item, viewHolder.categoryIconIv, viewHolder.itemContainerLl);
             viewHolder.productNameTv.setText(item.getProduct());
             // Hier prüfen, ob Eintrag abgehakt ist. Falls ja, Text durchstreichen
@@ -114,8 +116,8 @@ public class CurrentListAdapter extends BaseAdapter<CurrentListAdapter.Arraylist
         } else {
             BottomElementViewHolder viewHolder = (BottomElementViewHolder) holder;
 
-            if (itemsList != null) {
-                if (!itemsList.isEmpty()) {
+            if (currentList != null) {
+                if (!currentList.isEmpty()) {
                     viewHolder.noProductInListTv.setVisibility(View.VISIBLE);
                 } else {
                     viewHolder.noProductInListTv.setVisibility(View.GONE);
@@ -133,8 +135,8 @@ public class CurrentListAdapter extends BaseAdapter<CurrentListAdapter.Arraylist
     // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
-        if (itemsList != null) {
-            return itemsList.size() + 1; //plus one for bottom element
+        if (currentList != null) {
+            return currentList.size() + 1; //plus one for bottom element
         } else {
             return 1;
         }
@@ -143,8 +145,8 @@ public class CurrentListAdapter extends BaseAdapter<CurrentListAdapter.Arraylist
     @Override
     public int getItemViewType(int position) {
         int viewType;
-        if (itemsList != null) {
-            if (position < itemsList.size()) {
+        if (currentList != null) {
+            if (position < currentList.size()) {
                 viewType = LIST_ITEMS; // as long as it is an array list
             } else {
                 viewType = BOTTOM_ELEMENT; //if it is no array list anymore
@@ -163,11 +165,11 @@ public class CurrentListAdapter extends BaseAdapter<CurrentListAdapter.Arraylist
      * method to sort list alphabetically
      */
     public void sortListCategoryAndAlphabetical() {
-        Collections.sort(itemsList, new CurrentListAlphabeticalComparator());
-        Collections.sort(itemsList, new CurrentListCategoryComparator());
+        Collections.sort(currentList, new CurrentListAlphabeticalComparator());
+        Collections.sort(currentList, new CurrentListCategoryComparator());
 
         Log.d(LOG_TAG, "----------------- SORTED LIST ------------------");
-        for (ProductItem product : itemsList) {
+        for (ProductItem product : currentList) {
             Log.d(LOG_TAG, "Sorted: " + product.toNiceString());
         }
     }
@@ -180,10 +182,10 @@ public class CurrentListAdapter extends BaseAdapter<CurrentListAdapter.Arraylist
 
     public void changeProductChecked(ProductItem item) {
         ProductItem updatedItem = dataSource.updateProductItem(item.getId(), item.getProduct(), item.getCategory(), item.getBought(), !item.isDone(), item.isFavourite());
-        itemsList.remove(item);
-        itemsList.add(updatedItem);
+        currentList.remove(item);
+        currentList.add(updatedItem);
         sortListCategoryAndAlphabetical();
-        sharedPreferencesManager.saveCurrentShoppingListToLocalStore(itemsList);
+        sharedPreferencesManager.saveCurrentShoppingListToLocalStore(currentList);
         Log.d(LOG_TAG, "-----------------------Geänderter Eintrag:-------------------------------");
         Log.d(LOG_TAG, "Eintrag: " + updatedItem.toString());
         notifyDataSetChanged(); //refresh List View
@@ -263,7 +265,7 @@ public class CurrentListAdapter extends BaseAdapter<CurrentListAdapter.Arraylist
         @OnClick(R.id.item_container)
         public void onProductClick() {
             int pos = getAdapterPosition();
-            ProductItem product = itemsList.get(pos);
+            ProductItem product = currentList.get(pos);
             changeProductChecked(product);
         }
 
@@ -276,115 +278,11 @@ public class CurrentListAdapter extends BaseAdapter<CurrentListAdapter.Arraylist
         public boolean onProductLongClick() {
 
             int pos = getAdapterPosition();
-            ProductItem selectedItem = itemsList.get(pos);
+            ProductItem selectedItem = currentList.get(pos);
             editDeleteToolbarActive = !editDeleteToolbarActive;   //toggle if EditDelete Toolbar is active or not
             changeToolbarInterface.showEditAndDeleteIcon(editDeleteToolbarActive); //only show EditDelete Toolbar if it is not active right now. Otherwise change back to normal Toolbar
 
             setItemClicked(selectedItem);
-
-            //Overlay für Löschen von ListItems: ContextualActionBar
-//            final ListView productItemListView = (ListView) getActivity().findViewById(R.id.currentlist_recycler_view);
-//            productItemsListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
-//
-//            productItemsListView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
-//
-//                int selCount = 0;
-//
-//                // In dieser Callback-Methode zählen wir die ausgewählen Listeneinträge mit
-//                // und fordern ein Aktualisieren der Contextual Action Bar mit invalidate() an
-//                @Override
-//                public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
-//                    if (checked) {
-//                        selCount++;
-//                    } else {
-//                        selCount--;
-//                    }
-//                    ProductItem productItem = (ProductItem) currentShoppingListView.getItemAtPosition(position);
-//                    String selectedItem = productItem.getProduct();
-//                    String cabTitle = selectedItem + " " + getString(R.string.cab_checked_string);
-//                    mode.setTitle(cabTitle);
-//                    mode.invalidate();
-//                }
-//
-//                // In dieser Callback-Methode legen wir die CAB-Menüeinträge an
-//                @Override
-//                public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-//                    toolbar.setVisibility(View.GONE);
-//                    getActivity().getMenuInflater().inflate(R.menu.menu_contextual_action_bar, menu);
-//                    return true;
-//                }
-//
-//                // In dieser Callback-Methode reagieren wir auf den invalidate() Aufruf
-//                // Wir lassen das Edit-Symbol verschwinden, wenn mehr als 1 Eintrag ausgewählt ist
-//                @Override
-//                public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-//                    MenuItem item = menu.findItem(R.id.cab_change);
-//                    if (selCount == 1) {
-//                        item.setVisible(true);
-//                    } else {
-//                        item.setVisible(false);
-//                    }
-//                    return true;
-//                }
-//
-//                // In dieser Callback-Methode reagieren wir auf Action Item-Klicks
-//                // Je nachdem ob das Löschen- oder Ändern-Symbol angeklickt wurde
-//                @Override
-//                public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-//                    boolean returnValue = true;
-//                    SparseBooleanArray touchedProductItemsPositions = productItemsListView.getCheckedItemPositions();
-//
-//                    switch (item.getItemId()) {
-//                        case R.id.cab_delete:
-//                            for (int i = 0; i < touchedProductItemsPositions.size(); i++) {
-//                                boolean isDone = touchedProductItemsPositions.valueAt(i);
-//                                if (isDone) {
-//                                    int postitionInListView = touchedProductItemsPositions.keyAt(i);
-//                                    ProductItem productItem = (ProductItem) productItemsListView.getItemAtPosition(postitionInListView);
-//                                    Log.d(LOG_TAG, "Position im ListView: " + postitionInListView + " Inhalt: " + productItem.toString());
-//                                    currentList.remove(productItem);
-//                                    sortListCategoryAndAlphabetical();
-//                                    sharedPreferencesManager.saveCurrentShoppingListToLocalStore(currentList);
-//
-////                                dataSource.deleteProductItem(productItem);
-//                                }
-//                            }
-//                            showAllListEntries();
-//                            mode.finish();
-//                            break;
-//
-//                        case R.id.cab_change:
-//                            Log.d(LOG_TAG, "Eintrag ändern");
-//                            for (int i = 0; i < touchedProductItemsPositions.size(); i++) {
-//                                boolean isDone = touchedProductItemsPositions.valueAt(i);
-//                                if (isDone) {
-//                                    int postitionInListView = touchedProductItemsPositions.keyAt(i);
-//                                    ProductItem productItem = (ProductItem) productItemsListView.getItemAtPosition(postitionInListView);
-//                                    Log.d(LOG_TAG, "Position im ListView: " + postitionInListView + " Inhalt: " + productItem.toString());
-//
-//                                    AlertDialog editProductItemDialog = createEditProductItemDialog(productItem);
-//                                    editProductItemDialog.show();
-//                                }
-//                            }
-//                            mode.finish();
-//                            break;
-//
-//                        default:
-//                            returnValue = false;
-//                            break;
-//                    }
-//                    return returnValue;
-//                }
-//
-//                // In dieser Callback-Methode reagieren wir auf das Schließen der CAB
-//                // Wir setzen den Zähler auf 0 zurück
-//                @Override
-//                public void onDestroyActionMode(ActionMode mode) {
-//                    selCount = 0;
-//                    toolbar.setVisibility(View.VISIBLE);
-//                }
-//
-//            });
 
             return true;
         }
@@ -395,8 +293,6 @@ public class CurrentListAdapter extends BaseAdapter<CurrentListAdapter.Arraylist
      */
     public class BottomElementViewHolder extends BaseViewHolder {
 
-        @Bind(R.id.currentlist_Btn)
-        Button currentlistBtn;
         @Bind(R.id.currentlist_noproductinlist_tv)
         TextView noProductInListTv;
 
@@ -408,6 +304,15 @@ public class CurrentListAdapter extends BaseAdapter<CurrentListAdapter.Arraylist
         public BottomElementViewHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
+        }
+
+        /**
+         * Click Behaviour of "Einkauf abschliessen" Button
+         */
+        @OnClick(R.id.currentlist_Btn)
+        public void onFinishButtonClick() {
+
+            makeFinishAlertDialog();
         }
     }
 
@@ -450,4 +355,65 @@ public class CurrentListAdapter extends BaseAdapter<CurrentListAdapter.Arraylist
     public void setEditDeleteToolbarActive(boolean editDeleteToolbarActive) {
         this.editDeleteToolbarActive = editDeleteToolbarActive;
     }
+
+
+    private void makeFinishAlertDialog() {
+
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+        // set title and message
+        alertDialogBuilder.setTitle("Einkauf abschliessen?")
+                .setMessage("Die als erledigt markierten Produkte werden aus der Liste entfernt und in der Einkaufs-Historie abgespeichert. Die unerledigten Produkte verbleiben in der Liste.");
+        //set yes no fields
+        alertDialogBuilder
+                .setCancelable(false)
+                .setPositiveButton(R.string.dialog_button_finish_shoppingtrip, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+
+                        //make new ProductItem List "doneProductItemList" -> get all as done selected items from currentList
+                        List<ProductItem> doneProductItemList = new ArrayList<>();
+                        for (ProductItem product : currentList) {
+                            if (product.isDone()) {
+                                doneProductItemList.add(product);
+                            }
+                        }
+                        //TODO error handling if there are no as "done" marked items
+                        if (!doneProductItemList.isEmpty()) {
+                            //TODO sort "doneProductItemList" list
+                        }
+
+
+                        //TODO store sorted "doneProductItemList" SP
+
+                        //TODO delete all as done selected items from current list
+
+                        //TODO sort current List
+
+                        //TODO error handling if current List now is empty
+
+                        //TODO store current list without done to SP
+
+                        //TODO create Shopping Trip object, add current date
+
+                        //TODO create Shopping Trip list, get all current entries from SP, write to list
+
+                        //TODO add current Shopping Trip object to this list
+
+                        //TODO write finished Shopping Trip List to SP
+
+                        //TODO Toast "Einkauf abgeschlossen"
+
+                        dialog.dismiss();
+                    }
+                })
+                .setNegativeButton(R.string.dialog_button_negative, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.dismiss();
+                    }
+                });
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
+        ViewUtils.hideKeyboard((Activity) context);
+    }
+
+
 }

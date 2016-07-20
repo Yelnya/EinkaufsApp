@@ -53,5 +53,6 @@
     <string name="dialog_button_change_positive">Ändern</string>
     <string name="dialog_button_delete_positive">Löschen</string>
     <string name="dialog_button_negative">Abbrechen</string>
+    <string name="dialog_button_finish_shoppingtrip">Ja, Einkauf abschliessen</string>
 
 </resources>

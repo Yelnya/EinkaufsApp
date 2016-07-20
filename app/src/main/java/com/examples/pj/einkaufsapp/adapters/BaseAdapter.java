@@ -5,10 +5,18 @@ import android.support.v7.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Base Adapter class
+ *
+ * @param <T>
+ */
 public abstract class BaseAdapter<T> extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private List<T> dataset = new ArrayList<>();
 
+    /**
+     * delete existing dataset from adapter
+     */
     public void clearDataset() {
         dataset.clear();
     }
@@ -22,6 +30,11 @@ public abstract class BaseAdapter<T> extends RecyclerView.Adapter<RecyclerView.V
         dataset.addAll(data);
     }
 
+    /**
+     * add data to adapter
+     *
+     * @param data
+     */
     public void addData(List<T> data) {
         dataset.addAll(data);
     }

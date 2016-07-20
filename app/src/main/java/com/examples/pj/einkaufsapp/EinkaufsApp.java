@@ -2,6 +2,9 @@ package com.examples.pj.einkaufsapp;
 
 import android.app.Application;
 
+/**
+ * App Class
+ */
 public class EinkaufsApp extends Application {
 
     private static EinkaufsApp app;

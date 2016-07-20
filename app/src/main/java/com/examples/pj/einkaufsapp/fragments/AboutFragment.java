@@ -1,30 +1,37 @@
 package com.examples.pj.einkaufsapp.fragments;
 
-import android.content.Context;
 import android.os.Bundle;
-import android.view.inputmethod.InputMethodManager;
 
 import com.examples.pj.einkaufsapp.R;
 
+/**
+ * Class as Container for About Information
+ */
 public class AboutFragment extends BaseFragment {
     public static final String LOG_TAG = AboutFragment.class.getSimpleName();
 
-    private Context context;
     private boolean showEditAndDeleteIconInToolbar;
-    private final String toolbarTitle = "Über";
+    private static final String TOOLBAR_TITLE = "Über";
 
     //================================================================================
     // Fragment Instantiation
     //================================================================================
 
+    /**
+     * Constructor
+     */
     public AboutFragment() {
         super(LOG_TAG, true);   //influences Hamburger Icon HomeUp in Toolbar
     }
 
+    /**
+     * createInstance as container for bundle arguments
+     *
+     * @return fragment
+     */
     public static BaseFragment createInstance() {
         final BaseFragment fragment = new AboutFragment();
         final Bundle args = new Bundle();
-        //args.putParcelable(ARG_ROUTE, route);
         fragment.setArguments(args);
         return fragment;
     }
@@ -40,12 +47,12 @@ public class AboutFragment extends BaseFragment {
 
     @Override
     protected void setToolbar() {
-        getAttachedActivity().setToolbar(toolbar, true, toolbarTitle, showEditAndDeleteIconInToolbar); //Icon displayed, Titel of Toolbar
+        getAttachedActivity().setToolbar(toolbar, true, TOOLBAR_TITLE, showEditAndDeleteIconInToolbar); //Icon displayed, Titel of Toolbar
     }
 
     @Override
     protected void setToolbarEditAndDeleteIcon(boolean showEditAndDeleteIconInToolbar) {
-        toolbarTv.setText(toolbarTitle);
+        toolbarTv.setText(TOOLBAR_TITLE);
     }
 
     @Override
@@ -58,46 +65,10 @@ public class AboutFragment extends BaseFragment {
     //================================================================================
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-        context = this.getActivity();
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
 
         showEditAndDeleteIconInToolbar = false;
         setToolbarEditAndDeleteIcon(showEditAndDeleteIconInToolbar);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-    }
-
-    private void hideKeyboard() {
-        //Hide Softkeyboard
-        InputMethodManager inputMethodManager;
-        inputMethodManager = (InputMethodManager) getActivity().getSystemService(getActivity().INPUT_METHOD_SERVICE);
-        if (getActivity().getCurrentFocus() != null) {
-            inputMethodManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(), 0);
-        }
     }
 }

@@ -4,12 +4,12 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -31,6 +31,9 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnLongClick;
 
+/**
+ * Adapter for CurrentListFragment
+ */
 public class CurrentListAdapter extends BaseAdapter<CurrentListAdapter.ArraylistViewHolder> {
 
     public static final String LOG_TAG = CurrentListAdapter.class.getSimpleName();
@@ -47,6 +50,16 @@ public class CurrentListAdapter extends BaseAdapter<CurrentListAdapter.Arraylist
     private List<ProductItem> itemsList;
     private ProductItem itemClicked;
 
+    /**
+     * Constructor
+     *
+     * @param context                  from MainActivity
+     * @param changeToolbarInterface   for Edit / Delete Icons to show or not
+     * @param dataSource               db
+     * @param editDeleteToolbarActive  boolean -> edit / delete icons currently shown or not
+     * @param itemsList                currentList from Fragment
+     * @param sharedPreferencesManager to store data locally
+     */
     public CurrentListAdapter(List<ProductItem> itemsList, Context context, ProductItemDataSource dataSource, SharedPreferencesManager sharedPreferencesManager, ChangeToolbarInterface changeToolbarInterface, boolean editDeleteToolbarActive) {
         this.itemsList = itemsList;
         this.context = context;
@@ -101,10 +114,14 @@ public class CurrentListAdapter extends BaseAdapter<CurrentListAdapter.Arraylist
         } else {
             BottomElementViewHolder viewHolder = (BottomElementViewHolder) holder;
 
-            if (itemsList != null || itemsList.isEmpty()) {
-                viewHolder.noProductInList_Tv.setVisibility(View.VISIBLE);
+            if (itemsList != null) {
+                if (!itemsList.isEmpty()) {
+                    viewHolder.noProductInListTv.setVisibility(View.VISIBLE);
+                } else {
+                    viewHolder.noProductInListTv.setVisibility(View.GONE);
+                }
             } else {
-                viewHolder.noProductInList_Tv.setVisibility(View.GONE);
+                viewHolder.noProductInListTv.setVisibility(View.GONE);
             }
         }
     }
@@ -125,12 +142,12 @@ public class CurrentListAdapter extends BaseAdapter<CurrentListAdapter.Arraylist
 
     @Override
     public int getItemViewType(int position) {
-        int viewType = 0;   // as long as it is an array list
+        int viewType;
         if (itemsList != null) {
-            if (position < itemsList.size()) {  //if it is no array list anymore
-                viewType = LIST_ITEMS;
+            if (position < itemsList.size()) {
+                viewType = LIST_ITEMS; // as long as it is an array list
             } else {
-                viewType = BOTTOM_ELEMENT;
+                viewType = BOTTOM_ELEMENT; //if it is no array list anymore
             }
         } else {
             viewType = BOTTOM_ELEMENT;
@@ -142,6 +159,9 @@ public class CurrentListAdapter extends BaseAdapter<CurrentListAdapter.Arraylist
     // OTHER METHODS
     //---------------------------------------------------------------
 
+    /**
+     * method to sort list alphabetically
+     */
     public void sortListCategoryAndAlphabetical() {
         Collections.sort(itemsList, new CurrentListAlphabeticalComparator());
         Collections.sort(itemsList, new CurrentListCategoryComparator());
@@ -152,9 +172,13 @@ public class CurrentListAdapter extends BaseAdapter<CurrentListAdapter.Arraylist
         }
     }
 
+    /**
+     * method to toggle the "done" status for productItem
+     *
+     * @param item productItem
+     */
+
     public void changeProductChecked(ProductItem item) {
-        // Hier den checked-Wert des productItem-Objekts umkehren, bspw. von true auf false
-//        dataSource.updateProductItem(item.getId(), item.getProduct(), item.getCategory(), item.getBought(), false);
         ProductItem updatedItem = dataSource.updateProductItem(item.getId(), item.getProduct(), item.getCategory(), item.getBought(), !item.isDone(), item.isFavourite());
         itemsList.remove(item);
         itemsList.add(updatedItem);
@@ -165,39 +189,46 @@ public class CurrentListAdapter extends BaseAdapter<CurrentListAdapter.Arraylist
         notifyDataSetChanged(); //refresh List View
     }
 
+    /**
+     * method for mapping icon to category of product
+     *
+     * @param item productItem
+     * @param iv   ImageView Icon to change
+     * @param ll   LinearLayout Background Color to change
+     */
     public void getIconMatchingCategory(ProductItem item, ImageView iv, LinearLayout ll) {
         String[] stringArray = context.getResources().getStringArray(R.array.categories_array);
 
         if (item.getCategory().equals(stringArray[0])) {    //Fisch
             iv.setImageResource(R.drawable.fish);
-            ll.setBackgroundColor(context.getResources().getColor(R.color.fish));
+            ll.setBackgroundColor(ContextCompat.getColor(context, R.color.fish));
         } else if (item.getCategory().equals(stringArray[1])) { //Fleisch und Wurst
             iv.setImageResource(R.drawable.year_of_the_pig);
-            ll.setBackgroundColor(context.getResources().getColor(R.color.year_of_the_pig));
+            ll.setBackgroundColor(ContextCompat.getColor(context, R.color.year_of_the_pig));
         } else if (item.getCategory().equals(stringArray[2])) {  //Getränke
             iv.setImageResource(R.drawable.soda_bottle);
-            ll.setBackgroundColor(context.getResources().getColor(R.color.soda_bottle));
+            ll.setBackgroundColor(ContextCompat.getColor(context, R.color.soda_bottle));
         } else if (item.getCategory().equals(stringArray[3])) {  //Gewürze und Saucen
             iv.setImageResource(R.drawable.natural_food);
-            ll.setBackgroundColor(context.getResources().getColor(R.color.natural_food));
+            ll.setBackgroundColor(ContextCompat.getColor(context, R.color.natural_food));
         } else if (item.getCategory().equals(stringArray[4])) {  //Grundnahrungsmittel
             iv.setImageResource(R.drawable.bread);
-            ll.setBackgroundColor(context.getResources().getColor(R.color.bread));
+            ll.setBackgroundColor(ContextCompat.getColor(context, R.color.bread));
         } else if (item.getCategory().equals(stringArray[5])) {  //Konserven
             iv.setImageResource(R.drawable.tin_can);
-            ll.setBackgroundColor(context.getResources().getColor(R.color.tin_can));
+            ll.setBackgroundColor(ContextCompat.getColor(context, R.color.tin_can));
         } else if (item.getCategory().equals(stringArray[6])) {  //Milchprodukte
             iv.setImageResource(R.drawable.cheese);
-            ll.setBackgroundColor(context.getResources().getColor(R.color.cheese));
+            ll.setBackgroundColor(ContextCompat.getColor(context, R.color.cheese));
         } else if (item.getCategory().equals(stringArray[7])) {  //Obst und Gemüse
             iv.setImageResource(R.drawable.strawberry);
-            ll.setBackgroundColor(context.getResources().getColor(R.color.strawberry));
+            ll.setBackgroundColor(ContextCompat.getColor(context, R.color.strawberry));
         } else if (item.getCategory().equals(stringArray[8])) {  //Tiefkühlwaren
             iv.setImageResource(R.drawable.winter);
-            ll.setBackgroundColor(context.getResources().getColor(R.color.winter));
+            ll.setBackgroundColor(ContextCompat.getColor(context, R.color.winter));
         } else {                                                   //Sonstiges
             iv.setImageResource(R.drawable.foundation);
-            ll.setBackgroundColor(context.getResources().getColor(R.color.foundation));
+            ll.setBackgroundColor(ContextCompat.getColor(context, R.color.foundation));
         }
     }
 
@@ -205,6 +236,9 @@ public class CurrentListAdapter extends BaseAdapter<CurrentListAdapter.Arraylist
     // INNER CLASSES
     //---------------------------------------------------------------
 
+    /**
+     * ArrayListViewHolder
+     */
     public class ArraylistViewHolder extends RecyclerView.ViewHolder {
         @Bind(R.id.item_container)
         LinearLayout itemContainerLl;
@@ -213,11 +247,19 @@ public class CurrentListAdapter extends BaseAdapter<CurrentListAdapter.Arraylist
         @Bind(R.id.product_name)
         TextView productNameTv;
 
+        /**
+         * Constructor
+         *
+         * @param view
+         */
         public ArraylistViewHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
         }
 
+        /**
+         * Simple Click Behaviour of Recycler View Item
+         */
         @OnClick(R.id.item_container)
         public void onProductClick() {
             int pos = getAdapterPosition();
@@ -225,12 +267,17 @@ public class CurrentListAdapter extends BaseAdapter<CurrentListAdapter.Arraylist
             changeProductChecked(product);
         }
 
+        /**
+         * Long Click Behaviour of Recycler View Item
+         *
+         * @return needed by OnLongClick
+         */
         @OnLongClick(R.id.item_container)
         public boolean onProductLongClick() {
 
             int pos = getAdapterPosition();
             ProductItem selectedItem = itemsList.get(pos);
-            editDeleteToolbarActive = (!editDeleteToolbarActive);   //toggle if EditDelete Toolbar is active or not
+            editDeleteToolbarActive = !editDeleteToolbarActive;   //toggle if EditDelete Toolbar is active or not
             changeToolbarInterface.showEditAndDeleteIcon(editDeleteToolbarActive); //only show EditDelete Toolbar if it is not active right now. Otherwise change back to normal Toolbar
 
             setItemClicked(selectedItem);
@@ -343,13 +390,21 @@ public class CurrentListAdapter extends BaseAdapter<CurrentListAdapter.Arraylist
         }
     }
 
+    /**
+     * ViewHolder for TextView and Button below RecyclerView
+     */
     public class BottomElementViewHolder extends BaseViewHolder {
 
         @Bind(R.id.currentlist_Btn)
         Button currentlistBtn;
         @Bind(R.id.currentlist_noproductinlist_tv)
-        TextView noProductInList_Tv;
+        TextView noProductInListTv;
 
+        /**
+         * Constructor
+         *
+         * @param view
+         */
         public BottomElementViewHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
@@ -360,28 +415,23 @@ public class CurrentListAdapter extends BaseAdapter<CurrentListAdapter.Arraylist
     // COMPARATORS FOR LIST SORTING
     //---------------------------------------------------------------
 
+    /**
+     * Helper Class for Sorting List alphabetically
+     */
     public class CurrentListAlphabeticalComparator implements Comparator<ProductItem> {
+        @Override
         public int compare(ProductItem left, ProductItem right) {
             return left.getProduct().compareTo(right.getProduct());
         }
     }
 
+    /**
+     * Helper Class for Sorting List referring to Categories
+     */
     public class CurrentListCategoryComparator implements Comparator<ProductItem> {
+        @Override
         public int compare(ProductItem left, ProductItem right) {
             return left.getCategory().compareTo(right.getCategory());
-        }
-    }
-
-    //---------------------------------------------------------------
-    // OTHER METHODS
-    //---------------------------------------------------------------
-
-    //Hide Softkeyboard
-    private void hideKeyboard() {
-        InputMethodManager inputMethodManager;
-        inputMethodManager = (InputMethodManager) context.getSystemService(context.INPUT_METHOD_SERVICE);
-        if (contextActivity.getCurrentFocus() != null) {
-            inputMethodManager.hideSoftInputFromWindow(contextActivity.getCurrentFocus().getWindowToken(), 0);
         }
     }
 

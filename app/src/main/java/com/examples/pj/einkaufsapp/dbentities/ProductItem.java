@@ -1,7 +1,8 @@
 package com.examples.pj.einkaufsapp.dbentities;
 
-// DAS OBJEKT
-// -> ProductItem – Instanzen dieser Klasse können die Daten eines SQLite-Datensatzes aufnehmen. Sie repräsentieren die Datensätze im Code. Wir werden mit Objekten dieser Klasse den ListView füllen .
+/**
+ * Object class for ProductItem -> Entity
+ */
 public class ProductItem {
 
     private long id;
@@ -11,7 +12,16 @@ public class ProductItem {
     private boolean done;
     private boolean favourite;
 
-
+    /**
+     * Constructor
+     *
+     * @param id
+     * @param product
+     * @param category
+     * @param bought
+     * @param done
+     * @param favourite
+     */
     public ProductItem(long id, String product, String category, int bought, boolean done, boolean favourite) {
         this.id = id;
         this.product = product;
@@ -81,6 +91,11 @@ public class ProductItem {
                 '}';
     }
 
+    /**
+     * returns Information of productItem in nicely readable format
+     *
+     * @return String
+     */
     public String toNiceString() {
         return product + " (" + category + ")";
     }

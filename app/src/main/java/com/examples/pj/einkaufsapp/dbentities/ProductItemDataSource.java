@@ -9,15 +9,15 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 
-// DIE ARBEITERKLASSE
-// Herstellen der Verbindung zur SQLite Datenbank
-// -> ProductItemDataSource – Diese Klasse ist unser Data Access Object und für das Verwalten der Daten verantwortlich. Es unterhält die Datenbankverbindung und ist für das Hinzufügen, Auslesen und Löschen von Datensätzen zuständig. Außerdem wandelt es Datensätze in Java-Objekte für uns um, so dass der Code der Benutzeroberfläche nicht direkt mit den Datensätzen arbeiten muss.
+/**
+ * communication class for database
+ */
 public class ProductItemDataSource {
 
     private static final String LOG_TAG = ProductItemDataSource.class.getSimpleName();
 
     private SQLiteDatabase database;
-    private ProductItemDbHelper dbHelper;  //Verbindung zur SQLite
+    private ProductItemDbHelper dbHelper;  //connection to SQLite
 
     private String[] columns = {
             ProductItemDbHelper.COLUMN_ID,
@@ -28,46 +28,61 @@ public class ProductItemDataSource {
             ProductItemDbHelper.COLUMN_FAVOURITE
     };
 
+    /**
+     * Constructor
+     *
+     * @param context
+     */
     public ProductItemDataSource(Context context) {
         Log.d(LOG_TAG, "Die DataSource erzeugt jetzt den dbHelper.");
         dbHelper = new ProductItemDbHelper(context);
     }
 
-    //Datenbank beschreibbar öffnen
+    /**
+     * open db writable
+     */
     public void open() {
         Log.d(LOG_TAG, "Eine Referenz auf die Datenbank wird jetzt angefragt.");
         database = dbHelper.getWritableDatabase();
         Log.d(LOG_TAG, "Datenbank-Referenz erhalten. Pfad zur Datenbank: " + database.getPath());
     }
 
-    //Datenbank wieder schliessen
+    /**
+     * close db
+     */
     public void close() {
         dbHelper.close();
         Log.d(LOG_TAG, "Datenbank mit Hilfe des DbHelpers geschlossen.");
     }
 
-    //Einfügen von Datensätzen in die SQLite Tabelle
+    /**
+     * entry of new productItem in db when only name and category is known
+     *
+     * @param product  productItem name
+     * @param category productItem category
+     * @return
+     */
     public ProductItem createProductItem(String product, String category) {
-        ContentValues values = new ContentValues(); //Content Values mit Anzahl und Produkt
+        ContentValues values = new ContentValues();
         values.put(ProductItemDbHelper.COLUMN_PRODUCT, product);
         values.put(ProductItemDbHelper.COLUMN_CATEGORY, category);
 
-        //Einfügen der values in die Tabelle, Rückgabe der ID
+        //entry of values in table, return of id
         long insertId = database.insert(ProductItemDbHelper.TABLE_SHOPPING_LIST, null, values);
 
-        //Auslesen des angelegten Datensatzes zur Kontrolle
+        //read the newly added productItem from db for quality check
         Cursor cursor = database.query(ProductItemDbHelper.TABLE_SHOPPING_LIST,
-                columns, ProductItemDbHelper.COLUMN_ID + "=" + insertId,   //suche eben erst zurückgegebener ID, Rückgabe ist ein Cursor Objekt
+                columns, ProductItemDbHelper.COLUMN_ID + "=" + insertId,   //search for id, return is a cursur object
                 null, null, null, null);
 
-        cursor.moveToFirst();   //Cursor auf den ersten Datensatz setzen
-        ProductItem productItem = cursorToProductItem(cursor); //Umwandlung der CursorPosition in einen ProductItem Datensatz
+        cursor.moveToFirst();   //set cursor to first dataset
+        ProductItem productItem = cursorToProductItem(cursor); //transfer of cursor object to productItem entity
         cursor.close();
 
-        return productItem;    //Rückgabe des Datensatzes
+        return productItem;
     }
 
-    //Rückgabe des ProductItem Objekts, auf dem der Cursor sitzt
+    //get productItem of current cursor position
     private ProductItem cursorToProductItem(Cursor cursor) {
         int idIndex = cursor.getColumnIndex(ProductItemDbHelper.COLUMN_ID);
         int idProduct = cursor.getColumnIndex(ProductItemDbHelper.COLUMN_PRODUCT);
@@ -83,38 +98,40 @@ public class ProductItemDataSource {
         int intValueChecked = cursor.getInt(idChecked);
         int intValueFavourite = cursor.getInt(idFavourite);
 
-        boolean isChecked = (intValueChecked != 0);
-        boolean isFavourite = (intValueFavourite != 0);
+        boolean isChecked = intValueChecked != 0;
+        boolean isFavourite = intValueFavourite != 0;
 
-        ProductItem productItem = new ProductItem(id, product, category, bought, isChecked, isFavourite);
-
-        return productItem;
+        return new ProductItem(id, product, category, bought, isChecked, isFavourite);
     }
 
 
-    //Auslesen aller vorhandenen Datensätze aus der Datenbank und Rückgabe einer Liste
+    //read all available data from db, return as list
     public List<ProductItem> getAllProductItems() {
         List<ProductItem> productItemList = new ArrayList<>();
 
         Cursor cursor = database.query(ProductItemDbHelper.TABLE_SHOPPING_LIST,
-                columns, null, null, null, null, null); //Such-String ist null, damit alle Ergebnisse der Tabelle zurückgegeben werden
+                columns, null, null, null, null, null); //search string is null to get all results of table
 
         cursor.moveToFirst();
         ProductItem productItem;
 
-        while(!cursor.isAfterLast()) {  //Befüllen der Liste solange Einträge vorhanden sind
+        while (!cursor.isAfterLast()) {  //fill list as long as entries are available in table
             productItem = cursorToProductItem(cursor);
             productItemList.add(productItem);
             Log.d(LOG_TAG, "Inhalt: " + productItem.toString());
             cursor.moveToNext();
         }
 
-        cursor.close(); //Schliessen = wichtig!
+        cursor.close(); //close = important!
 
         return productItemList;
     }
 
-    //Eintrag aus Liste löschen
+    /**
+     * delete productItem from db
+     *
+     * @param productItem Object
+     */
     public void deleteProductItem(ProductItem productItem) {
         long id = productItem.getId();
 
@@ -125,25 +142,38 @@ public class ProductItemDataSource {
         Log.d(LOG_TAG, "Eintrag gelöscht! Inhalt: " + productItem.toString());
     }
 
-    //Holen des aktuellen Werts Bought aus der Tabelle nach ID und Rückgabe
-    public int getTimesBought (long id) {
+    /**
+     * get current value "timesBought" from table referring to ID, return as attribute of productItem
+     *
+     * @param id of productItem
+     * @return timesBought value as int
+     */
+    public int getTimesBought(long id) {
         Cursor cursor = database.query(ProductItemDbHelper.TABLE_SHOPPING_LIST,
                 columns, ProductItemDbHelper.COLUMN_ID + "=" + id,   //suche eben erst zurückgegebener ID, Rückgabe ist ein Cursor Objekt
                 null, null, null, null);
 
-        cursor.moveToFirst();   //Cursor auf den ersten Datensatz setzen
-        ProductItem productItem = cursorToProductItem(cursor); //Umwandlung der CursorPosition in einen ProductItem Datensatz
+        cursor.moveToFirst();
+        ProductItem productItem = cursorToProductItem(cursor); //transfer cursorPosition to productItem entity
         cursor.close();
 
-        //get bought value
-        int bought = productItem.getBought();
-        return bought;    //Rückgabe des Datensatzes
+        return productItem.getBought();
     }
 
-    //Einträge aus der Liste editieren
+    /**
+     * update existing db entry referring to id, return edited object as ProductItem object
+     *
+     * @param id
+     * @param newProduct
+     * @param newCategory
+     * @param bought
+     * @param newChecked
+     * @param newFavourite
+     * @return productItem object
+     */
     public ProductItem updateProductItem(long id, String newProduct, String newCategory, int bought, boolean newChecked, boolean newFavourite) {
-        int intValueChecked = (newChecked)? 1 : 0;
-        int intValueFavourite = (newFavourite) ? 1 : 0;
+        int intValueChecked = newChecked ? 1 : 0;
+        int intValueFavourite = newFavourite ? 1 : 0;
         int newBought = getTimesBought(id) + bought;
 
         ContentValues values = new ContentValues();
@@ -158,7 +188,7 @@ public class ProductItemDataSource {
                 ProductItemDbHelper.COLUMN_ID + "=" + id,
                 null);
 
-        //Rückgabe des geänderten Objekts
+        //return of edited value
         Cursor cursor = database.query(ProductItemDbHelper.TABLE_SHOPPING_LIST,
                 columns, ProductItemDbHelper.COLUMN_ID + "=" + id,
                 null, null, null, null);
@@ -170,20 +200,17 @@ public class ProductItemDataSource {
         return productItem;
     }
 
-    //Holen des aktuellen Werts Bought aus der Tabelle nach ID und Rückgabe
+    //get the highest id from database and return
     public long getHighestID() {
         String query = "SELECT MAX(_id) AS max_id FROM shopping_list";
         Cursor cursor = database.rawQuery(query, null);
 
         int id = 0;
-        if (cursor.moveToFirst())
-        {
-            do
-            {
+        if (cursor.moveToFirst()) {
+            do {
                 id = cursor.getInt(0);
-            } while(cursor.moveToNext());
+            } while (cursor.moveToNext());
         }
         return id;
     }
-
 }

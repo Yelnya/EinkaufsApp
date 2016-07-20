@@ -6,7 +6,9 @@ import com.examples.pj.einkaufsapp.fragments.BaseFragment;
 import com.examples.pj.einkaufsapp.fragments.CurrentListFragment;
 import com.examples.pj.einkaufsapp.util.NavigationManager;
 
-//MANDATORY CLASS #1
+/**
+ * MainActivity class
+ */
 public class MainActivity extends BaseActivity {
 
     NavigationManager navigationManager;
@@ -33,37 +35,16 @@ public class MainActivity extends BaseActivity {
     protected void onStart() {
         super.onStart();
         navigationManager = new NavigationManager();
-//        toast("Ich bin im onStart");
     }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-//        toast("Ich bin im onStop");
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-//        toast("Ich bin im onPause");
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-//        toast("Ich bin im onResume");
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-//        toast("Ich bin im onDestroy");
-    }
-
     //================================================================================
     // Butterknife Events
     //================================================================================
 
+    /**
+     * Navigation behaviour on item click of left Side Menu
+     *
+     * @param v: view
+     */
     public void onMenuLeftItemSelected(View v) {
         NavigationManager.switchToFragmentForMenuResId(v.getId());
     }
@@ -74,6 +55,7 @@ public class MainActivity extends BaseActivity {
 
     @Override
     public void onPostSwitchFragment(int menuResId) {
+        //not needed
     }
 
 }

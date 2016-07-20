@@ -14,20 +14,21 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
 
+import com.examples.pj.einkaufsapp.fragments.AboutFragment;
 import com.examples.pj.einkaufsapp.fragments.BaseFragment;
 import com.examples.pj.einkaufsapp.util.NavigationManager;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-//MANDATORY CLASS #2
+/**
+ * BaseActivity, inherited by MainActivity
+ */
 public abstract class BaseActivity extends AppCompatActivity implements NavigationManager.NavigationEventListener {
     public static final String LOG_TAG = BaseActivity.class.getSimpleName();
 
-    private static final String SIS_CONTENT_FRAGMENT = "ContentFragment";
+    private static final String CONTENT_FRAGMENT = "ContentFragment";
     protected FragmentManager fragmentManager;
     protected BaseFragment contentFragment;
     @Nullable
@@ -38,7 +39,6 @@ public abstract class BaseActivity extends AppCompatActivity implements Navigati
     View leftDrawer;
     ActionBarDrawerToggle drawerToggle;
     private String startFragmentTag;
-    TextView toolbarTv;
     ImageView toolbarEditIv;
     ImageView toolbarDeleteIv;
 
@@ -60,7 +60,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Navigati
 
         if (drawerLayout != null) {
             drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.leftsidemenu_open, R.string.leftsidemenu_close);
-            drawerLayout.setDrawerListener(drawerToggle);
+            drawerLayout.addDrawerListener(drawerToggle);
             drawerLayout.setFocusableInTouchMode(false);
             //drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
         }
@@ -68,7 +68,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Navigati
         fragmentManager = getSupportFragmentManager();
 
         if (savedInstanceState != null) {
-            contentFragment = (BaseFragment) getSupportFragmentManager().getFragment(savedInstanceState, SIS_CONTENT_FRAGMENT);
+            contentFragment = (BaseFragment) getSupportFragmentManager().getFragment(savedInstanceState, CONTENT_FRAGMENT);
         }
 
         if (contentFragment != null) {
@@ -87,8 +87,6 @@ public abstract class BaseActivity extends AppCompatActivity implements Navigati
         super.onStart();
         Log.d(LOG_TAG, "onStart()");
         NavigationManager.registerNavigationEventListener(this);
-
-//        toast("Ich bin im onStart");
     }
 
     @Override
@@ -96,38 +94,12 @@ public abstract class BaseActivity extends AppCompatActivity implements Navigati
         super.onStop();
         Log.d(LOG_TAG, "onStop()");
         NavigationManager.unRegisterNavigationEventListener(this);
-//        toast("Ich bin im onStop");
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-//        toast("Ich bin im onPause");
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-//        toast("Ich bin im onResume");
-    }
-
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-//        toast("Ich bin im onRestart");
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-//        toast("Ich bin im onDestroy");
     }
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         // Sync the toggle state after onRestoreInstanceState has occurred.
-//        toast("Ich bin im onPostCreate");
         if (drawerToggle != null) {
             drawerToggle.syncState();
         }
@@ -145,7 +117,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Navigati
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         if (contentFragment != null && contentFragment.isAdded()) {
-            fragmentManager.putFragment(outState, SIS_CONTENT_FRAGMENT, contentFragment);
+            fragmentManager.putFragment(outState, CONTENT_FRAGMENT, contentFragment);
         }
     }
 
@@ -158,6 +130,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Navigati
                 } else {
                     onBackPressed();
                 }
+            default:
         }
         return super.onOptionsItemSelected(item);
     }
@@ -172,23 +145,6 @@ public abstract class BaseActivity extends AppCompatActivity implements Navigati
             if (!contentFragment.canGoBack()) {
                 return;
             }
-
-            // if user is at QuizKnowledgeResultFragment and navigates back then we have to show the RouteRootFragment
-//            if (contentFragment instanceof QuizKnowledgeResultFragment) {
-//                final QuizKnowledgeResultFragment fragment = (QuizKnowledgeResultFragment) contentFragment;
-//                if (fragment.isRouteQuiz()) {
-//                    NavigationManager.moveToRoute();
-//                } else {
-//                    NavigationManager.moveToQuiz();
-//                }
-//                return;
-//            }
-
-            // if user is at ProfileModalitiesFragment and navigates back then we have to show the RouteRootFragment
-//            if (contentFragment instanceof ProfileModalitiesFragment) {
-//                NavigationManager.moveToRoute();
-//                return;
-//            }
 
             if (contentFragment.isRootFragment()) {
                 if (!isSlidingDrawerOpened() && isNavigationEnabled(contentFragment)) {
@@ -207,10 +163,8 @@ public abstract class BaseActivity extends AppCompatActivity implements Navigati
             showMenue();
             return;
         }
-
         super.onBackPressed();
         setCurrentContentFragment();
-
         refreshDrawerIndicator();
     }
 
@@ -218,17 +172,29 @@ public abstract class BaseActivity extends AppCompatActivity implements Navigati
         return leftDrawer != null && drawerLayout != null && drawerLayout.isDrawerOpen(leftDrawer);
     }
 
+    /**
+     * Open Left Side Menu
+     */
     public void showMenue() {
         try {
-            drawerLayout.openDrawer(GravityCompat.START);
+            if (drawerLayout != null) {
+                drawerLayout.openDrawer(GravityCompat.START);
+            }
         } catch (IllegalArgumentException e) {
+            Log.e(LOG_TAG, e.toString());
         }
     }
 
+    /**
+     * Close Left Side Menu
+     */
     public void closeMenue() {
         try {
-            drawerLayout.closeDrawer(GravityCompat.START);
+            if (drawerLayout != null) {
+                drawerLayout.closeDrawer(GravityCompat.START);
+            }
         } catch (IllegalArgumentException e) {
+            Log.e(LOG_TAG, e.toString());
         }
     }
 
@@ -260,6 +226,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Navigati
             contentFragment = fragment;
             tx.commit();
         } else {
+            //dn
         }
         closeMenue();
     }
@@ -271,11 +238,11 @@ public abstract class BaseActivity extends AppCompatActivity implements Navigati
         final int lastItemIndex = fragmentManager.getBackStackEntryCount() - 1;
         if (lastItemIndex >= 0) {
             currentFragmentBaseTag = fragmentManager.getBackStackEntryAt(lastItemIndex).getName();
-        } else { // we are at the end of the line - quit
+        } else { // end of the line - quit
             finish();
             return;
         }
-        // might be null if we have inner fragment transactions
+        // might be null if there are inner fragment transactions
         if (currentFragmentBaseTag != null) {
             contentFragment = (BaseFragment) fragmentManager.findFragmentByTag(currentFragmentBaseTag);
         } else {
@@ -289,10 +256,6 @@ public abstract class BaseActivity extends AppCompatActivity implements Navigati
         }
     }
 
-    public void toast(String text) {
-        Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
-    }
-
     //================================================================================
     // Toolbar
     //================================================================================
@@ -301,6 +264,12 @@ public abstract class BaseActivity extends AppCompatActivity implements Navigati
         setToolbar(toolbar, true);
     }
 
+    /**
+     * setToolbar: manually set displayHomeAsUp enabled of Toolbar
+     *
+     * @param setDisplayHomeAsUp: Home Icon
+     * @param toolbar             inherited Toolbar
+     */
     public void setToolbar(Toolbar toolbar, boolean setDisplayHomeAsUp) {
         if (toolbar != null) {
             setSupportActionBar(toolbar);
@@ -314,6 +283,14 @@ public abstract class BaseActivity extends AppCompatActivity implements Navigati
         }
     }
 
+    /**
+     * setToolbar: manually set appearance of Toolbar
+     *
+     * @param setDisplayHomeAsUp:            Home Icon
+     * @param toolbar                        inherited Toolbar
+     * @param title                          of toolbar
+     * @param showEditAndDeleteIconInToolbar icons edit and trashbin in toolbar
+     */
     public void setToolbar(Toolbar toolbar, boolean setDisplayHomeAsUp, String title, boolean showEditAndDeleteIconInToolbar) {
         if (toolbar != null) {
             setSupportActionBar(toolbar);
@@ -325,7 +302,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Navigati
                 getSupportActionBar().setTitle(title);
                 Log.d(LOG_TAG, "Edit And Delete Icon Shown in Toolbar: " + showEditAndDeleteIconInToolbar);
                 toolbar.setTitleTextColor(Color.WHITE);
-                if (contentFragment.isRootFragment()){  //setting Hamburger Icon instead of Arrow if Fragment is rootFragment
+                if (contentFragment.isRootFragment()) {  //setting Hamburger Icon instead of Arrow if Fragment is rootFragment
                     getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp);
                 }
             }
@@ -333,14 +310,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Navigati
     }
 
     private boolean isNavigationEnabled(BaseFragment fragment) {
-//        return !((fragment instanceof LoginFragment) ||
-//                (fragment instanceof WeeklyQuizRootFragment) ||
-//                (fragment instanceof QuizKnowledgeFragment) ||
-//                (fragment instanceof RegistrationAddressFragment) ||
-//                (fragment instanceof Intro53Fragment) ||
-//                (fragment instanceof Intro53CarPickerFragment) ||
-//                (fragment instanceof Intro53ResidentialPickerFragment));
-        return true;    //entfernen wenn die Methode gebraucht wird!
+        return !(fragment instanceof AboutFragment);
     }
 
 }

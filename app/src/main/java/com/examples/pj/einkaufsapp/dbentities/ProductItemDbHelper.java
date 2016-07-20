@@ -5,9 +5,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-// DER HELFER
-// Definieren der Eigenschaften der Datenbank
-// -> ProductItemDbHelper – Sie ist eine Hilfsklasse mit deren Hilfe wir die SQLite-Datenbank erstellen lassen. Sie enthält weiterhin wichtige Konstanten, die wir für die Arbeit mit der Datenbank benötigen, wie den Tabellennamen, die Datenbankversion oder die Namen der Spalten.
+/**
+ * Class ProductItemDbHelper = Definition and sturcture of db
+ */
 public class ProductItemDbHelper extends SQLiteOpenHelper {
 
     private static final String LOG_TAG = ProductItemDbHelper.class.getSimpleName();
@@ -35,6 +35,11 @@ public class ProductItemDbHelper extends SQLiteOpenHelper {
 
     public static final String SQL_DROP = "DROP TABLE IF EXISTS " + TABLE_SHOPPING_LIST;
 
+    /**
+     * Constructor
+     *
+     * @param context of MainActivity
+     */
     public ProductItemDbHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
         Log.d(LOG_TAG, "DbHelper hat die Datenbank: " + getDatabaseName() + " erzeugt.");
@@ -44,21 +49,17 @@ public class ProductItemDbHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         try {
             Log.d(LOG_TAG, "Die Tabelle wird mit SQL-Befehl: " + SQL_CREATE + " angelegt.");
-            db.execSQL(SQL_CREATE); //Erzeugung der neuen DB WENN noch keine vorhanden ist
-        }
-        catch (Exception ex) {
+            db.execSQL(SQL_CREATE); //create new db if none existing
+        } catch (Exception ex) {
             Log.e(LOG_TAG, "Fehler beim Anlegen der Tabelle: " + ex.getMessage());
         }
     }
 
-    // Die onUpgrade-Methode wird aufgerufen, sobald die neue Versionsnummer höher
-    // als die alte Versionsnummer ist und somit ein Upgrade notwendig wird
+    // this onUpgrade method is called if the version number of db changes -> update is necessary!
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         Log.d(LOG_TAG, "Die Tabelle mit Versionsnummer " + oldVersion + " wird entfernt.");
         db.execSQL(SQL_DROP);
         onCreate(db);
     }
-
-
 }

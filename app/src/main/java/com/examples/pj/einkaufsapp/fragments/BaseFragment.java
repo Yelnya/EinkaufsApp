@@ -1,6 +1,5 @@
 package com.examples.pj.einkaufsapp.fragments;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -21,7 +20,9 @@ import com.examples.pj.einkaufsapp.util.ViewUtils;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-//MANDATORY CLASS #5
+/**
+ * Base Fragment, inherited by all other Fragments
+ */
 public abstract class BaseFragment extends Fragment {
     protected final String baseTag;
 
@@ -40,10 +41,21 @@ public abstract class BaseFragment extends Fragment {
     // Fragment Instantiation
     //================================================================================
 
+    /**
+     * Constructor
+     *
+     * @param tag String TAG name of inheriting Fragment
+     */
     public BaseFragment(String tag) {
         this(tag, false);
     }
 
+    /**
+     * Constructor
+     *
+     * @param tag            String TAG name of inheriting Fragment
+     * @param isRootFragment is Fragment a Root Fragment of navigation
+     */
     public BaseFragment(String tag, boolean isRootFragment) {
         this.baseTag = tag;
         this.isRootFragment = isRootFragment;
@@ -68,31 +80,6 @@ public abstract class BaseFragment extends Fragment {
     }
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-    }
-
-    @Override
     public void onDestroyView() {
         super.onDestroyView();
         ButterKnife.unbind(this);
@@ -101,14 +88,6 @@ public abstract class BaseFragment extends Fragment {
     //================================================================================
     // Other Methods
     //================================================================================
-
-    public final void startActivity(Class<?> cls, boolean finish) {
-        Intent i = new Intent(getActivity(), cls);
-        startActivity(i);
-        if (finish) {
-            getActivity().finish();
-        }
-    }
 
     protected final void finish() {
         NavigationManager.goBackFrom(this);
@@ -121,6 +100,10 @@ public abstract class BaseFragment extends Fragment {
     protected void setToolbarEditAndDeleteIcon(boolean isVisible) {
     }
 
+    /** indicator for possibility to move one step back or not
+     *
+     * @return true or false
+     */
     public boolean canGoBack() {
         return true;
     }

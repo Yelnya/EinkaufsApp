@@ -13,14 +13,13 @@
     <dimen name="font_big">18sp</dimen>
 
     <!-- heights -->
-    <dimen name="default_toolbar_height">56dp</dimen>
+    <dimen name="toolbar_heigth">56dp</dimen>
     <dimen name="default_row_height">36dp</dimen>
     <dimen name="default_button_height">48dp</dimen>
-    <dimen name="toolbar_heigth">56dp</dimen>
     <dimen name="addproduct_height">70dp</dimen>
 
     <!--widths-->
-    <dimen name="toolbar_iv_width">30dp</dimen>
+    <dimen name="toolbar_iv_width">25dp</dimen>
     <dimen name="small_button_width">40dp</dimen>
 
     <!-- spacing -->

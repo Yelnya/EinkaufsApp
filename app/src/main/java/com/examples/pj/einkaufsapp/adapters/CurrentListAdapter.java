@@ -21,11 +21,11 @@ import com.examples.pj.einkaufsapp.dbentities.ProductItem;
 import com.examples.pj.einkaufsapp.dbentities.ProductItemDataSource;
 import com.examples.pj.einkaufsapp.interfaces.ChangeToolbarInterface;
 import com.examples.pj.einkaufsapp.util.SharedPreferencesManager;
+import com.examples.pj.einkaufsapp.util.StringUtils;
 import com.examples.pj.einkaufsapp.util.ViewUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import butterknife.Bind;
@@ -161,17 +161,34 @@ public class CurrentListAdapter extends BaseAdapter<CurrentListAdapter.Arraylist
     // OTHER METHODS
     //---------------------------------------------------------------
 
-    /**
-     * method to sort list alphabetically
+//    /**
+//     * method to sort list alphabetically and referring to category
+//     */
+//    public void sortListCategoryAndAlphabetical() {
+//        Collections.sort(currentList, new StringUtils.CurrentListAlphabeticalComparator());
+//        Collections.sort(currentList, new StringUtils.CurrentListCategoryComparator());
+//
+//        Log.d(LOG_TAG, "----------------- SORTED LIST ------------------");
+//        for (ProductItem product : currentList) {
+//            Log.d(LOG_TAG, "Sorted: " + product.toNiceString());
+//        }
+//    }
+
+    /** method to sort list alphabetically and referring to category
+     *
+     * @param listToSort list
+     * @return list
      */
-    public void sortListCategoryAndAlphabetical() {
-        Collections.sort(currentList, new CurrentListAlphabeticalComparator());
-        Collections.sort(currentList, new CurrentListCategoryComparator());
+    public List<ProductItem> sortListCategoryAndAlphabetical(List<ProductItem> listToSort) {
+
+        Collections.sort(listToSort, new StringUtils.CurrentListAlphabeticalComparator());
+        Collections.sort(listToSort, new StringUtils.CurrentListCategoryComparator());
 
         Log.d(LOG_TAG, "----------------- SORTED LIST ------------------");
-        for (ProductItem product : currentList) {
+        for (ProductItem product : listToSort) {
             Log.d(LOG_TAG, "Sorted: " + product.toNiceString());
         }
+        return listToSort;
     }
 
     /**
@@ -184,7 +201,7 @@ public class CurrentListAdapter extends BaseAdapter<CurrentListAdapter.Arraylist
         ProductItem updatedItem = dataSource.updateProductItem(item.getId(), item.getProduct(), item.getCategory(), item.getBought(), !item.isDone(), item.isFavourite());
         currentList.remove(item);
         currentList.add(updatedItem);
-        sortListCategoryAndAlphabetical();
+        currentList = sortListCategoryAndAlphabetical(currentList);
         sharedPreferencesManager.saveCurrentShoppingListToLocalStore(currentList);
         Log.d(LOG_TAG, "-----------------------Geänderter Eintrag:-------------------------------");
         Log.d(LOG_TAG, "Eintrag: " + updatedItem.toString());
@@ -305,38 +322,12 @@ public class CurrentListAdapter extends BaseAdapter<CurrentListAdapter.Arraylist
             super(view);
             ButterKnife.bind(this, view);
         }
-
         /**
          * Click Behaviour of "Einkauf abschliessen" Button
          */
         @OnClick(R.id.currentlist_Btn)
         public void onFinishButtonClick() {
-
             makeFinishAlertDialog();
-        }
-    }
-
-    //---------------------------------------------------------------
-    // COMPARATORS FOR LIST SORTING
-    //---------------------------------------------------------------
-
-    /**
-     * Helper Class for Sorting List alphabetically
-     */
-    public class CurrentListAlphabeticalComparator implements Comparator<ProductItem> {
-        @Override
-        public int compare(ProductItem left, ProductItem right) {
-            return left.getProduct().compareTo(right.getProduct());
-        }
-    }
-
-    /**
-     * Helper Class for Sorting List referring to Categories
-     */
-    public class CurrentListCategoryComparator implements Comparator<ProductItem> {
-        @Override
-        public int compare(ProductItem left, ProductItem right) {
-            return left.getCategory().compareTo(right.getCategory());
         }
     }
 
@@ -376,9 +367,10 @@ public class CurrentListAdapter extends BaseAdapter<CurrentListAdapter.Arraylist
                                 doneProductItemList.add(product);
                             }
                         }
-                        //TODO error handling if there are no as "done" marked items
+                        //error handling if there are no as "done" marked items
                         if (!doneProductItemList.isEmpty()) {
-                            //TODO sort "doneProductItemList" list
+                            //sort "doneProductItemList" list
+                            doneProductItemList = sortListCategoryAndAlphabetical(doneProductItemList);
                         }
 
 

@@ -14,6 +14,8 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">@dimen/toolbar_heigth</item>
         <item name="android:background">@color/purple</item>
+        <item name="android:minHeight">@dimen/toolbar_heigth</item>
+        <item name="android:actionBarSize">@dimen/toolbar_heigth</item>
     </style>
 
     <!--Uni font theme-->

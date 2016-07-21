@@ -1,5 +1,8 @@
 package com.examples.pj.einkaufsapp.util;
 
+import com.examples.pj.einkaufsapp.dbentities.ProductItem;
+
+import java.util.Comparator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -28,5 +31,29 @@ public class StringUtils {
             }
         }
         return matchFound;
+    }
+
+    //---------------------------------------------------------------
+    // COMPARATORS FOR LIST SORTING
+    //---------------------------------------------------------------
+
+    /**
+     * Helper Class for Sorting List alphabetically
+     */
+    public static class CurrentListAlphabeticalComparator implements Comparator<ProductItem> {
+        @Override
+        public int compare(ProductItem left, ProductItem right) {
+            return left.getProduct().compareTo(right.getProduct());
+        }
+    }
+
+    /**
+     * Helper Class for Sorting List referring to Categories
+     */
+    public static class CurrentListCategoryComparator implements Comparator<ProductItem> {
+        @Override
+        public int compare(ProductItem left, ProductItem right) {
+            return left.getCategory().compareTo(right.getCategory());
+        }
     }
 }

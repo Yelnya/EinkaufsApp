@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.Toolbar
     android:id="@+id/my_toolbar"
     style="@style/Toolbar"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:minHeight="?attr/actionBarSize">
 
     <LinearLayout
@@ -16,10 +17,12 @@
             android:layout_height="match_parent"
             android:layout_gravity="start"
             android:layout_weight="1"
+            android:ellipsize="end"
             android:gravity="center_vertical"
-            android:textSize="@dimen/font_big"
+            android:lines="1"
             android:textColor="@color/white"
-            android:textStyle="bold" />
+            android:textSize="@dimen/font_big"
+            android:textStyle="bold"/>
 
         <ImageView
             android:id="@+id/toolbarEditIv"
@@ -29,7 +32,7 @@
             android:layout_marginStart="@dimen/padding_smaller"
             android:contentDescription="@string/toolbar_edit_iv_cd"
             android:src="@drawable/icon_actionbar_edit"
-            android:visibility="gone" />
+            android:visibility="gone"/>
 
         <ImageView
             android:id="@+id/toolbarDeleteIv"
@@ -39,7 +42,7 @@
             android:layout_marginRight="@dimen/padding_smaller"
             android:contentDescription="@string/toolbar_delete_iv_cd"
             android:src="@drawable/trash_bin_white"
-            android:visibility="gone" />
+            android:visibility="gone"/>
 
     </LinearLayout>
 

@@ -14,6 +14,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 
 import com.examples.pj.einkaufsapp.R;
@@ -27,7 +28,6 @@ import com.examples.pj.einkaufsapp.util.ViewUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import butterknife.Bind;
@@ -39,6 +39,10 @@ import butterknife.OnClick;
 public class CurrentListFragment extends BaseFragment implements ChangeToolbarInterface {
     public static final String LOG_TAG = CurrentListFragment.class.getSimpleName();
 
+    @Bind(R.id.toolbarDeleteIv)
+    ImageView toolbarDeleteIv;
+    @Bind(R.id.toolbarEditIv)
+    ImageView toolbarEditIv;
     @Bind(R.id.spinner_category)
     Spinner spinner;
     @Bind(R.id.currentlist_recycler_view)
@@ -182,6 +186,7 @@ public class CurrentListFragment extends BaseFragment implements ChangeToolbarIn
     @OnClick(R.id.toolbarDeleteIv)
     public void onToolbarDeleteClick() {
         Log.d(LOG_TAG, "TrashBin clicked");
+
         ProductItem clickedItem = currentListAdapter.getItemClicked(); //get item clicked from Adapter
         ProductItem matchingItemInLocalList = null;
         for (ProductItem item : currentList) { //find item and delete it from local list
@@ -290,8 +295,8 @@ public class CurrentListFragment extends BaseFragment implements ChangeToolbarIn
      * @return currentList, sorted alphabetically and referring to categories
      */
     public List<ProductItem> sortListCategoryAndAlphabetical(List<ProductItem> list) {
-        Collections.sort(list, new CurrentListAlphabeticalComparator());
-        Collections.sort(list, new CurrentListCategoryComparator());
+        Collections.sort(list, new StringUtils.CurrentListAlphabeticalComparator());
+        Collections.sort(list, new StringUtils.CurrentListCategoryComparator());
         return list;
     }
 
@@ -461,29 +466,5 @@ public class CurrentListFragment extends BaseFragment implements ChangeToolbarIn
         AlertDialog alertDialog = alertDialogBuilder.create();
         alertDialog.show();
         ViewUtils.hideKeyboard((Activity) context);
-    }
-
-    //---------------------------------------------------------------
-    // COMPARATORS FOR LIST SORTING
-    //---------------------------------------------------------------
-
-    /**
-     * CurrentListAlphabeticalComparator: Helper class for alphabetical sorting
-     */
-    public class CurrentListAlphabeticalComparator implements Comparator<ProductItem> {
-        @Override
-        public int compare(ProductItem left, ProductItem right) {
-            return left.getProduct().compareTo(right.getProduct());
-        }
-    }
-
-    /**
-     * CurrentListAlphabeticalComparator: Helper class for sorting categories
-     */
-    public class CurrentListCategoryComparator implements Comparator<ProductItem> {
-        @Override
-        public int compare(ProductItem left, ProductItem right) {
-            return left.getCategory().compareTo(right.getCategory());
-        }
     }
 }

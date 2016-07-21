@@ -8,7 +8,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,10 +31,6 @@ public abstract class BaseFragment extends Fragment {
     Toolbar toolbar;
     @Bind(R.id.toolbarTv)
     TextView toolbarTv;
-    @Bind(R.id.toolbarEditIv)
-    ImageView toolbarEditIv;
-    @Bind(R.id.toolbarDeleteIv)
-    ImageView toolbarDeleteIv;
 
     //================================================================================
     // Fragment Instantiation

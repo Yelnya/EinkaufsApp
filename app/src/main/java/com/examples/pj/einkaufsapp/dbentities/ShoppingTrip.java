@@ -1,28 +1,45 @@
 package com.examples.pj.einkaufsapp.dbentities;
 
-import java.util.Date;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
 import java.util.List;
 
 public class ShoppingTrip {
 
-    private Date dateCompleted;
+    private String dateCompleted;
+    private String boughtProductsJsonList;
     private List<ProductItem> boughtProducts;
 
-    public ShoppingTrip(Date dateCompleted, List<ProductItem> boughtProducts) {
+    public ShoppingTrip(String dateCompleted, String boughtProductsJsonList) {
         this.dateCompleted = dateCompleted;
-        this.boughtProducts = boughtProducts;
+        this.boughtProductsJsonList = boughtProductsJsonList;
     }
 
-    public Date getDateCompleted() {
+    public String getDateCompleted() {
         return dateCompleted;
     }
 
-    public void setDateCompleted(Date dateCompleted) {
+    public void setDateCompleted(String dateCompleted) {
         this.dateCompleted = dateCompleted;
     }
 
+    public String getBoughtProductsJsonList() {
+        return boughtProductsJsonList;
+    }
+
+    public void setBoughtProductsJsonList(String boughtProductsJsonList) {
+        this.boughtProductsJsonList = boughtProductsJsonList;
+    }
+
     public List<ProductItem> getBoughtProducts() {
-        return boughtProducts;
+
+        Gson gson = new Gson();
+        Type type = new TypeToken<List<ProductItem>>() {
+        }.getType();
+
+        return gson.fromJson(boughtProductsJsonList, type);
     }
 
     public void setBoughtProducts(List<ProductItem> boughtProducts) {
@@ -32,8 +49,8 @@ public class ShoppingTrip {
     @Override
     public String toString() {
         return "ShoppingTrip{" +
-                "dateCompleted=" + dateCompleted +
-                ", boughtProducts=" + boughtProducts +
+                "dateCompleted='" + dateCompleted + '\'' +
+                ", boughtProductsJsonList='" + boughtProductsJsonList + '\'' +
                 '}';
     }
 }

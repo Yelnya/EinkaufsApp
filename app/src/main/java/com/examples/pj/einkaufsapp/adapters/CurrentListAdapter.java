@@ -15,17 +15,23 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.examples.pj.einkaufsapp.R;
 import com.examples.pj.einkaufsapp.dbentities.ProductItem;
 import com.examples.pj.einkaufsapp.dbentities.ProductItemDataSource;
+import com.examples.pj.einkaufsapp.dbentities.ShoppingTrip;
 import com.examples.pj.einkaufsapp.interfaces.ChangeToolbarInterface;
+import com.examples.pj.einkaufsapp.util.DateUtils;
 import com.examples.pj.einkaufsapp.util.SharedPreferencesManager;
 import com.examples.pj.einkaufsapp.util.StringUtils;
 import com.examples.pj.einkaufsapp.util.ViewUtils;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 import butterknife.Bind;
@@ -174,7 +180,8 @@ public class CurrentListAdapter extends BaseAdapter<CurrentListAdapter.Arraylist
 //        }
 //    }
 
-    /** method to sort list alphabetically and referring to category
+    /**
+     * method to sort list alphabetically and referring to category
      *
      * @param listToSort list
      * @return list
@@ -322,6 +329,7 @@ public class CurrentListAdapter extends BaseAdapter<CurrentListAdapter.Arraylist
             super(view);
             ButterKnife.bind(this, view);
         }
+
         /**
          * Click Behaviour of "Einkauf abschliessen" Button
          */
@@ -360,40 +368,44 @@ public class CurrentListAdapter extends BaseAdapter<CurrentListAdapter.Arraylist
                 .setPositiveButton(R.string.dialog_button_finish_shoppingtrip, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
 
-                        //make new ProductItem List "doneProductItemList" -> get all as done selected items from currentList
+                        //make two new ProductItem List "doneProductItemList" and "notDoneProductItemsList -> currentList split to done and not done products
                         List<ProductItem> doneProductItemList = new ArrayList<>();
+                        List<ProductItem> notDoneItemsList = new ArrayList<>();
+
                         for (ProductItem product : currentList) {
                             if (product.isDone()) {
+                                product.setDone(false);
                                 doneProductItemList.add(product);
+                            } else {
+                                notDoneItemsList.add(product);
                             }
                         }
-                        //error handling if there are no as "done" marked items
-                        if (!doneProductItemList.isEmpty()) {
-                            //sort "doneProductItemList" list
-                            doneProductItemList = sortListCategoryAndAlphabetical(doneProductItemList);
+                        //notDoneItemsList copy to currentList
+                        currentList.clear();
+                        currentList.addAll(notDoneItemsList);
+                        System.out.println("-------------- REFRESHED CURRENT LIST ---------------");
+                        for (ProductItem productItem : currentList) {
+                            System.out.println("ID: " + productItem.getId() + ", Produkt: " + productItem.getProduct() + ", Done: " + productItem.isDone());
                         }
-
-
-                        //TODO store sorted "doneProductItemList" SP
-
-                        //TODO delete all as done selected items from current list
-
-                        //TODO sort current List
-
-                        //TODO error handling if current List now is empty
-
-                        //TODO store current list without done to SP
-
-                        //TODO create Shopping Trip object, add current date
-
-                        //TODO create Shopping Trip list, get all current entries from SP, write to list
-
-                        //TODO add current Shopping Trip object to this list
-
-                        //TODO write finished Shopping Trip List to SP
-
-                        //TODO Toast "Einkauf abgeschlossen"
-
+                        //store current list without done to SP
+                        sharedPreferencesManager.saveCurrentShoppingListToLocalStore(currentList);
+                        //create Shopping Trip object, add current date
+                        Date now = DateUtils.getCurrentDate();
+                        String date = DateUtils.dateToString(now);
+                        Gson gson = new Gson();
+                        String doneProductsListAsJson = gson.toJson(doneProductItemList, LinkedList.class);
+                        ShoppingTrip shoppingTrip = new ShoppingTrip(date, doneProductsListAsJson);
+                        doneProductItemList.clear();
+                        //create Shopping Trip list, get all current entries from SP, write to list
+                        List<ShoppingTrip> shoppingTripList = sharedPreferencesManager.loadHistoricShoppingTripsListFromLocalStore();
+                        //add current Shopping Trip object to this list and save tp SP
+                        if (shoppingTripList == null) {
+                            shoppingTripList = new ArrayList<>();
+                        }
+                        shoppingTripList.add(shoppingTrip);
+                        sharedPreferencesManager.saveHistoricShoppingTripsListToLocalStore(shoppingTripList);
+                        Toast.makeText(context, "Einkauf abgeschlossen", Toast.LENGTH_SHORT).show();
+                        notifyDataSetChanged();
                         dialog.dismiss();
                     }
                 })

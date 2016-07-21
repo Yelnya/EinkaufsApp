@@ -315,6 +315,7 @@ public class CurrentListFragment extends BaseFragment implements ChangeToolbarIn
                     }
                 }
                 if (!existingProductInCurrentListFound) {
+                    currentProductObject.setDone(false);
                     currentList.add(currentProductObject);  //if no duplicate found, add item to current list, refresh and store new list
                     currentList = sortListCategoryAndAlphabetical(currentList);
                     sharedPreferencesManager.saveCurrentShoppingListToLocalStore(currentList);

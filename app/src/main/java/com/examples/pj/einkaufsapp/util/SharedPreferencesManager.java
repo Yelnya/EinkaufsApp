@@ -79,20 +79,22 @@ public class SharedPreferencesManager {
     // HISTORIC SHOPPING TRIPS LIST
     //---------------------------------------------------------------
 
-    /** saves historic shopping list to SP in json format
+    /**
+     * saves historicShoppingTripsList in json format
      *
-     * @param shoppingTripList
+     * @param shoppingTripsList historicShoppingTripsList
      */
-    public void saveHistoricShoppingTripsListToLocalStore(List<ShoppingTrip> shoppingTripList) {
+    public void saveHistoricShoppingTripsListToLocalStore(List<ShoppingTrip> shoppingTripsList) {
         Gson gson = new Gson();
-        String json = gson.toJson(shoppingTripList, LinkedList.class);
+        String json = gson.toJson(shoppingTripsList, LinkedList.class);
         editor.putString(HISTORIC_SHOPPING_TRIPS_LIST, json);
         editor.commit();
     }
 
-    /** loads all SP entries of historic Shopping list from SP (stored in json format)
+    /**
+     * loads all SP entries of historic Shopping list from SP (stored in json format)
      *
-      * @return list
+     * @return list
      */
     public List<ShoppingTrip> loadHistoricShoppingTripsListFromLocalStore() {
         String historicShoppingListString = sharedPreferences.getString(HISTORIC_SHOPPING_TRIPS_LIST, null);

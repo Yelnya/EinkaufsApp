@@ -1,8 +1,16 @@
 package com.examples.pj.einkaufsapp.fragments;
 
+import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.examples.pj.einkaufsapp.R;
+import com.examples.pj.einkaufsapp.dbentities.ProductItem;
+import com.examples.pj.einkaufsapp.dbentities.ShoppingTrip;
+import com.examples.pj.einkaufsapp.util.SharedPreferencesManager;
+
+import java.util.List;
 
 /**
  * Fore already done shopping events
@@ -12,6 +20,10 @@ public class HistoricListsFragment extends BaseFragment {
 
     private static final String TOOLBAR_TITLE = "Erledigte Einkäufe";
     private boolean showEditAndDeleteIconInToolbar;
+
+    Context context;
+    SharedPreferencesManager sharedPreferencesManager;
+    private List<ShoppingTrip> historicShoppingTripsList;
 
     //================================================================================
     // Fragment Instantiation
@@ -70,5 +82,33 @@ public class HistoricListsFragment extends BaseFragment {
 
         showEditAndDeleteIconInToolbar = false;
         setToolbarEditAndDeleteIcon(showEditAndDeleteIconInToolbar);
+
+        context = getActivity();
+        if (sharedPreferencesManager == null) {
+            sharedPreferencesManager = SharedPreferencesManager.initSharedPreferences((Activity) context);
+        }
+        historicShoppingTripsList = sharedPreferencesManager.loadHistoricShoppingTripsListFromLocalStore();
+
+        showHistoricShoppingTripsListLog();
+    }
+
+    //================================================================================
+    // Other Methods
+    //================================================================================
+
+    private void showHistoricShoppingTripsListLog() {
+        int i = 0;
+        Log.d(LOG_TAG, "-------------------LOCAL LIST ENTRIES -----------------------");
+        for (ShoppingTrip trip : historicShoppingTripsList) {
+            i++;
+            Log.d(LOG_TAG, "Shopping Trip " + i + ": " + trip.getDateCompleted());
+            List<ProductItem> boughtProductsList = trip.getBoughtProducts();
+            int j = 0;
+
+            for (ProductItem productItem : boughtProductsList) {
+                j++;
+                Log.d(LOG_TAG, "Produkt " + j + ": " + productItem.getProduct());
+            }
+        }
     }
 }

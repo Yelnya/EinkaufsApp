@@ -167,19 +167,6 @@ public class CurrentListAdapter extends BaseAdapter<CurrentListAdapter.Arraylist
     // OTHER METHODS
     //---------------------------------------------------------------
 
-//    /**
-//     * method to sort list alphabetically and referring to category
-//     */
-//    public void sortListCategoryAndAlphabetical() {
-//        Collections.sort(currentList, new StringUtils.CurrentListAlphabeticalComparator());
-//        Collections.sort(currentList, new StringUtils.CurrentListCategoryComparator());
-//
-//        Log.d(LOG_TAG, "----------------- SORTED LIST ------------------");
-//        for (ProductItem product : currentList) {
-//            Log.d(LOG_TAG, "Sorted: " + product.toNiceString());
-//        }
-//    }
-
     /**
      * method to sort list alphabetically and referring to category
      *
@@ -337,6 +324,70 @@ public class CurrentListAdapter extends BaseAdapter<CurrentListAdapter.Arraylist
         public void onFinishButtonClick() {
             makeFinishAlertDialog();
         }
+
+
+        private void makeFinishAlertDialog() {
+
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+            // set title and message
+            alertDialogBuilder.setTitle(context.getResources().getText(R.string.dialog_button_finish_title))
+                    .setMessage(context.getResources().getText(R.string.dialog_button_finish_message));
+            //set yes no fields
+            alertDialogBuilder
+                    .setCancelable(false)
+                    .setPositiveButton(R.string.dialog_button_finish_shoppingtrip, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+
+                            //make two new ProductItem List "doneProductItemList" and "notDoneProductItemsList -> currentList split to done and not done products
+                            List<ProductItem> doneProductItemList = new ArrayList<>();
+                            List<ProductItem> notDoneItemsList = new ArrayList<>();
+
+                            for (ProductItem product : currentList) {
+                                if (product.isDone()) {
+                                    product.setDone(false);
+                                    doneProductItemList.add(product);
+                                } else {
+                                    notDoneItemsList.add(product);
+                                }
+                            }
+                            //notDoneItemsList copy to currentList
+                            currentList.clear();
+                            currentList.addAll(notDoneItemsList);
+                            Log.d(LOG_TAG, "-------------- REFRESHED CURRENT LIST ---------------");
+                            for (ProductItem productItem : currentList) {
+                                Log.d(LOG_TAG, "ID: " + productItem.getId() + ", Produkt: " + productItem.getProduct() + ", Done: " + productItem.isDone());
+                            }
+                            //store current list without done to SP
+                            sharedPreferencesManager.saveCurrentShoppingListToLocalStore(currentList);
+                            //create Shopping Trip object, add current date
+                            Date now = DateUtils.getCurrentDate();
+                            String date = DateUtils.dateToString(now);
+                            Gson gson = new Gson();
+                            String doneProductsListAsJson = gson.toJson(doneProductItemList, LinkedList.class);
+                            ShoppingTrip shoppingTrip = new ShoppingTrip(date, doneProductsListAsJson);
+                            doneProductItemList.clear();
+                            //create Shopping Trip list, get all current entries from SP, write to list
+                            List<ShoppingTrip> shoppingTripList = sharedPreferencesManager.loadHistoricShoppingTripsListFromLocalStore();
+                            //add current Shopping Trip object to this list and save tp SP
+                            if (shoppingTripList == null) {
+                                shoppingTripList = new ArrayList<>();
+                            }
+                            shoppingTripList.add(shoppingTrip);
+                            sharedPreferencesManager.saveHistoricShoppingTripsListToLocalStore(shoppingTripList);
+                            Toast.makeText(context, context.getResources().getText(R.string.toast_shopping_trip_closed), Toast.LENGTH_SHORT).show();
+                            notifyDataSetChanged();
+                            dialog.dismiss();
+                        }
+                    })
+                    .setNegativeButton(R.string.dialog_button_negative, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.dismiss();
+                        }
+                    });
+            AlertDialog alertDialog = alertDialogBuilder.create();
+            alertDialog.show();
+            ViewUtils.hideKeyboard((Activity) context);
+        }
     }
 
     //---------------------------------------------------------------
@@ -354,70 +405,4 @@ public class CurrentListAdapter extends BaseAdapter<CurrentListAdapter.Arraylist
     public void setEditDeleteToolbarActive(boolean editDeleteToolbarActive) {
         this.editDeleteToolbarActive = editDeleteToolbarActive;
     }
-
-
-    private void makeFinishAlertDialog() {
-
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
-        // set title and message
-        alertDialogBuilder.setTitle("Einkauf abschliessen?")
-                .setMessage("Die als erledigt markierten Produkte werden aus der Liste entfernt und in der Einkaufs-Historie abgespeichert. Die unerledigten Produkte verbleiben in der Liste.");
-        //set yes no fields
-        alertDialogBuilder
-                .setCancelable(false)
-                .setPositiveButton(R.string.dialog_button_finish_shoppingtrip, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-
-                        //make two new ProductItem List "doneProductItemList" and "notDoneProductItemsList -> currentList split to done and not done products
-                        List<ProductItem> doneProductItemList = new ArrayList<>();
-                        List<ProductItem> notDoneItemsList = new ArrayList<>();
-
-                        for (ProductItem product : currentList) {
-                            if (product.isDone()) {
-                                product.setDone(false);
-                                doneProductItemList.add(product);
-                            } else {
-                                notDoneItemsList.add(product);
-                            }
-                        }
-                        //notDoneItemsList copy to currentList
-                        currentList.clear();
-                        currentList.addAll(notDoneItemsList);
-                        System.out.println("-------------- REFRESHED CURRENT LIST ---------------");
-                        for (ProductItem productItem : currentList) {
-                            System.out.println("ID: " + productItem.getId() + ", Produkt: " + productItem.getProduct() + ", Done: " + productItem.isDone());
-                        }
-                        //store current list without done to SP
-                        sharedPreferencesManager.saveCurrentShoppingListToLocalStore(currentList);
-                        //create Shopping Trip object, add current date
-                        Date now = DateUtils.getCurrentDate();
-                        String date = DateUtils.dateToString(now);
-                        Gson gson = new Gson();
-                        String doneProductsListAsJson = gson.toJson(doneProductItemList, LinkedList.class);
-                        ShoppingTrip shoppingTrip = new ShoppingTrip(date, doneProductsListAsJson);
-                        doneProductItemList.clear();
-                        //create Shopping Trip list, get all current entries from SP, write to list
-                        List<ShoppingTrip> shoppingTripList = sharedPreferencesManager.loadHistoricShoppingTripsListFromLocalStore();
-                        //add current Shopping Trip object to this list and save tp SP
-                        if (shoppingTripList == null) {
-                            shoppingTripList = new ArrayList<>();
-                        }
-                        shoppingTripList.add(shoppingTrip);
-                        sharedPreferencesManager.saveHistoricShoppingTripsListToLocalStore(shoppingTripList);
-                        Toast.makeText(context, "Einkauf abgeschlossen", Toast.LENGTH_SHORT).show();
-                        notifyDataSetChanged();
-                        dialog.dismiss();
-                    }
-                })
-                .setNegativeButton(R.string.dialog_button_negative, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.dismiss();
-                    }
-                });
-        AlertDialog alertDialog = alertDialogBuilder.create();
-        alertDialog.show();
-        ViewUtils.hideKeyboard((Activity) context);
-    }
-
-
 }

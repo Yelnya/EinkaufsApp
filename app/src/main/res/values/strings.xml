@@ -16,7 +16,7 @@
     <string name="toolbar_edit_iv_cd">Icon Edit</string>
     <string name="toolbar_delete_iv_cd">Icon Delete</string>
 
-    <!--Current List-->
+    <!--Current List Fragment-->
     <string name="editText_hint_product">Produktname</string>
     <string name="button_add_product">+</string>
     <string name="editText_errorMessage">Das Feld darf nicht leer sein und keine Sonderzeichen enthalten.</string>
@@ -54,5 +54,9 @@
     <string name="dialog_button_delete_positive">Löschen</string>
     <string name="dialog_button_negative">Abbrechen</string>
     <string name="dialog_button_finish_shoppingtrip">Ja, Einkauf abschliessen</string>
+    <string name="dialog_button_finish_title">Einkauf abschliessen?</string>
+    <string name="dialog_button_finish_message">Die als erledigt markierten Produkte werden aus der Liste entfernt und in der Einkaufs-Historie abgespeichert. Die unerledigten Produkte verbleiben in der Liste.</string>
 
+    <!--Toasts-->
+    <string name="toast_shopping_trip_closed">Einkauf abgeschlossen</string>
 </resources>

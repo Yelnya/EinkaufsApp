@@ -38,8 +38,9 @@ public class ShoppingTrip {
         Gson gson = new Gson();
         Type type = new TypeToken<List<ProductItem>>() {
         }.getType();
-
-        return gson.fromJson(boughtProductsJsonList, type);
+        List<ProductItem> boughtProductsList = gson.fromJson(boughtProductsJsonList, type);
+        setBoughtProducts(boughtProductsList);
+        return boughtProductsList;
     }
 
     public void setBoughtProducts(List<ProductItem> boughtProducts) {

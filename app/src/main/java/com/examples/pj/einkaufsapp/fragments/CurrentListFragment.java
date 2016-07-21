@@ -121,6 +121,8 @@ public class CurrentListFragment extends BaseFragment implements ChangeToolbarIn
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        showEditAndDeleteIconInToolbar = false;
+
         context = getActivity();
         if (sharedPreferencesManager == null) {
             sharedPreferencesManager = SharedPreferencesManager.initSharedPreferences((Activity) context);
@@ -144,7 +146,6 @@ public class CurrentListFragment extends BaseFragment implements ChangeToolbarIn
     public void onResume() {
         super.onResume();
         toolbarTitle = TOOLBAR_TITLE_FRAGMENT;
-        showEditAndDeleteIconInToolbar = false;
         setToolbarEditAndDeleteIcon(showEditAndDeleteIconInToolbar);
 
         dataSource.open(); //open db connection

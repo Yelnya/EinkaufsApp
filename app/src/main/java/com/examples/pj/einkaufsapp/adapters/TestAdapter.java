@@ -9,11 +9,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.examples.pj.einkaufsapp.R;
+import com.examples.pj.einkaufsapp.dbentities.ProductItem;
+import com.examples.pj.einkaufsapp.dbentities.ShoppingTrip;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.Bind;
 import butterknife.ButterKnife;
 
 public class TestAdapter extends BaseAdapter<TestAdapter.ListHeaderViewHolder> {
@@ -22,12 +23,15 @@ public class TestAdapter extends BaseAdapter<TestAdapter.ListHeaderViewHolder> {
     public static final int CHILD = 1;
 
     private List<Item> data;
+    private List<Object> parentAndChildrenList;
+    public List<Object> invisibleChildren;
     private Context context;
     private boolean editDeleteToolbarActive;
 
-    public TestAdapter(Context context, List<Item> data) {
+    public TestAdapter(Context context, List<Item> data, List<Object> parentAndChildrenList) {
         this.data = data;
         this.context = context;
+        this.parentAndChildrenList = parentAndChildrenList;
     }
 
     //---------------------------------------------------------------
@@ -61,91 +65,156 @@ public class TestAdapter extends BaseAdapter<TestAdapter.ListHeaderViewHolder> {
     }
 
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        final Item item = data.get(position);
-        switch (item.type) {
-            case HEADER:
-                final ListHeaderViewHolder itemController = (ListHeaderViewHolder) holder;
-                itemController.refferalItem = item;
-                itemController.header_title.setText(item.text);
-                if (item.invisibleChildren == null) {
-                    itemController.btn_expand_toggle.setImageResource(R.drawable.circle_minus);
-                } else {
-                    itemController.btn_expand_toggle.setImageResource(R.drawable.circle_plus);
+
+        //current position header object
+        final Object object = parentAndChildrenList.get(position);
+        if (object instanceof ShoppingTrip) {
+            final ListHeaderViewHolder viewHolder = (ListHeaderViewHolder) holder;
+            //get header object
+            ShoppingTrip item = (ShoppingTrip) object;
+            //treat invisibleChildrenList
+                if (invisibleChildren == null) {
+                    invisibleChildren = new ArrayList<>();
                 }
-                itemController.btn_expand_toggle.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (item.invisibleChildren == null) {
-                            item.invisibleChildren = new ArrayList<Item>();
-                            int count = 0;
-                            int pos = data.indexOf(itemController.refferalItem);
-                            while (data.size() > pos + 1 && data.get(pos + 1).type == CHILD) {
-                                item.invisibleChildren.add(data.remove(pos + 1));
-                                count++;
-                            }
-                            notifyItemRangeRemoved(pos + 1, count);
-                            itemController.btn_expand_toggle.setImageResource(R.drawable.circle_plus);
-                        } else {
-                            int pos = data.indexOf(itemController.refferalItem);
-                            int index = pos + 1;
-                            for (Item i : item.invisibleChildren) {
-                                data.add(index, i);
-                                index++;
-                            }
-                            notifyItemRangeInserted(pos + 1, index - pos - 1);
-                            itemController.btn_expand_toggle.setImageResource(R.drawable.circle_minus);
-                            item.invisibleChildren = null;
+                if (!invisibleChildren.isEmpty()) {
+                    invisibleChildren.clear();
+                }
+
+//            for (ProductItem boughtItem : item.getBoughtProducts()) {
+//                invisibleChildren.add(boughtItem);
+//            }
+            viewHolder.refferalItem = item;
+            viewHolder.header_title.setText("Einkauf vom " + item.getDateCompleted());
+            if (invisibleChildren != null) {
+                viewHolder.btn_expand_toggle.setImageResource(R.drawable.circle_minus);
+            } else {
+                viewHolder.btn_expand_toggle.setImageResource(R.drawable.circle_plus);
+            }
+            viewHolder.btn_expand_toggle.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (invisibleChildren == null) {
+                        invisibleChildren = new ArrayList<>();
+                        int count = 0;
+                        int pos = parentAndChildrenList.indexOf(viewHolder.refferalItem);
+                        while (parentAndChildrenList.size() > pos + 1 && parentAndChildrenList.get(pos + 1) instanceof ProductItem) {
+                            invisibleChildren.add(parentAndChildrenList.remove(pos + 1));
+                            count++;
                         }
+                        notifyItemRangeRemoved(pos + 1, count);
+                        viewHolder.btn_expand_toggle.setImageResource(R.drawable.circle_plus);
+                    } else {
+                        int pos = parentAndChildrenList.indexOf(viewHolder.refferalItem);
+                        int index = pos + 1;
+                        for (Object i : invisibleChildren) {
+                            parentAndChildrenList.add(index, i);
+                            index++;
+                        }
+                        notifyItemRangeInserted(pos + 1, index - pos - 1);
+                        viewHolder.btn_expand_toggle.setImageResource(R.drawable.circle_minus);
+                        invisibleChildren = null;
                     }
-                });
-                break;
-            case CHILD:
-                TextView itemTextView = (TextView) holder.itemView;
-                itemTextView.setText(data.get(position).text);
-                break;
+                }
+            });
+        } else {
+            //current Position child object
+            TextView itemTextView = (TextView) holder.itemView;
+            ProductItem productItem = (ProductItem) parentAndChildrenList.get(position);
+            itemTextView.setText(productItem.getProduct());
         }
     }
+//
+//        final Item item = data.get(position);
+//        switch (item.type) {
+//            case HEADER:
+//                final ListHeaderViewHolder itemController = (ListHeaderViewHolder) holder;
+//                itemController.refferalItem = item;
+//                itemController.header_title.setText(item.text);
+//                if (item.invisibleChildren == null) {
+//                    itemController.btn_expand_toggle.setImageResource(R.drawable.circle_minus);
+//                } else {
+//                    itemController.btn_expand_toggle.setImageResource(R.drawable.circle_plus);
+//                }
+//                itemController.btn_expand_toggle.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        if (item.invisibleChildren == null) {
+//                            item.invisibleChildren = new ArrayList<Item>();
+//                            int count = 0;
+//                            int pos = data.indexOf(itemController.refferalItem);
+//                            while (data.size() > pos + 1 && data.get(pos + 1).type == CHILD) {
+//                                item.invisibleChildren.add(data.remove(pos + 1));
+//                                count++;
+//                            }
+//                            notifyItemRangeRemoved(pos + 1, count);
+//                            itemController.btn_expand_toggle.setImageResource(R.drawable.circle_plus);
+//                        } else {
+//                            int pos = data.indexOf(itemController.refferalItem);
+//                            int index = pos + 1;
+//                            for (Item i : item.invisibleChildren) {
+//                                data.add(index, i);
+//                                index++;
+//                            }
+//                            notifyItemRangeInserted(pos + 1, index - pos - 1);
+//                            itemController.btn_expand_toggle.setImageResource(R.drawable.circle_minus);
+//                            item.invisibleChildren = null;
+//                        }
+//                    }
+//                });
+//                break;
+//            case CHILD:
+//                TextView itemTextView = (TextView) holder.itemView;
+//                itemTextView.setText(data.get(position).text);
+//                break;
+//        }
 
     @Override
     public int getItemViewType(int position) {
-        return data.get(position).type;
+        if (parentAndChildrenList.get(position) instanceof ShoppingTrip) {
+            return HEADER;
+        } else {
+            return CHILD;
+        }
     }
 
     @Override
     public int getItemCount() {
-        return data.size();
+        return parentAndChildrenList.size();
+//        return data.size();
     }
 
-    //---------------------------------------------------------------
-    // INNER CLASSES
-    //---------------------------------------------------------------
+//---------------------------------------------------------------
+// INNER CLASSES
+//---------------------------------------------------------------
 
-    public static class ListHeaderViewHolder extends RecyclerView.ViewHolder {
-        public Item refferalItem;
-        @Bind(R.id.header_title)
-        TextView header_title;
-        @Bind(R.id.btn_expand_toggle)
-        ImageView btn_expand_toggle;
+public static class ListHeaderViewHolder extends RecyclerView.ViewHolder {
+    public TextView header_title;
+    public ImageView btn_expand_toggle;
+    //        public Item refferalItem;
+    public Object refferalItem;
 
-        public ListHeaderViewHolder(View itemView) {
-            super(itemView);
-            ButterKnife.bind(this, itemView);
-        }
+    public ListHeaderViewHolder(View itemView) {
+        super(itemView);
+        ButterKnife.bind(this, itemView);
+        header_title = (TextView) itemView.findViewById(R.id.header_title);
+        btn_expand_toggle = (ImageView) itemView.findViewById(R.id.btn_expand_toggle);
+    }
+}
+
+public static class Item {
+    public int type;
+    public String text;
+    public List<Item> invisibleChildren;
+
+    public Item() {
     }
 
-    public static class Item {
-        public int type;
-        public String text;
-        public List<Item> invisibleChildren;
-
-        public Item() {
-        }
-
-        public Item(int type, String text) {
-            this.type = type;
-            this.text = text;
-        }
+    public Item(int type, String text) {
+        this.type = type;
+        this.text = text;
     }
+
+}
 
     //---------------------------------------------------------------
     // GETTER AND SETTER

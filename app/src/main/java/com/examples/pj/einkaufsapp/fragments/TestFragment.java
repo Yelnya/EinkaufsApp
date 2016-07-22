@@ -11,6 +11,7 @@ import android.widget.ImageView;
 
 import com.examples.pj.einkaufsapp.R;
 import com.examples.pj.einkaufsapp.adapters.TestAdapter;
+import com.examples.pj.einkaufsapp.dbentities.ProductItem;
 import com.examples.pj.einkaufsapp.dbentities.ShoppingTrip;
 import com.examples.pj.einkaufsapp.interfaces.ChangeToolbarInterface;
 import com.examples.pj.einkaufsapp.util.SharedPreferencesManager;
@@ -152,13 +153,16 @@ public class TestFragment extends BaseFragment implements ChangeToolbarInterface
         places.invisibleChildren.add(new TestAdapter.Item(TestAdapter.CHILD, "Maharashtra"));
         data.add(places);
 
-        //get shoppingTrips from list -> data
-//        historicShoppingTripsList
-
-        //get productItems from shoppingTrips from list -> places
-
-
-        testAdapter = new TestAdapter(context, data);
+        //make List with ShoppingTrip Objects and referring ProductItemObjects
+        List<Object> parentAndChildrenList = new ArrayList<>();
+        for (ShoppingTrip shoppingTrip : historicShoppingTripsList) {
+            parentAndChildrenList.add(shoppingTrip);
+            for (ProductItem productItem : shoppingTrip.getBoughtProducts()) {
+                parentAndChildrenList.add(productItem);
+            }
+        }
+        //Adapter setup
+        testAdapter = new TestAdapter(context, data, parentAndChildrenList);
         final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         testRv.setLayoutManager(linearLayoutManager);

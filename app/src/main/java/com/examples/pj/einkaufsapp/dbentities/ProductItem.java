@@ -98,6 +98,7 @@ public class ProductItem {
                 ", bought=" + bought +
                 ", done=" + done +
                 ", favourite=" + favourite +
+                ", invisible=" + invisible +
                 '}';
     }
 

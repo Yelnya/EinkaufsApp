@@ -11,6 +11,7 @@ public class ShoppingTrip {
     private String dateCompleted;
     private String boughtProductsJsonList;
     private List<ProductItem> boughtProducts;
+    private boolean isExpanded;
 
     public ShoppingTrip(String dateCompleted, String boughtProductsJsonList) {
         this.dateCompleted = dateCompleted;
@@ -47,11 +48,21 @@ public class ShoppingTrip {
         this.boughtProducts = boughtProducts;
     }
 
+    public boolean isExpanded() {
+        return isExpanded;
+    }
+
+    public void setExpanded(boolean expanded) {
+        isExpanded = expanded;
+    }
+
     @Override
     public String toString() {
         return "ShoppingTrip{" +
                 "dateCompleted='" + dateCompleted + '\'' +
                 ", boughtProductsJsonList='" + boughtProductsJsonList + '\'' +
+                ", boughtProducts=" + boughtProducts +
+                ", isExpanded=" + isExpanded +
                 '}';
     }
 }

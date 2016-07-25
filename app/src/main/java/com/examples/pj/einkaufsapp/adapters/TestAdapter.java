@@ -1,6 +1,7 @@
 package com.examples.pj.einkaufsapp.adapters;
 
 import android.content.Context;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +16,7 @@ import com.examples.pj.einkaufsapp.dbentities.ShoppingTrip;
 
 import java.util.List;
 
+import butterknife.Bind;
 import butterknife.ButterKnife;
 
 public class TestAdapter extends BaseAdapter<TestAdapter.ListHeaderViewHolder> {
@@ -40,25 +42,16 @@ public class TestAdapter extends BaseAdapter<TestAdapter.ListHeaderViewHolder> {
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int type) {
         View view = null;
-        float dp = context.getResources().getDisplayMetrics().density;
-        int subItemPaddingLeft = (int) (18 * dp);
-        int subItemPaddingTopAndBottom = (int) (5 * dp);
+        LayoutInflater inflater = (LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         switch (type) {
             case HEADER:
-                LayoutInflater inflater = (LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 view = inflater.inflate(R.layout.list_header, parent, false);
                 ListHeaderViewHolder header = new ListHeaderViewHolder(view);
                 return header;
             case CHILD:
-                TextView itemTextView = new TextView(context);
-                itemTextView.setPadding(subItemPaddingLeft, subItemPaddingTopAndBottom, 0, subItemPaddingTopAndBottom);
-                itemTextView.setTextColor(0x88000000);
-                itemTextView.setLayoutParams(
-                        new ViewGroup.LayoutParams(
-                                ViewGroup.LayoutParams.MATCH_PARENT,
-                                ViewGroup.LayoutParams.WRAP_CONTENT));
-                return new RecyclerView.ViewHolder(itemTextView) {
-                };
+                view = inflater.inflate(R.layout.list_child, parent, false);
+                ListChildViewHolder child = new ListChildViewHolder(view);
+                return child;
         }
         return null;
     }
@@ -67,63 +60,66 @@ public class TestAdapter extends BaseAdapter<TestAdapter.ListHeaderViewHolder> {
         if (!parentAndChildrenListOriginal.isEmpty()) {
             //get all List Data (Shopping Trips AND ProductItems)
             final Object object = parentAndChildrenListOriginal.get(position);
+
             //current position is header object -> ShoppingTrip
             if (object instanceof ShoppingTrip) {
-                final ListHeaderViewHolder viewHolder = (ListHeaderViewHolder) holder;
+                final ListHeaderViewHolder parentViewHolder = (ListHeaderViewHolder) holder;
                 final ShoppingTrip item = (ShoppingTrip) object;
-                viewHolder.refferalItem = item; //current ShoppingTrip
-                viewHolder.header_title.setText("Einkauf vom " + item.getDateCompleted());
+                parentViewHolder.header_title.setText("Einkauf vom " + item.getDateCompleted());
 
-                if (!viewHolder.isExpanded) { //if there are ProductItem Entries for current ShoppingTrip
-                    viewHolder.btn_expand_toggle.setImageResource(R.drawable.circle_plus);
-                } else {
-                    viewHolder.btn_expand_toggle.setImageResource(R.drawable.circle_minus);
-                }
-                //On Click Behaviour
-                viewHolder.btn_expand_toggle.setOnClickListener(new View.OnClickListener() {
+                //On Click Behaviour of plus minus Icon
+                parentViewHolder.btn_expand_toggle.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        viewHolder.isExpanded = !viewHolder.isExpanded; //toggle expanded status
+                        System.out.println("Entered OnClickListener");
+                        item.setExpanded(!item.isExpanded()); //toggle expanded status
 
                         //if view is now expanded
-                        if (viewHolder.isExpanded) {
-                            viewHolder.btn_expand_toggle.setImageResource(R.drawable.circle_minus);
-
-                            int count = 0;
-                            int pos = parentAndChildrenListOriginal.indexOf(viewHolder.refferalItem);
+                        if (item.isExpanded()) {
+                            System.out.println("Entered OnClickListener IF ISEXPANDED");
+                            parentViewHolder.btn_expand_toggle.setImageResource(R.drawable.circle_minus);
+                            parentViewHolder.header_title.setBackgroundColor(ContextCompat.getColor(context, R.color.light_purple));
+                            int pos = parentAndChildrenListOriginal.indexOf(item);
                             //for all ProductItems of current ShoppingTrip
-                            while (parentAndChildrenListOriginal.size() > pos + 1 && parentAndChildrenListOriginal.get(pos + 1 + count) instanceof ProductItem) {
-                                Object currentObject = parentAndChildrenListOriginal.get(pos + 1 + count);
+                            while (parentAndChildrenListOriginal.size() > pos + 1 && parentAndChildrenListOriginal.get(pos + 1) instanceof ProductItem) {
+                                pos++;
+                                Object currentObject = parentAndChildrenListOriginal.get(pos);
                                 ProductItem currentProductItem = (ProductItem) currentObject;
                                 currentProductItem.setInvisible(false);
-                                count++;
+                                ((ProductItem) parentAndChildrenListOriginal.get(pos)).setInvisible(false);
+                                showList();
+                                notifyItemChanged(pos);
                             }
-//                            notifyItemRangeRemoved(pos + 1, count);
                         } else {    //if view is now not expanded
-                            viewHolder.btn_expand_toggle.setImageResource(R.drawable.circle_plus);
-                            int count = 0;
-                            int pos = parentAndChildrenListOriginal.indexOf(viewHolder.refferalItem);
+                            System.out.println("Entered OnClickListener ELSE NOT EXPANDED");
+                            parentViewHolder.btn_expand_toggle.setImageResource(R.drawable.circle_plus);
+                            parentViewHolder.header_title.setBackgroundColor(ContextCompat.getColor(context, R.color.grey));
+
+                            int pos = parentAndChildrenListOriginal.indexOf(item);
                             //for all ProductItems of current ShoppingTrip
-                            while (parentAndChildrenListOriginal.size() > pos + 1 && parentAndChildrenListOriginal.get(pos + 1 + count) instanceof ProductItem) {
-                                Object currentObject = parentAndChildrenListOriginal.get(pos + 1 + count);
+                            while (parentAndChildrenListOriginal.size() > pos + 1 && parentAndChildrenListOriginal.get(pos + 1) instanceof ProductItem) {
+                                pos++;
+                                Object currentObject = parentAndChildrenListOriginal.get(pos);
                                 ProductItem currentProductItem = (ProductItem) currentObject;
                                 currentProductItem.setInvisible(true);
-                                count++;
+                                ProductItem productItem = (ProductItem) parentAndChildrenListOriginal.get(pos);
+                                productItem.setInvisible(true);
+                                showList();
+                                notifyItemChanged(pos);
                             }
                         }
-//                            notifyItemRangeRemoved(pos + 1, count);
-                        notifyDataSetChanged();
                     }
                 });
             } else {
+                final ListChildViewHolder childViewHolder = (ListChildViewHolder) holder;
                 //current Position is child object -> ProductItem
-                TextView itemTextView = (TextView) holder.itemView;
                 ProductItem productItem = (ProductItem) parentAndChildrenListOriginal.get(position);
-                if (!productItem.isInvisible()) {
-                    itemTextView.setVisibility(View.GONE);
+                System.out.println("BoughtProduct in ListChildViewHolder: " + productItem.toString());
+                if (productItem.isInvisible()) {
+                    childViewHolder.listChildTv.setVisibility(View.GONE);
                 } else {
-                    itemTextView.setVisibility(View.VISIBLE);
-                    itemTextView.setText(productItem.getProduct() + ", Visibility: " + productItem.isInvisible());
+                    childViewHolder.listChildTv.setVisibility(View.VISIBLE);
+                    childViewHolder.listChildTv.setText(productItem.getProduct() + ", Is Invisible: " + productItem.isInvisible());
                 }
             }
         } else {
@@ -131,50 +127,7 @@ public class TestAdapter extends BaseAdapter<TestAdapter.ListHeaderViewHolder> {
             Toast.makeText(context, "Es sind noch keine Einkäufe abgeschlossen worden", Toast.LENGTH_SHORT).show();
         }
     }
-//
-//        final Item item = data.get(position);
-//        switch (item.type) {
-//            case HEADER:
-//                final ListHeaderViewHolder itemController = (ListHeaderViewHolder) holder;
-//                itemController.refferalItem = item;
-//                itemController.header_title.setText(item.text);
-//                if (item.invisibleChildren == null) {
-//                    itemController.btn_expand_toggle.setImageResource(R.drawable.circle_minus);
-//                } else {
-//                    itemController.btn_expand_toggle.setImageResource(R.drawable.circle_plus);
-//                }
-//                itemController.btn_expand_toggle.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View v) {
-//                        if (item.invisibleChildren == null) {
-//                            item.invisibleChildren = new ArrayList<Item>();
-//                            int count = 0;
-//                            int pos = data.indexOf(itemController.refferalItem);
-//                            while (data.size() > pos + 1 && data.get(pos + 1).type == CHILD) {
-//                                item.invisibleChildren.add(data.remove(pos + 1));
-//                                count++;
-//                            }
-//                            notifyItemRangeRemoved(pos + 1, count);
-//                            itemController.btn_expand_toggle.setImageResource(R.drawable.circle_plus);
-//                        } else {
-//                            int pos = data.indexOf(itemController.refferalItem);
-//                            int index = pos + 1;
-//                            for (Item i : item.invisibleChildren) {
-//                                data.add(index, i);
-//                                index++;
-//                            }
-//                            notifyItemRangeInserted(pos + 1, index - pos - 1);
-//                            itemController.btn_expand_toggle.setImageResource(R.drawable.circle_minus);
-//                            item.invisibleChildren = null;
-//                        }
-//                    }
-//                });
-//                break;
-//            case CHILD:
-//                TextView itemTextView = (TextView) holder.itemView;
-//                itemTextView.setText(data.get(position).text);
-//                break;
-//        }
+
 
     @Override
     public int getItemViewType(int position) {
@@ -196,18 +149,24 @@ public class TestAdapter extends BaseAdapter<TestAdapter.ListHeaderViewHolder> {
 //---------------------------------------------------------------
 
     public static class ListHeaderViewHolder extends RecyclerView.ViewHolder {
-        public TextView header_title;
-        public ImageView btn_expand_toggle;
-        //        public Item refferalItem;
-        public Object refferalItem;
-        public boolean isExpanded;
-        public List<ProductItem> invisibleChildrenForShoppingTrip;
+        @Bind(R.id.header_title)
+        TextView header_title;
+        @Bind(R.id.btn_expand_toggle)
+        ImageView btn_expand_toggle;
 
         public ListHeaderViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
-            header_title = (TextView) itemView.findViewById(R.id.header_title);
-            btn_expand_toggle = (ImageView) itemView.findViewById(R.id.btn_expand_toggle);
+        }
+    }
+
+    public static class ListChildViewHolder extends RecyclerView.ViewHolder {
+        @Bind(R.id.list_child_text_tv)
+        TextView listChildTv;
+
+        public ListChildViewHolder(View itemView) {
+            super(itemView);
+            ButterKnife.bind(this, itemView);
         }
     }
 
@@ -230,5 +189,21 @@ public class TestAdapter extends BaseAdapter<TestAdapter.ListHeaderViewHolder> {
 
     public void setEditDeleteToolbarActive(boolean editDeleteToolbarActive) {
         this.editDeleteToolbarActive = editDeleteToolbarActive;
+    }
+
+    //---------------------------------------------------------------
+    // OTHER METHODS
+    //---------------------------------------------------------------
+
+    private void showList() {
+        for (Object object : parentAndChildrenListOriginal) {
+            if (object instanceof ShoppingTrip) {
+                ShoppingTrip shoppingTrip = (ShoppingTrip) object;
+                System.out.print("Shopping Trip: " + shoppingTrip.getDateCompleted());
+            } else {
+                ProductItem productItem = (ProductItem) object;
+                System.out.println("Product Item: " + productItem.toString());
+            }
+        }
     }
 }

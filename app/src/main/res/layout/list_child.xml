@@ -1,6 +1,6 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
+    android:orientation="vertical"
     android:paddingLeft="13dp"
     android:paddingStart="13dp"
     android:paddingRight="10dp"
@@ -9,12 +9,13 @@
     android:paddingBottom="5dp"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
+
     <TextView
-        android:id="@+id/header_title"
+        android:id="@+id/list_child_text_tv"
         android:textColor="@color/colorAccent"
         android:textSize="14sp"
         android:gravity="center_vertical"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"/>
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
 </LinearLayout>

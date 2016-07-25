@@ -8,6 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.examples.pj.einkaufsapp.R;
 import com.examples.pj.einkaufsapp.adapters.HistoricListsAdapter;
@@ -16,13 +17,11 @@ import com.examples.pj.einkaufsapp.dbentities.ShoppingTrip;
 import com.examples.pj.einkaufsapp.interfaces.ChangeToolbarInterface;
 import com.examples.pj.einkaufsapp.util.SharedPreferencesManager;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.Bind;
 
-/**
- * Fore already done shopping events
- */
 public class HistoricListsFragment extends BaseFragment implements ChangeToolbarInterface {
     public static final String LOG_TAG = HistoricListsFragment.class.getSimpleName();
 
@@ -36,11 +35,13 @@ public class HistoricListsFragment extends BaseFragment implements ChangeToolbar
     private static final String TOOLBAR_TITLE_EDIT = "Löschen/Ändern";
 
     @Bind(R.id.historiclist_recycler_view)
-    RecyclerView historicListRv;
+    RecyclerView historicListsRv;
     @Bind(R.id.toolbarDeleteIv)
     ImageView toolbarDeleteIv;
     @Bind(R.id.toolbarEditIv)
     ImageView toolbarEditIv;
+    @Bind(R.id.historiclist_top_hint)
+    TextView topHint;
 
     //================================================================================
     // Fragment Instantiation
@@ -106,9 +107,9 @@ public class HistoricListsFragment extends BaseFragment implements ChangeToolbar
             sharedPreferencesManager = SharedPreferencesManager.initSharedPreferences((Activity) context);
         }
         historicShoppingTripsList = sharedPreferencesManager.loadHistoricShoppingTripsListFromLocalStore();
-
-        initializeProductItemsListView();
         showEditAndDeleteIconInToolbar = false;
+
+        initializeRvAdapter();
     }
 
     @Override
@@ -116,14 +117,18 @@ public class HistoricListsFragment extends BaseFragment implements ChangeToolbar
         super.onResume();
         toolbarTitle = TOOLBAR_TITLE_FRAGMENT;
         setToolbarEditAndDeleteIcon(showEditAndDeleteIconInToolbar);
-
         context = getActivity();
         if (sharedPreferencesManager == null) {
             sharedPreferencesManager = SharedPreferencesManager.initSharedPreferences((Activity) context);
         }
         historicShoppingTripsList = sharedPreferencesManager.loadHistoricShoppingTripsListFromLocalStore();
 
-        showHistoricShoppingTripsListLog();
+        if (historicShoppingTripsList == null || historicShoppingTripsList.isEmpty()) {
+            topHint.setVisibility(View.VISIBLE);
+            topHint.setText(context.getResources().getString(R.string.top_hint_no_shopping_trips));
+        } else {
+            topHint.setVisibility(View.GONE);
+        }
     }
 
     //---------------------------------------------------------------
@@ -137,30 +142,26 @@ public class HistoricListsFragment extends BaseFragment implements ChangeToolbar
         historicListsAdapter.setEditDeleteToolbarActive(false);
     }
 
-    private void showHistoricShoppingTripsListLog() {
-        int i = 0;
-        Log.d(LOG_TAG, "-------------------LOCAL LIST ENTRIES -----------------------");
-        for (ShoppingTrip trip : historicShoppingTripsList) {
-            i++;
-            Log.d(LOG_TAG, "Shopping Trip " + i + ": " + trip.getDateCompleted());
-            List<ProductItem> boughtProductsList = trip.getBoughtProducts();
-            int j = 0;
+    private void initializeRvAdapter() {
 
-            for (ProductItem productItem : boughtProductsList) {
-                j++;
-                Log.d(LOG_TAG, "Produkt " + j + ": " + productItem.getProduct());
+        //make List with ShoppingTrip Objects and referring ProductItemObjects
+        List<Object> parentAndChildrenList = new ArrayList<>();
+        for (ShoppingTrip shoppingTrip : historicShoppingTripsList) {
+            parentAndChildrenList.add(shoppingTrip);
+            for (ProductItem productItem : shoppingTrip.getBoughtProducts()) {
+                parentAndChildrenList.add(productItem);
+                System.out.println("BoughtProduct: " + productItem.toString());
             }
         }
-    }
 
-    private void initializeProductItemsListView() {
-        historicListsAdapter = new HistoricListsAdapter(context, sharedPreferencesManager, this, historicShoppingTripsList, showEditAndDeleteIconInToolbar);
+        //Adapter setup
+        historicListsAdapter = new HistoricListsAdapter(context, parentAndChildrenList);
         final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        historicListRv.setLayoutManager(linearLayoutManager);
-        historicListRv.setAdapter(historicListsAdapter);
-        historicListRv.setHasFixedSize(true);
-        historicListRv.setVisibility(View.VISIBLE);
+        historicListsRv.setLayoutManager(linearLayoutManager);
+        historicListsRv.setAdapter(historicListsAdapter);
+        historicListsRv.setHasFixedSize(true);
+        historicListsRv.setVisibility(View.VISIBLE);
     }
 
     //---------------------------------------------------------------

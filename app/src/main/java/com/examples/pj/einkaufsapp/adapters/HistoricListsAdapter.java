@@ -77,6 +77,7 @@ public class HistoricListsAdapter extends BaseAdapter<HistoricListsAdapter.ListH
                         if (item.isExpanded()) {
                             parentViewHolder.btn_expand_toggle.setImageResource(R.drawable.circle_minus);
                             parentViewHolder.headerContainerLl.setBackgroundColor(ContextCompat.getColor(context, R.color.light_purple));
+                            parentViewHolder.header_title.setTextColor(ContextCompat.getColor(context, R.color.black));
                             int pos = parentAndChildrenListOriginal.indexOf(item);
                             //for all ProductItems of current ShoppingTrip
                             while (parentAndChildrenListOriginal.size() > pos + 1 && parentAndChildrenListOriginal.get(pos + 1) instanceof ProductItem) {
@@ -90,6 +91,7 @@ public class HistoricListsAdapter extends BaseAdapter<HistoricListsAdapter.ListH
                         } else {    //if view is now not expanded
                             parentViewHolder.btn_expand_toggle.setImageResource(R.drawable.circle_plus);
                             parentViewHolder.headerContainerLl.setBackgroundColor(ContextCompat.getColor(context, R.color.grey));
+                            parentViewHolder.header_title.setTextColor(ContextCompat.getColor(context, R.color.grey_dark));
 
                             int pos = parentAndChildrenListOriginal.indexOf(item);
                             //for all ProductItems of current ShoppingTrip

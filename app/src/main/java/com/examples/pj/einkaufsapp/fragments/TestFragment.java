@@ -135,23 +135,29 @@ public class TestFragment extends BaseFragment implements ChangeToolbarInterface
     private void initializeRvAdapter() {
         List<TestAdapter.Item> data = new ArrayList<>();
 
-        data.add(new TestAdapter.Item(TestAdapter.HEADER, "Fruits"));
-        data.add(new TestAdapter.Item(TestAdapter.CHILD, "Apple"));
-        data.add(new TestAdapter.Item(TestAdapter.CHILD, "Orange"));
-        data.add(new TestAdapter.Item(TestAdapter.CHILD, "Banana"));
-        data.add(new TestAdapter.Item(TestAdapter.HEADER, "Cars"));
-        data.add(new TestAdapter.Item(TestAdapter.CHILD, "Audi"));
-        data.add(new TestAdapter.Item(TestAdapter.CHILD, "Aston Martin"));
-        data.add(new TestAdapter.Item(TestAdapter.CHILD, "BMW"));
-        data.add(new TestAdapter.Item(TestAdapter.CHILD, "Cadillac"));
+//        data.add(new TestAdapter.Item(TestAdapter.HEADER, "Fruits"));
+//        data.add(new TestAdapter.Item(TestAdapter.CHILD, "Apple"));
+//        data.add(new TestAdapter.Item(TestAdapter.CHILD, "Orange"));
+//        data.add(new TestAdapter.Item(TestAdapter.CHILD, "Banana"));
+//        data.add(new TestAdapter.Item(TestAdapter.HEADER, "Cars"));
+//        data.add(new TestAdapter.Item(TestAdapter.CHILD, "Audi"));
+//        data.add(new TestAdapter.Item(TestAdapter.CHILD, "Aston Martin"));
+//        data.add(new TestAdapter.Item(TestAdapter.CHILD, "BMW"));
+//        data.add(new TestAdapter.Item(TestAdapter.CHILD, "Cadillac"));
+//
+//        TestAdapter.Item places = new TestAdapter.Item(TestAdapter.HEADER, "Places");
+//        places.invisibleChildren = new ArrayList<>();
+//        places.invisibleChildren.add(new TestAdapter.Item(TestAdapter.CHILD, "Kerala"));
+//        places.invisibleChildren.add(new TestAdapter.Item(TestAdapter.CHILD, "Tamil Nadu"));
+//        places.invisibleChildren.add(new TestAdapter.Item(TestAdapter.CHILD, "Karnataka"));
+//        places.invisibleChildren.add(new TestAdapter.Item(TestAdapter.CHILD, "Maharashtra"));
+//        data.add(places);
 
-        TestAdapter.Item places = new TestAdapter.Item(TestAdapter.HEADER, "Places");
-        places.invisibleChildren = new ArrayList<>();
-        places.invisibleChildren.add(new TestAdapter.Item(TestAdapter.CHILD, "Kerala"));
-        places.invisibleChildren.add(new TestAdapter.Item(TestAdapter.CHILD, "Tamil Nadu"));
-        places.invisibleChildren.add(new TestAdapter.Item(TestAdapter.CHILD, "Karnataka"));
-        places.invisibleChildren.add(new TestAdapter.Item(TestAdapter.CHILD, "Maharashtra"));
-        data.add(places);
+        //make List with only Headers
+        List<Object> onlyHeadersList = new ArrayList<>();
+        for (ShoppingTrip shoppingTrip : historicShoppingTripsList) {
+            onlyHeadersList.add(shoppingTrip);
+        }
 
         //make List with ShoppingTrip Objects and referring ProductItemObjects
         List<Object> parentAndChildrenList = new ArrayList<>();
@@ -161,6 +167,7 @@ public class TestFragment extends BaseFragment implements ChangeToolbarInterface
                 parentAndChildrenList.add(productItem);
             }
         }
+
         //Adapter setup
         testAdapter = new TestAdapter(context, data, parentAndChildrenList);
         final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());

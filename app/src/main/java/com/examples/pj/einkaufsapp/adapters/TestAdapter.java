@@ -7,12 +7,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.examples.pj.einkaufsapp.R;
 import com.examples.pj.einkaufsapp.dbentities.ProductItem;
 import com.examples.pj.einkaufsapp.dbentities.ShoppingTrip;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.ButterKnife;
@@ -23,15 +23,14 @@ public class TestAdapter extends BaseAdapter<TestAdapter.ListHeaderViewHolder> {
     public static final int CHILD = 1;
 
     private List<Item> data;
-    private List<Object> parentAndChildrenList;
-    public List<Object> invisibleChildren;
+    private List<Object> parentAndChildrenListOriginal;
     private Context context;
     private boolean editDeleteToolbarActive;
 
     public TestAdapter(Context context, List<Item> data, List<Object> parentAndChildrenList) {
         this.data = data;
         this.context = context;
-        this.parentAndChildrenList = parentAndChildrenList;
+        this.parentAndChildrenListOriginal = parentAndChildrenList;
     }
 
     //---------------------------------------------------------------
@@ -65,62 +64,71 @@ public class TestAdapter extends BaseAdapter<TestAdapter.ListHeaderViewHolder> {
     }
 
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        if (!parentAndChildrenListOriginal.isEmpty()) {
+            //get all List Data (Shopping Trips AND ProductItems)
+            final Object object = parentAndChildrenListOriginal.get(position);
+            //current position is header object -> ShoppingTrip
+            if (object instanceof ShoppingTrip) {
+                final ListHeaderViewHolder viewHolder = (ListHeaderViewHolder) holder;
+                final ShoppingTrip item = (ShoppingTrip) object;
+                viewHolder.refferalItem = item; //current ShoppingTrip
+                viewHolder.header_title.setText("Einkauf vom " + item.getDateCompleted());
 
-        //current position header object
-        final Object object = parentAndChildrenList.get(position);
-        if (object instanceof ShoppingTrip) {
-            final ListHeaderViewHolder viewHolder = (ListHeaderViewHolder) holder;
-            //get header object
-            ShoppingTrip item = (ShoppingTrip) object;
-            //treat invisibleChildrenList
-                if (invisibleChildren == null) {
-                    invisibleChildren = new ArrayList<>();
+                if (!viewHolder.isExpanded) { //if there are ProductItem Entries for current ShoppingTrip
+                    viewHolder.btn_expand_toggle.setImageResource(R.drawable.circle_plus);
+                } else {
+                    viewHolder.btn_expand_toggle.setImageResource(R.drawable.circle_minus);
                 }
-                if (!invisibleChildren.isEmpty()) {
-                    invisibleChildren.clear();
-                }
+                //On Click Behaviour
+                viewHolder.btn_expand_toggle.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        viewHolder.isExpanded = !viewHolder.isExpanded; //toggle expanded status
 
-//            for (ProductItem boughtItem : item.getBoughtProducts()) {
-//                invisibleChildren.add(boughtItem);
-//            }
-            viewHolder.refferalItem = item;
-            viewHolder.header_title.setText("Einkauf vom " + item.getDateCompleted());
-            if (invisibleChildren != null) {
-                viewHolder.btn_expand_toggle.setImageResource(R.drawable.circle_minus);
-            } else {
-                viewHolder.btn_expand_toggle.setImageResource(R.drawable.circle_plus);
-            }
-            viewHolder.btn_expand_toggle.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (invisibleChildren == null) {
-                        invisibleChildren = new ArrayList<>();
-                        int count = 0;
-                        int pos = parentAndChildrenList.indexOf(viewHolder.refferalItem);
-                        while (parentAndChildrenList.size() > pos + 1 && parentAndChildrenList.get(pos + 1) instanceof ProductItem) {
-                            invisibleChildren.add(parentAndChildrenList.remove(pos + 1));
-                            count++;
+                        //if view is now expanded
+                        if (viewHolder.isExpanded) {
+                            viewHolder.btn_expand_toggle.setImageResource(R.drawable.circle_minus);
+
+                            int count = 0;
+                            int pos = parentAndChildrenListOriginal.indexOf(viewHolder.refferalItem);
+                            //for all ProductItems of current ShoppingTrip
+                            while (parentAndChildrenListOriginal.size() > pos + 1 && parentAndChildrenListOriginal.get(pos + 1 + count) instanceof ProductItem) {
+                                Object currentObject = parentAndChildrenListOriginal.get(pos + 1 + count);
+                                ProductItem currentProductItem = (ProductItem) currentObject;
+                                currentProductItem.setInvisible(false);
+                                count++;
+                            }
+//                            notifyItemRangeRemoved(pos + 1, count);
+                        } else {    //if view is now not expanded
+                            viewHolder.btn_expand_toggle.setImageResource(R.drawable.circle_plus);
+                            int count = 0;
+                            int pos = parentAndChildrenListOriginal.indexOf(viewHolder.refferalItem);
+                            //for all ProductItems of current ShoppingTrip
+                            while (parentAndChildrenListOriginal.size() > pos + 1 && parentAndChildrenListOriginal.get(pos + 1 + count) instanceof ProductItem) {
+                                Object currentObject = parentAndChildrenListOriginal.get(pos + 1 + count);
+                                ProductItem currentProductItem = (ProductItem) currentObject;
+                                currentProductItem.setInvisible(true);
+                                count++;
+                            }
                         }
-                        notifyItemRangeRemoved(pos + 1, count);
-                        viewHolder.btn_expand_toggle.setImageResource(R.drawable.circle_plus);
-                    } else {
-                        int pos = parentAndChildrenList.indexOf(viewHolder.refferalItem);
-                        int index = pos + 1;
-                        for (Object i : invisibleChildren) {
-                            parentAndChildrenList.add(index, i);
-                            index++;
-                        }
-                        notifyItemRangeInserted(pos + 1, index - pos - 1);
-                        viewHolder.btn_expand_toggle.setImageResource(R.drawable.circle_minus);
-                        invisibleChildren = null;
+//                            notifyItemRangeRemoved(pos + 1, count);
+                        notifyDataSetChanged();
                     }
+                });
+            } else {
+                //current Position is child object -> ProductItem
+                TextView itemTextView = (TextView) holder.itemView;
+                ProductItem productItem = (ProductItem) parentAndChildrenListOriginal.get(position);
+                if (!productItem.isInvisible()) {
+                    itemTextView.setVisibility(View.GONE);
+                } else {
+                    itemTextView.setVisibility(View.VISIBLE);
+                    itemTextView.setText(productItem.getProduct() + ", Visibility: " + productItem.isInvisible());
                 }
-            });
+            }
         } else {
-            //current Position child object
-            TextView itemTextView = (TextView) holder.itemView;
-            ProductItem productItem = (ProductItem) parentAndChildrenList.get(position);
-            itemTextView.setText(productItem.getProduct());
+            //if there are no shopping list entries at all:
+            Toast.makeText(context, "Es sind noch keine Einkäufe abgeschlossen worden", Toast.LENGTH_SHORT).show();
         }
     }
 //
@@ -170,7 +178,7 @@ public class TestAdapter extends BaseAdapter<TestAdapter.ListHeaderViewHolder> {
 
     @Override
     public int getItemViewType(int position) {
-        if (parentAndChildrenList.get(position) instanceof ShoppingTrip) {
+        if (parentAndChildrenListOriginal.get(position) instanceof ShoppingTrip) {
             return HEADER;
         } else {
             return CHILD;
@@ -179,7 +187,7 @@ public class TestAdapter extends BaseAdapter<TestAdapter.ListHeaderViewHolder> {
 
     @Override
     public int getItemCount() {
-        return parentAndChildrenList.size();
+        return parentAndChildrenListOriginal.size();
 //        return data.size();
     }
 
@@ -187,35 +195,35 @@ public class TestAdapter extends BaseAdapter<TestAdapter.ListHeaderViewHolder> {
 // INNER CLASSES
 //---------------------------------------------------------------
 
-public static class ListHeaderViewHolder extends RecyclerView.ViewHolder {
-    public TextView header_title;
-    public ImageView btn_expand_toggle;
-    //        public Item refferalItem;
-    public Object refferalItem;
+    public static class ListHeaderViewHolder extends RecyclerView.ViewHolder {
+        public TextView header_title;
+        public ImageView btn_expand_toggle;
+        //        public Item refferalItem;
+        public Object refferalItem;
+        public boolean isExpanded;
+        public List<ProductItem> invisibleChildrenForShoppingTrip;
 
-    public ListHeaderViewHolder(View itemView) {
-        super(itemView);
-        ButterKnife.bind(this, itemView);
-        header_title = (TextView) itemView.findViewById(R.id.header_title);
-        btn_expand_toggle = (ImageView) itemView.findViewById(R.id.btn_expand_toggle);
-    }
-}
-
-public static class Item {
-    public int type;
-    public String text;
-    public List<Item> invisibleChildren;
-
-    public Item() {
+        public ListHeaderViewHolder(View itemView) {
+            super(itemView);
+            ButterKnife.bind(this, itemView);
+            header_title = (TextView) itemView.findViewById(R.id.header_title);
+            btn_expand_toggle = (ImageView) itemView.findViewById(R.id.btn_expand_toggle);
+        }
     }
 
-    public Item(int type, String text) {
-        this.type = type;
-        this.text = text;
+    public static class Item {
+        public int type;
+        public String text;
+        public List<Item> invisibleChildren;
+
+        public Item() {
+        }
+
+        public Item(int type, String text) {
+            this.type = type;
+            this.text = text;
+        }
     }
-
-}
-
     //---------------------------------------------------------------
     // GETTER AND SETTER
     //---------------------------------------------------------------

@@ -101,7 +101,7 @@ public class ProductItemDataSource {
         boolean isChecked = intValueChecked != 0;
         boolean isFavourite = intValueFavourite != 0;
 
-        return new ProductItem(id, product, category, bought, isChecked, isFavourite);
+        return new ProductItem(id, product, category, bought, isChecked, isFavourite, true);
     }
 
 

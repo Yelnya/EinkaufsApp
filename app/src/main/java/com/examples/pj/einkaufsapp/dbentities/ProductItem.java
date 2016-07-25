@@ -11,6 +11,7 @@ public class ProductItem {
     private int bought;
     private boolean done;
     private boolean favourite;
+    private boolean invisible;
 
     /**
      * Constructor
@@ -22,13 +23,14 @@ public class ProductItem {
      * @param done
      * @param favourite
      */
-    public ProductItem(long id, String product, String category, int bought, boolean done, boolean favourite) {
+    public ProductItem(long id, String product, String category, int bought, boolean done, boolean favourite, boolean invisible) {
         this.id = id;
         this.product = product;
         this.category = category;
         this.bought = bought;
         this.done = done;
         this.favourite = favourite;
+        this.invisible = invisible;
     }
 
     public String getProduct() {
@@ -77,6 +79,14 @@ public class ProductItem {
 
     public void setFavourite(boolean favourite) {
         this.favourite = favourite;
+    }
+
+    public boolean isInvisible() {
+        return invisible;
+    }
+
+    public void setInvisible(boolean invisible) {
+        this.invisible = invisible;
     }
 
     @Override

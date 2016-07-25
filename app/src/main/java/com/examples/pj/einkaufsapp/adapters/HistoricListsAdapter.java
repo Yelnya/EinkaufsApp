@@ -19,6 +19,7 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnLongClick;
 
 public class HistoricListsAdapter extends BaseAdapter<HistoricListsAdapter.ListHeaderViewHolder> {
 
@@ -45,11 +46,11 @@ public class HistoricListsAdapter extends BaseAdapter<HistoricListsAdapter.ListH
         switch (type) {
             case HEADER:
                 view = inflater.inflate(R.layout.list_header, parent, false);
-                ListHeaderViewHolder header = new ListHeaderViewHolder(view);
+                ListHeaderViewHolder header = new ListHeaderViewHolder(context, view);
                 return header;
             case CHILD:
                 view = inflater.inflate(R.layout.list_child, parent, false);
-                ListChildViewHolder child = new ListChildViewHolder(view);
+                ListChildViewHolder child = new ListChildViewHolder(context, view);
                 return child;
         }
         return null;
@@ -144,6 +145,7 @@ public class HistoricListsAdapter extends BaseAdapter<HistoricListsAdapter.ListH
 //---------------------------------------------------------------
 
     public static class ListHeaderViewHolder extends RecyclerView.ViewHolder {
+        Context context;
         @Bind(R.id.header_title)
         TextView header_title;
         @Bind(R.id.btn_expand_toggle)
@@ -151,21 +153,42 @@ public class HistoricListsAdapter extends BaseAdapter<HistoricListsAdapter.ListH
         @Bind(R.id.historiclist_header_container)
         LinearLayout headerContainerLl;
 
-        public ListHeaderViewHolder(View itemView) {
+        public ListHeaderViewHolder(Context context, View itemView) {
             super(itemView);
+            this.context = context;
             ButterKnife.bind(this, itemView);
+        }
+
+        @OnLongClick(R.id.historiclist_header_container)
+        public boolean onParentLongClick() {
+            //TODO All Products from Historic Shopping Trip add to current List
+            int pos = getAdapterPosition();
+            //TODO Alert Dialog to confirm
+            //Toast to show success
+            Toast.makeText(context, "Alle Artikel erfolgreich zur aktuellen Einkaufsliste hinzugefügt.", Toast.LENGTH_SHORT).show();
+            return true;
         }
     }
 
     public static class ListChildViewHolder extends RecyclerView.ViewHolder {
-        @Bind(R.id.list_child_container)
-        LinearLayout listChildLl;
+        Context context;
         @Bind(R.id.list_child_text_tv)
         TextView listChildTv;
 
-        public ListChildViewHolder(View itemView) {
+        public ListChildViewHolder(Context context, View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+            this.context = context;
+        }
+
+        @OnLongClick(R.id.list_child_container)
+        public boolean onChildLongClick() {
+            //TODO Product add to current Shopping List
+            int pos = getAdapterPosition();
+            //TODO Infotext at Bottom about long click
+            //Toast to show success
+            Toast.makeText(context, "Artikel erfolgreich zur aktuellen Einkaufsliste hinzugefügt.", Toast.LENGTH_SHORT).show();
+            return true;
         }
     }
 

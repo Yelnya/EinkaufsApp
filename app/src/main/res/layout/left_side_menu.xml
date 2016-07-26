@@ -31,6 +31,11 @@
             style="@style/SidebarItem"
             android:text="@string/leftsidemenu_about" />
 
+        <TextView
+            android:id="@+id/sidebar_test_screen"
+            style="@style/SidebarItem"
+            android:text="Test" />
+
         <Space
             android:layout_width="1dp"
             android:layout_height="@dimen/leftsidemenu_line_heigth"/>

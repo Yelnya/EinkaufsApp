@@ -16,8 +16,12 @@ import com.examples.pj.einkaufsapp.R;
 import com.examples.pj.einkaufsapp.util.NavigationManager;
 import com.examples.pj.einkaufsapp.util.ViewUtils;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import rx.Subscription;
 
 /**
  * Base Fragment, inherited by all other Fragments
@@ -26,6 +30,7 @@ public abstract class BaseFragment extends Fragment {
     protected final String baseTag;
 
     private boolean isRootFragment;
+    private List<Subscription> subscriptions = new ArrayList<>();
     @Nullable
     @Bind(R.id.my_toolbar)
     Toolbar toolbar;
@@ -76,8 +81,22 @@ public abstract class BaseFragment extends Fragment {
 
     @Override
     public void onDestroyView() {
-        super.onDestroyView();
         ButterKnife.unbind(this);
+        // reset options menu if any menu is set in a Fragment within the ChildFragmentManager
+        getActivity().supportInvalidateOptionsMenu();
+        for (Subscription subscription : subscriptions) {
+            if (subscription != null) {
+                subscription.unsubscribe();
+            }
+        }
+        subscriptions.clear();
+        super.onDestroyView();
+    }
+
+    @Override
+    public void onDestroy() {
+        cleanUp();
+        super.onDestroy();
     }
 
     //================================================================================
@@ -102,6 +121,8 @@ public abstract class BaseFragment extends Fragment {
     public boolean canGoBack() {
         return true;
     }
+
+    protected abstract void onCleanUp();
 
     protected final void snack(int stringResId) {
         ViewUtils.makeSnackbar(getView(), stringResId).show();
@@ -132,5 +153,25 @@ public abstract class BaseFragment extends Fragment {
 
     public String getBaseTag() {
         return baseTag;
+    }
+
+    private void cleanUp() {
+        onCleanUp();
+        subscriptions = null;
+    }
+
+    public final void addSubscription(Subscription subscription) {
+        if (subscription != null) {
+            subscriptions.add(subscription);
+        }
+    }
+
+    public final void removeSubscription(Subscription subscription) {
+        if (subscription != null) {
+            subscription.unsubscribe();
+            if (subscriptions.contains(subscription)) {
+                subscriptions.remove(subscription);
+            }
+        }
     }
 }

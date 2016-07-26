@@ -113,6 +113,11 @@ public class CurrentListFragment extends BaseFragment implements ChangeToolbarIn
         return true;
     }
 
+    @Override
+    protected void onCleanUp() {
+
+    }
+
     //================================================================================
     // Fragment Lifecycle
     //================================================================================

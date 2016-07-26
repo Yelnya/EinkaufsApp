@@ -92,6 +92,11 @@ public class HistoricListsFragment extends BaseFragment implements ChangeToolbar
         return true;
     }
 
+    @Override
+    protected void onCleanUp() {
+
+    }
+
     //================================================================================
     // Fragment Lifecycle
     //================================================================================

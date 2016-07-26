@@ -85,6 +85,11 @@ public class StatisticFragment extends BaseFragment {
         return true;
     }
 
+    @Override
+    protected void onCleanUp() {
+
+    }
+
     //================================================================================
     // Fragment Lifecycle
     //================================================================================

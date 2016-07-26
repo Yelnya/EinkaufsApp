@@ -21,7 +21,7 @@ public class StringUtils {
      * @return boolean if special char has been found
      */
     public static boolean stringContainsSpecialCharacters(String string) {
-        Pattern pattern = Pattern.compile("[^A-Za-z ]");      //check string if input contains special characters
+        Pattern pattern = Pattern.compile("[^A-Za-zäöü ]");      //check string if input contains special characters
         Matcher matcher = pattern.matcher(string);
         boolean matchFound = false;
         for (int i = 0; i < string.length(); i++) {

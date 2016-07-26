@@ -23,11 +23,11 @@
     <string name="cab_delete">Einträge löschen</string>
     <string name="cab_change">Eintrag ändern</string>
     <string name="cab_checked_string">ausgewählt</string>
-    <string name="currentList_noproductinlist_tv">Es sind noch keine Einträge in Ihrer Einkaufsliste vorhanden. Fügen Sie ein Produkt hinzu, indem Sie oben den Namen und die Kategorie des Produkts eintragen und dann auf das + Symbol klicken. </string>
+    <string name="currentList_noproductinlist_tv">HINWEIS: \nEs sind noch keine Einträge in Ihrer Einkaufsliste vorhanden. Fügen Sie ein Produkt hinzu, indem Sie oben den Namen und die Kategorie des Produkts eintragen und dann auf das + Symbol klicken. </string>
     <string name="currentList_howtouse_tv">HINWEIS: \nWenn Sie kurz auf ein Produkt in Ihrer Liste klicken, markieren Sie es als erledigt. Klicken Sie lang auf ein Produkt, so können Sie es bearbeiten. Wenn Sie auf den Knopf \"Einkauf abschliessen\" klicken, speichern Sie den Einkauf in ihre \"Erledigten Einkäufe\" und beginnen eine neue Einkaufsliste. </string>
 
     <!--Historic List Fragment-->
-    <string name="top_hint_no_shopping_trips">Sie haben noch keine Einkäufe abgeschlossen.\nUm einen Einkauf abzuschliessen, markieren Sie in Ihrer aktuellen Einkaufsliste Produkte als erledigt und drücken Sie den Knopf \"Einkauf abschliessen\"</string>
+    <string name="top_hint_no_shopping_trips">HINWEIS: \nSie haben noch keine Einkäufe abgeschlossen.\nUm einen Einkauf abzuschliessen, markieren Sie in Ihrer aktuellen Einkaufsliste Produkte als erledigt und drücken Sie den Knopf \"Einkauf abschliessen\"</string>
     <string name="header_title_date">Einkauf vom %1$s</string>
 
     <!--Buttons-->

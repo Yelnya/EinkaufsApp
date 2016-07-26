@@ -29,6 +29,7 @@
             android:visibility="gone" />
 
         <TextView
+            android:id="@+id/currentlist_how_tu_use_tv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingBottom="@dimen/padding_bigger"

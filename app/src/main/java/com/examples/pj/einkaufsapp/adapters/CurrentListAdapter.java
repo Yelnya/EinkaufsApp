@@ -122,14 +122,12 @@ public class CurrentListAdapter extends BaseAdapter<CurrentListAdapter.Arraylist
         } else {
             BottomElementViewHolder viewHolder = (BottomElementViewHolder) holder;
 
-            if (currentList != null) {
-                if (!currentList.isEmpty()) {
-                    viewHolder.noProductInListTv.setVisibility(View.VISIBLE);
-                } else {
-                    viewHolder.noProductInListTv.setVisibility(View.GONE);
-                }
+            if (currentList == null || currentList.isEmpty()) {
+                viewHolder.noProductInListTv.setVisibility(View.VISIBLE);
+                viewHolder.howToUseTv.setVisibility(View.GONE);
             } else {
                 viewHolder.noProductInListTv.setVisibility(View.GONE);
+                viewHolder.howToUseTv.setVisibility(View.VISIBLE);
             }
         }
     }
@@ -306,6 +304,8 @@ public class CurrentListAdapter extends BaseAdapter<CurrentListAdapter.Arraylist
 
         @Bind(R.id.currentlist_noproductinlist_tv)
         TextView noProductInListTv;
+        @Bind(R.id.currentlist_how_tu_use_tv)
+        TextView howToUseTv;
 
         /**
          * Constructor

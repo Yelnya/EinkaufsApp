@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.Bind;
+import butterknife.OnClick;
 
 /**
  * Class as Container for Test Information
@@ -188,6 +189,8 @@ public class HistoricListsFragment extends BaseFragment {
                 removeItemFromSelectedList(productItem); //remove deselected product if it is in list
             }
 
+            //TODO: Output delete -> AlertDialog for Click on ShoppingCartIcon, then transfer of products of selected List into CurrentList
+
             //Output
             for (ProductItem product : selectedProductItemsList) {
                 System.out.println("Item in selectedProductItemsList: " + product.getProduct());
@@ -207,6 +210,16 @@ public class HistoricListsFragment extends BaseFragment {
             return false;
         }
     };
+
+    @OnClick(R.id.toolbarArrowDownIv)
+    public void onArrowDownClick() {
+        expandAll();
+    }
+
+    @OnClick(R.id.toolbarArrowUpIv)
+    public void onArrowUpClick() {
+        collapseAll();
+    }
 
     //================================================================================
     // Other Methods

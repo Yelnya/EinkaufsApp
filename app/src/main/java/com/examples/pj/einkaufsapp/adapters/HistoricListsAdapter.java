@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -34,8 +35,14 @@ public class HistoricListsAdapter extends BaseExpandableListAdapter {
         }
         final TextView heading = (TextView) view.findViewById(R.id.header_title);
         final LinearLayout headingLl = (LinearLayout) view.findViewById(R.id.historiclist_header_container);
-        heading.setText("Einkauf vom " + shoppingTrip.getDateCompleted().trim());
+        final TextView headingBoughtItems = (TextView) view.findViewById(R.id.header_bought_items);
+        final ImageView headingIv = (ImageView) view.findViewById(R.id.btn_expand_toggle);
 
+        heading.setText(shoppingTrip.getNiceDateCompleted().trim());
+        heading.setTextColor(ContextCompat.getColor(context, shoppingTrip.isExpanded() ? R.color.dark_purple : R.color.grey_dark));
+        headingBoughtItems.setText(context.getResources().getString(R.string.header_bought_items, getChildrenCount(groupPosition)));
+        headingBoughtItems.setTextColor(ContextCompat.getColor(context, shoppingTrip.isExpanded() ? R.color.dark_purple : R.color.grey_dark));
+        headingIv.setImageResource(shoppingTrip.isExpanded() ? R.drawable.circle_minus : R.drawable.circle_plus);
         headingLl.setBackgroundColor(ContextCompat.getColor(context, shoppingTrip.isExpanded() ? R.color.light_purple : R.color.grey));
         return view;
     }

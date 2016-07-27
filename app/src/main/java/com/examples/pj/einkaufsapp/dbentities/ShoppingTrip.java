@@ -1,5 +1,6 @@
 package com.examples.pj.einkaufsapp.dbentities;
 
+import com.examples.pj.einkaufsapp.util.DateUtils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -23,6 +24,10 @@ public class ShoppingTrip {
 
     public String getDateCompleted() {
         return dateCompleted;
+    }
+
+    public String getNiceDateCompleted() {
+        return DateUtils.stringDateToHourMinuteString(dateCompleted);
     }
 
     public void setDateCompleted(String dateCompleted) {

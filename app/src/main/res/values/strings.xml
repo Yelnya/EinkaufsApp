@@ -29,6 +29,7 @@
     <!--Historic List Fragment-->
     <string name="top_hint_no_shopping_trips">HINWEIS: \nSie haben noch keine Einkäufe abgeschlossen.\nUm einen Einkauf abzuschliessen, markieren Sie in Ihrer aktuellen Einkaufsliste Produkte als erledigt und drücken Sie den Knopf \"Einkauf abschliessen\"</string>
     <string name="header_title_date">Einkauf vom %1$s</string>
+    <string name="header_bought_items">(%1$d Artikel)</string>
 
     <!--Buttons-->
     <string name="currentList_finish_currentlist_btn">Einkauf abschliessen</string>

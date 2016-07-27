@@ -29,7 +29,7 @@ public class HistoricListsFragment extends BaseFragment {
 
     private boolean showEditAndDeleteIconInToolbar;
     private String toolbarTitle = "";
-    private static final String TOOLBAR_TITLE_FRAGMENT = "Erledigte Einkäufe";
+    private static final String TOOLBAR_TITLE_FRAGMENT = "Einkauf vom ...";
 
     @Bind(R.id.expandable_list)
     ExpandableListView expandableListView;

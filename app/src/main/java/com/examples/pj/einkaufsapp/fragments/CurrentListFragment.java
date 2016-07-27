@@ -337,7 +337,7 @@ public class CurrentListFragment extends BaseFragment implements ChangeToolbarIn
 
         if (!existingProductFound) {    //if no duplicate found, create new productItem and store in currentList and generalList
             long currentProductID = dataSource.getHighestID() + 1; //new ID: get highest ID in DB and +1
-            currentProductObject = new ProductItem(currentProductID, currentProductName, selectedCategory, 0, false, false, true); //create new object
+            currentProductObject = new ProductItem(currentProductID, currentProductName, selectedCategory, 0, false, false, false); //create new object
             generalProductItemList.add(currentProductObject);   //update generalList
             currentList.add(currentProductObject);  //update currentList
             currentList = sortListCategoryAndAlphabetical(currentList);

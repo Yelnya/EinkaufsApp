@@ -1,10 +1,12 @@
 package com.examples.pj.einkaufsapp.adapters;
 
 import android.content.Context;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.examples.pj.einkaufsapp.R;
@@ -31,7 +33,10 @@ public class HistoricListsAdapter extends BaseExpandableListAdapter {
             view = inf.inflate(R.layout.list_header, parent, false);
         }
         final TextView heading = (TextView) view.findViewById(R.id.header_title);
+        final LinearLayout headingLl = (LinearLayout) view.findViewById(R.id.historiclist_header_container);
         heading.setText("Einkauf vom " + shoppingTrip.getDateCompleted().trim());
+
+        headingLl.setBackgroundColor(ContextCompat.getColor(context, shoppingTrip.isExpanded() ? R.color.light_purple : R.color.grey));
         return view;
     }
 
@@ -42,14 +47,17 @@ public class HistoricListsAdapter extends BaseExpandableListAdapter {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             view = inflater.inflate(R.layout.list_child, parent, false);
         }
-        TextView childItem = (TextView) view.findViewById(R.id.list_child_text_tv);
+        final TextView childItem = (TextView) view.findViewById(R.id.list_child_text_tv);
+        final LinearLayout childItemLl = (LinearLayout) view.findViewById(R.id.list_child_container);
         childItem.setText(productItem.getProduct().trim());
+
+        childItemLl.setBackgroundColor(ContextCompat.getColor(context, productItem.isCurrentClicked() ? R.color.cheese : R.color.grey));
         return view;
     }
 
     @Override
     public Object getChild(int groupPosition, int childPosition) {
-        List<ProductItem> productItemList = historicShoppingTrips.get(groupPosition).getBoughtProducts();
+        List<ProductItem> productItemList = historicShoppingTrips.get(groupPosition).getBoughtProductsList();
         return productItemList.get(childPosition);
     }
 
@@ -60,7 +68,7 @@ public class HistoricListsAdapter extends BaseExpandableListAdapter {
 
     @Override
     public int getChildrenCount(int groupPosition) {
-        List<ProductItem> productItemList = historicShoppingTrips.get(groupPosition).getBoughtProducts();
+        List<ProductItem> productItemList = historicShoppingTrips.get(groupPosition).getBoughtProductsList();
         return productItemList.size();
     }
 

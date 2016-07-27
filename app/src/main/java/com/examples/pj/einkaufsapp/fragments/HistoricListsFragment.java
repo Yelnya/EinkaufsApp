@@ -96,7 +96,6 @@ public class HistoricListsFragment extends BaseFragment {
 
     @Override
     protected void onCleanUp() {
-
     }
 
     //================================================================================
@@ -158,8 +157,13 @@ public class HistoricListsFragment extends BaseFragment {
     private OnChildClickListener myListItemClicked = new OnChildClickListener() {
         public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
             ShoppingTrip shoppingTrip = historicShoppingTripsList.get(groupPosition); //get the group header
-            ProductItem productItem =shoppingTrip.getBoughtProducts().get(childPosition);//get the child info
+            List<ProductItem> productItemList = historicShoppingTripsList.get(groupPosition).getBoughtProductsList();   //get children list of group header
+            ProductItem productItem = productItemList.get(childPosition);//get the child info
             Toast.makeText(context, "Click on " + productItem.getProduct(), Toast.LENGTH_LONG).show();
+
+            productItem.setCurrentClicked(!productItem.isCurrentClicked());
+            shoppingTrip.setBoughtProductsList(productItemList);    //refresh product list of shoppingtrip
+            listAdapter.notifyDataSetChanged();
             return false;
         }
     };
@@ -169,6 +173,9 @@ public class HistoricListsFragment extends BaseFragment {
         public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id) {
             ShoppingTrip shoppingTrip = historicShoppingTripsList.get(groupPosition); //get the group header
             Toast.makeText(context, "Click on Einkauf: " + shoppingTrip.getDateCompleted(), Toast.LENGTH_LONG).show();
+
+            shoppingTrip.setExpanded(!shoppingTrip.isExpanded());
+            listAdapter.notifyDataSetChanged();
             return false;
         }
     };

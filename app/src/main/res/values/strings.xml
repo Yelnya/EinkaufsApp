@@ -15,6 +15,9 @@
     <!--Toolbar-->
     <string name="toolbar_edit_iv_cd">Icon Edit</string>
     <string name="toolbar_delete_iv_cd">Icon Delete</string>
+    <string name="toolbar_shopping_cart_iv_cd">Icon Shopping Cart</string>
+    <string name="toolbar_arrow_up_iv_cd">Icon Pfeil nach oben</string>
+    <string name="toolbar_arrow_down_iv_cd">Icon Pfeil nach unten</string>
 
     <!--Current List Fragment-->
     <string name="editText_hint_product">Produktname</string>

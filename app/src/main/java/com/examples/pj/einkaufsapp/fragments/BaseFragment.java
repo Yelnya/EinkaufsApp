@@ -114,6 +114,15 @@ public abstract class BaseFragment extends Fragment {
     protected void setToolbarEditAndDeleteIcon(boolean isVisible) {
     }
 
+    protected void setToolbarShoppingCartIcon(boolean isVisible) {
+    }
+
+    protected void setToolbarArrowUpIcon(boolean isVisible) {
+    }
+
+    protected void setToolbarArrowDownIcon(boolean isVisible) {
+    }
+
     /** indicator for possibility to move one step back or not
      *
      * @return true or false

@@ -11,6 +11,7 @@ public class AboutFragment extends BaseFragment {
     public static final String LOG_TAG = AboutFragment.class.getSimpleName();
 
     private boolean showEditAndDeleteIconInToolbar;
+    private boolean showShoppingCartIconInToolbar;
     private static final String TOOLBAR_TITLE = "Über";
 
     //================================================================================
@@ -47,7 +48,7 @@ public class AboutFragment extends BaseFragment {
 
     @Override
     protected void setToolbar() {
-        getAttachedActivity().setToolbar(toolbar, true, TOOLBAR_TITLE, showEditAndDeleteIconInToolbar); //Icon displayed, Titel of Toolbar
+        getAttachedActivity().setToolbar(toolbar, true, TOOLBAR_TITLE, showEditAndDeleteIconInToolbar, showShoppingCartIconInToolbar); //Icon displayed, Titel of Toolbar
     }
 
     @Override
@@ -73,6 +74,7 @@ public class AboutFragment extends BaseFragment {
     public void onResume() {
         super.onResume();
 
+        showShoppingCartIconInToolbar = false;
         showEditAndDeleteIconInToolbar = false;
         setToolbarEditAndDeleteIcon(showEditAndDeleteIconInToolbar);
     }

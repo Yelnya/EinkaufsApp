@@ -16,5 +16,4 @@ public interface ToolbarIconClickInterface {
      * @param clicked
      */
     void toolbarDeleteIconClicked(boolean clicked);
-
 }

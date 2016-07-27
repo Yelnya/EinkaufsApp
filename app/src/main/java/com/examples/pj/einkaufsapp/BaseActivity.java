@@ -41,6 +41,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Navigati
     private String startFragmentTag;
     ImageView toolbarEditIv;
     ImageView toolbarDeleteIv;
+    ImageView toolbarShoppingCart;
 
     //================================================================================
     // Fragment Instantiation
@@ -279,6 +280,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Navigati
                 getSupportActionBar().setDisplayShowTitleEnabled(false);
                 toolbarEditIv.setVisibility(View.INVISIBLE);
                 toolbarDeleteIv.setVisibility(View.INVISIBLE);
+                toolbarShoppingCart.setVisibility(View.INVISIBLE);
             }
         }
     }
@@ -291,7 +293,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Navigati
      * @param title                          of toolbar
      * @param showEditAndDeleteIconInToolbar icons edit and trashbin in toolbar
      */
-    public void setToolbar(Toolbar toolbar, boolean setDisplayHomeAsUp, String title, boolean showEditAndDeleteIconInToolbar) {
+    public void setToolbar(Toolbar toolbar, boolean setDisplayHomeAsUp, String title, boolean showEditAndDeleteIconInToolbar, boolean showShoppingCartIconInToolbar) {
         if (toolbar != null) {
             setSupportActionBar(toolbar);
             if (getSupportActionBar() != null) {

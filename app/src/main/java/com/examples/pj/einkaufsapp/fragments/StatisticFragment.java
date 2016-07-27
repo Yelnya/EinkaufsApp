@@ -38,6 +38,7 @@ public class StatisticFragment extends BaseFragment {
     private ListView mProductItemListView;
     private String selectedCategory;
     private boolean showEditAndDeleteIconInToolbar;
+    private boolean showShoppingCartIconInToolbar;
     //================================================================================
     // Fragment Instantiation
     //================================================================================
@@ -72,7 +73,7 @@ public class StatisticFragment extends BaseFragment {
 
     @Override
     protected void setToolbar() {
-        getAttachedActivity().setToolbar(toolbar, true, TOOLBAR_TITLE, showEditAndDeleteIconInToolbar); //Icon displayed, Titel of Toolbar
+        getAttachedActivity().setToolbar(toolbar, true, TOOLBAR_TITLE, showEditAndDeleteIconInToolbar, showShoppingCartIconInToolbar); //Icon displayed, Titel of Toolbar
     }
 
     @Override
@@ -117,6 +118,7 @@ public class StatisticFragment extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
+        showShoppingCartIconInToolbar = false;
         showEditAndDeleteIconInToolbar = false;
         setToolbarEditAndDeleteIcon(showEditAndDeleteIconInToolbar);
         Log.d(LOG_TAG, "Die Datenquelle wird geöffnet.");

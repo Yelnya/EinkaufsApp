@@ -9,5 +9,4 @@ public interface ChangeToolbarInterface {
      * Boolean method if edit and delete icon should be shown
      */
     void showEditAndDeleteIcon(boolean show);
-
 }

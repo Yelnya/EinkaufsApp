@@ -27,23 +27,28 @@ import butterknife.Bind;
 public class HistoricListsFragment extends BaseFragment {
     public static final String LOG_TAG = HistoricListsFragment.class.getSimpleName();
 
+    private boolean showShoppingCartIconInToolbar;
     private boolean showEditAndDeleteIconInToolbar;
     private String toolbarTitle = "";
     private static final String TOOLBAR_TITLE_FRAGMENT = "Einkauf vom ...";
 
     @Bind(R.id.expandable_list)
     ExpandableListView expandableListView;
-    @Bind(R.id.toolbarDeleteIv)
-    ImageView toolbarDeleteIv;
-    @Bind(R.id.toolbarEditIv)
-    ImageView toolbarEditIv;
+    @Bind(R.id.toolbarShoppingCartIv)
+    ImageView toolbarShoppingCartIv;
+    @Bind(R.id.toolbarArrowUpIv)
+    ImageView toolbarArrowUpIv;
+    @Bind(R.id.toolbarArrowDownIv)
+    ImageView toolbarArrowDownIv;
     @Bind(R.id.historiclist_top_hint)
     TextView topHint;
 
-    Context context;
-    SharedPreferencesManager sharedPreferencesManager;
+    private Context context;
+    private SharedPreferencesManager sharedPreferencesManager;
     private List<ShoppingTrip> historicShoppingTripsList;
     private HistoricListsAdapter listAdapter;
+    private List<ProductItem> selectedProductItemsList;
+    private int noSelected;
 
     //================================================================================
     // Fragment Instantiation
@@ -79,13 +84,24 @@ public class HistoricListsFragment extends BaseFragment {
 
     @Override
     protected void setToolbar() {
-        getAttachedActivity().setToolbar(toolbar, true, toolbarTitle, showEditAndDeleteIconInToolbar); //Icon displayed, Titel of Toolbar
+        getAttachedActivity().setToolbar(toolbar, true, toolbarTitle, showEditAndDeleteIconInToolbar, showShoppingCartIconInToolbar); //Icon displayed, Titel of Toolbar
     }
 
     @Override
-    protected void setToolbarEditAndDeleteIcon(boolean showEditAndDeleteIconInToolbar) {
-        toolbarEditIv.setVisibility(showEditAndDeleteIconInToolbar ? View.VISIBLE : View.INVISIBLE);
-        toolbarDeleteIv.setVisibility(showEditAndDeleteIconInToolbar ? View.VISIBLE : View.INVISIBLE);
+    protected void setToolbarShoppingCartIcon(boolean showShoppingCartIconInToolbar) {
+        toolbarShoppingCartIv.setVisibility(showShoppingCartIconInToolbar ? View.VISIBLE : View.GONE);
+        toolbarTv.setText(toolbarTitle);
+    }
+
+    @Override
+    protected void setToolbarArrowUpIcon(boolean showArrowUpIconInToolbar) {
+        toolbarArrowUpIv.setVisibility(showArrowUpIconInToolbar ? View.VISIBLE : View.GONE);
+        toolbarTv.setText(toolbarTitle);
+    }
+
+    @Override
+    protected void setToolbarArrowDownIcon(boolean showArrowDownIconInToolbar) {
+        toolbarArrowDownIv.setVisibility(showArrowDownIconInToolbar ? View.VISIBLE : View.GONE);
         toolbarTv.setText(toolbarTitle);
     }
 
@@ -107,6 +123,12 @@ public class HistoricListsFragment extends BaseFragment {
         super.onActivityCreated(savedInstanceState);
 
         context = super.getActivity();
+        noSelected = 0;
+
+        showEditAndDeleteIconInToolbar = false;
+        showShoppingCartIconInToolbar = false;
+        setToolbarArrowUpIcon(true);
+        setToolbarArrowDownIcon(true);
 
         if (sharedPreferencesManager == null) {
             sharedPreferencesManager = SharedPreferencesManager.initSharedPreferences((Activity) context);
@@ -120,14 +142,16 @@ public class HistoricListsFragment extends BaseFragment {
         collapseAll(); //collapse all Groups
         expandableListView.setOnChildClickListener(myListItemClicked); //listener for child row click
         expandableListView.setOnGroupClickListener(myListGroupClicked); //listener for group heading click
+
+
     }
 
     @Override
     public void onResume() {
         super.onResume();
         toolbarTitle = TOOLBAR_TITLE_FRAGMENT;
-        showEditAndDeleteIconInToolbar = false;
         setToolbarEditAndDeleteIcon(showEditAndDeleteIconInToolbar);
+        setToolbarShoppingCartIcon(showShoppingCartIconInToolbar);
 
         if (historicShoppingTripsList == null || historicShoppingTripsList.isEmpty()) {
             topHint.setVisibility(View.VISIBLE);
@@ -135,7 +159,58 @@ public class HistoricListsFragment extends BaseFragment {
         } else {
             topHint.setVisibility(View.GONE);
         }
+
+        if (selectedProductItemsList == null) {
+            selectedProductItemsList = new ArrayList<>();
+        }
     }
+
+    //================================================================================
+    // OnClickListeners
+    //================================================================================
+
+    //child click listener
+    private OnChildClickListener myListItemClicked = new OnChildClickListener() {
+        public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
+            ShoppingTrip shoppingTrip = historicShoppingTripsList.get(groupPosition); //get the group header
+            List<ProductItem> productItemList = historicShoppingTripsList.get(groupPosition).getBoughtProductsList();   //get children list of group header
+            ProductItem productItem = productItemList.get(childPosition);//get the child info
+            Toast.makeText(context, "Click on " + productItem.getProduct(), Toast.LENGTH_LONG).show();
+
+            productItem.setCurrentClicked(!productItem.isCurrentClicked());
+            shoppingTrip.setBoughtProductsList(productItemList);    //refresh product list of shoppingtrip
+            listAdapter.notifyDataSetChanged();
+
+            //add product to Selected List if not already present
+            if (productItem.isCurrentClicked()) {
+                addItemToSelectedList(productItem);
+            } else {
+                removeItemFromSelectedList(productItem); //remove deselected product if it is in list
+            }
+
+            //Output
+            for (ProductItem product : selectedProductItemsList) {
+                System.out.println("Item in selectedProductItemsList: " + product.getProduct());
+            }
+            return false;
+        }
+    };
+
+    //group click listener
+    private ExpandableListView.OnGroupClickListener myListGroupClicked = new ExpandableListView.OnGroupClickListener() {
+        public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id) {
+            ShoppingTrip shoppingTrip = historicShoppingTripsList.get(groupPosition); //get the group header
+            Toast.makeText(context, "Click on Einkauf: " + shoppingTrip.getDateCompleted(), Toast.LENGTH_LONG).show();
+
+            shoppingTrip.setExpanded(!shoppingTrip.isExpanded());
+            listAdapter.notifyDataSetChanged();
+            return false;
+        }
+    };
+
+    //================================================================================
+    // Other Methods
+    //================================================================================
 
     //method to expand all groups
     private void expandAll() {
@@ -153,30 +228,43 @@ public class HistoricListsFragment extends BaseFragment {
         }
     }
 
-    //child click listener
-    private OnChildClickListener myListItemClicked = new OnChildClickListener() {
-        public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
-            ShoppingTrip shoppingTrip = historicShoppingTripsList.get(groupPosition); //get the group header
-            List<ProductItem> productItemList = historicShoppingTripsList.get(groupPosition).getBoughtProductsList();   //get children list of group header
-            ProductItem productItem = productItemList.get(childPosition);//get the child info
-            Toast.makeText(context, "Click on " + productItem.getProduct(), Toast.LENGTH_LONG).show();
-
-            productItem.setCurrentClicked(!productItem.isCurrentClicked());
-            shoppingTrip.setBoughtProductsList(productItemList);    //refresh product list of shoppingtrip
-            listAdapter.notifyDataSetChanged();
-            return false;
+    private void addItemToSelectedList(ProductItem productItem) {
+        boolean alreadyInList = false;
+        for (ProductItem product : selectedProductItemsList) {
+            if (productItem.getId() == product.getId()) {
+                alreadyInList = true;
+                break;
+            }
         }
-    };
 
-    //group click listener
-    private ExpandableListView.OnGroupClickListener myListGroupClicked = new ExpandableListView.OnGroupClickListener() {
-        public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id) {
-            ShoppingTrip shoppingTrip = historicShoppingTripsList.get(groupPosition); //get the group header
-            Toast.makeText(context, "Click on Einkauf: " + shoppingTrip.getDateCompleted(), Toast.LENGTH_LONG).show();
-
-            shoppingTrip.setExpanded(!shoppingTrip.isExpanded());
-            listAdapter.notifyDataSetChanged();
-            return false;
+        System.out.println("No. of Selected Items (before): " + noSelected);
+        if (!alreadyInList) {
+            selectedProductItemsList.add(productItem);
+            noSelected++;
         }
-    };
+        System.out.println("No. of Selected Items (after): " + noSelected);
+        toolbarShoppingCartIv.setVisibility(noSelected == 0 ? View.GONE : View.VISIBLE);
+        showShoppingCartIconInToolbar = !(noSelected == 0);
+    }
+
+    private void removeItemFromSelectedList(ProductItem productItem) {
+        List<ProductItem> copySelectedProductItemsList = new ArrayList<>();
+
+        for (ProductItem product : selectedProductItemsList) {
+            if (productItem.getId() != product.getId()) {
+                copySelectedProductItemsList.add(product);
+            }
+        }
+        System.out.println("No. of Selected Items (before): " + noSelected);
+
+        if (selectedProductItemsList.size() > copySelectedProductItemsList.size()) {
+            noSelected--;
+        }
+        selectedProductItemsList.clear();
+        selectedProductItemsList.addAll(copySelectedProductItemsList);
+
+        System.out.println("No. of Selected Items (after): " + noSelected);
+        toolbarShoppingCartIv.setVisibility(noSelected == 0 ? View.GONE : View.VISIBLE);
+        showShoppingCartIconInToolbar = !(noSelected == 0);
+    }
 }

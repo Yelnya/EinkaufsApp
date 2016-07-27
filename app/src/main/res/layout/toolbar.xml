@@ -25,6 +25,34 @@
             android:textStyle="bold"/>
 
         <ImageView
+            android:id="@+id/toolbarShoppingCartIv"
+            android:layout_width="@dimen/toolbar_iv_width"
+            android:layout_height="match_parent"
+            android:layout_marginRight="@dimen/padding_smaller"
+            android:contentDescription="@string/toolbar_shopping_cart_iv_cd"
+            android:src="@drawable/ic_shopping_cart_white_24dp"
+            android:visibility="gone"/>
+
+        <ImageView
+            android:id="@+id/toolbarArrowUpIv"
+            android:layout_width="@dimen/toolbar_iv_width"
+            android:layout_height="match_parent"
+            android:layout_marginRight="@dimen/padding_smaller"
+            android:contentDescription="@string/toolbar_arrow_up_iv_cd"
+            android:src="@drawable/ic_arrow_upward_white_24dp"
+            android:visibility="gone"/>
+
+        <ImageView
+            android:id="@+id/toolbarArrowDownIv"
+            android:layout_width="@dimen/toolbar_iv_width"
+            android:layout_height="match_parent"
+            android:layout_marginRight="@dimen/padding_smaller"
+            android:contentDescription="@string/toolbar_arrow_down_iv_cd"
+            android:src="@drawable/ic_arrow_downward_white_24dp"
+            android:visibility="gone"/>
+
+
+        <ImageView
             android:id="@+id/toolbarEditIv"
             android:layout_width="@dimen/toolbar_iv_width"
             android:layout_height="match_parent"

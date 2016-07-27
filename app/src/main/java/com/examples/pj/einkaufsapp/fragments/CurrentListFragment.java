@@ -63,6 +63,7 @@ public class CurrentListFragment extends BaseFragment implements ChangeToolbarIn
     private static final String TOOLBAR_TITLE_FRAGMENT = "Aktuelle Einkaufsliste";
     private static final String TOOLBAR_TITLE_EDIT = "Löschen/Ändern";
     private boolean showEditAndDeleteIconInToolbar;
+    private boolean showShoppingCartIconInToolbar;
 
     //================================================================================
     // Fragment Instantiation
@@ -98,7 +99,7 @@ public class CurrentListFragment extends BaseFragment implements ChangeToolbarIn
 
     @Override
     protected void setToolbar() {
-        getAttachedActivity().setToolbar(toolbar, true, toolbarTitle, showEditAndDeleteIconInToolbar); //Icon displayed, Titel of Toolbar
+        getAttachedActivity().setToolbar(toolbar, true, toolbarTitle, showEditAndDeleteIconInToolbar, showShoppingCartIconInToolbar); //Icon displayed, Titel of Toolbar
     }
 
     @Override
@@ -126,6 +127,7 @@ public class CurrentListFragment extends BaseFragment implements ChangeToolbarIn
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        showShoppingCartIconInToolbar = false;
         showEditAndDeleteIconInToolbar = false;
 
         context = getActivity();
@@ -367,7 +369,6 @@ public class CurrentListFragment extends BaseFragment implements ChangeToolbarIn
         setToolbarEditAndDeleteIcon(show);
         setToolbar();
     }
-
     //---------------------------------------------------------------
     // ALERT DIALOGS
     //---------------------------------------------------------------

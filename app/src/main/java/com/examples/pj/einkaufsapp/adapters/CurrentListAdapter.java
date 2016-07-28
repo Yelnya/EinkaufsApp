@@ -175,11 +175,6 @@ public class CurrentListAdapter extends BaseAdapter<CurrentListAdapter.Arraylist
 
         Collections.sort(listToSort, new StringUtils.CurrentListAlphabeticalComparator());
         Collections.sort(listToSort, new StringUtils.CurrentListCategoryComparator());
-
-        Log.d(LOG_TAG, "----------------- SORTED LIST ------------------");
-        for (ProductItem product : listToSort) {
-            Log.d(LOG_TAG, "Sorted: " + product.toNiceString());
-        }
         return listToSort;
     }
 
@@ -190,14 +185,26 @@ public class CurrentListAdapter extends BaseAdapter<CurrentListAdapter.Arraylist
      */
 
     public void changeProductChecked(ProductItem item) {
-        ProductItem updatedItem = dataSource.updateProductItem(item.getId(), item.getProduct(), item.getCategory(), item.getBought(), !item.isDone(), item.isFavourite());
+
+        ProductItem itemFromDB = dataSource.getProductItemFromDB(item.getId());
+        dataSource.updateProductItem(item.getId(), item.getProduct(), item.getCategory(), itemFromDB.getBought(), !item.isDone(), item.isFavourite());
+        ProductItem updatedItem = dataSource.getProductItemFromDB(item.getId());
         currentList.remove(item);
         currentList.add(updatedItem);
         currentList = sortListCategoryAndAlphabetical(currentList);
         sharedPreferencesManager.saveCurrentShoppingListToLocalStore(currentList);
-        Log.d(LOG_TAG, "-----------------------Geänderter Eintrag:-------------------------------");
-        Log.d(LOG_TAG, "Eintrag: " + updatedItem.toString());
         notifyDataSetChanged(); //refresh List View
+    }
+
+    public void changeProductItemDataSetEnhanceBoughtPerOne(ProductItem productItem) {
+        //get item from DB with ID
+        ProductItem productFromDB = dataSource.getProductItemFromDB(productItem.getId());
+        Log.d(LOG_TAG, "VORHER: Produkt: " + productFromDB.getProduct() + " wurde " + productFromDB.getBought() + "x gekauft.");
+        //change bought value +1
+        int bought = productFromDB.getBought() + 1;
+        dataSource.updateProductItem(productItem.getId(), productItem.getProduct(), productItem.getCategory(), bought, false, productItem.isFavourite());
+        ProductItem productFromDBafter = dataSource.getProductItemFromDB(productItem.getId());
+        Log.d(LOG_TAG, "NACHHER: Produkt: " + productFromDBafter.getProduct() + " wurde " + productFromDBafter.getBought() + "x gekauft.");
     }
 
     /**
@@ -349,6 +356,11 @@ public class CurrentListAdapter extends BaseAdapter<CurrentListAdapter.Arraylist
                                 if (product.isDone()) {
                                     product.setDone(false);
                                     doneProductItemList.add(product);
+                                    ProductItem productItem = dataSource.getProductItemFromDB(product.getId()); //get product from DB
+                                    product.setBought(productItem.getBought());
+                                    product.setCurrentClicked(false);
+                                    product.setDone(false);
+                                    changeProductItemDataSetEnhanceBoughtPerOne(product);   //write bought +1 in DB
                                 } else {
                                     notDoneItemsList.add(product);
                                 }
@@ -356,10 +368,6 @@ public class CurrentListAdapter extends BaseAdapter<CurrentListAdapter.Arraylist
                             //notDoneItemsList copy to currentList
                             currentList.clear();
                             currentList.addAll(notDoneItemsList);
-                            Log.d(LOG_TAG, "-------------- REFRESHED CURRENT LIST ---------------");
-                            for (ProductItem productItem : currentList) {
-                                Log.d(LOG_TAG, "ID: " + productItem.getId() + ", Produkt: " + productItem.getProduct() + ", Done: " + productItem.isDone());
-                            }
                             //store current list without done to SP
                             sharedPreferencesManager.saveCurrentShoppingListToLocalStore(currentList);
                             //create Shopping Trip object, add current date
@@ -377,6 +385,7 @@ public class CurrentListAdapter extends BaseAdapter<CurrentListAdapter.Arraylist
                             }
                             shoppingTripList.add(shoppingTrip);
                             sharedPreferencesManager.saveHistoricShoppingTripsListToLocalStore(shoppingTripList);
+
                             Toast.makeText(context, context.getResources().getText(R.string.toast_shopping_trip_closed), Toast.LENGTH_SHORT).show();
                             notifyDataSetChanged();
                             dialog.dismiss();

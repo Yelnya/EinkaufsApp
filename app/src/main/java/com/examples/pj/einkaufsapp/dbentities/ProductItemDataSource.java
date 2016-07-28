@@ -160,6 +160,20 @@ public class ProductItemDataSource {
         return productItem.getBought();
     }
 
+    public ProductItem getProductItemFromDB(long id) {
+        Cursor cursor = database.query(ProductItemDbHelper.TABLE_SHOPPING_LIST,
+                columns, ProductItemDbHelper.COLUMN_ID + "=" + id,
+                null, null, null, null);
+
+        cursor.moveToFirst();
+        ProductItem productItem = cursorToProductItem(cursor);
+        cursor.close();
+
+        Log.d(LOG_TAG, "getproductItemFromDB(): ProductItem in Database: " + productItem.getProduct() + " wurde " + productItem.getBought() + "x gekauft.");
+
+        return productItem;
+    }
+
     /**
      * update existing db entry referring to id, return edited object as ProductItem object
      *
@@ -171,15 +185,14 @@ public class ProductItemDataSource {
      * @param newFavourite
      * @return productItem object
      */
-    public ProductItem updateProductItem(long id, String newProduct, String newCategory, int bought, boolean newChecked, boolean newFavourite) {
+    public void updateProductItem(long id, String newProduct, String newCategory, int bought, boolean newChecked, boolean newFavourite) {
         int intValueChecked = newChecked ? 1 : 0;
         int intValueFavourite = newFavourite ? 1 : 0;
-        int newBought = getTimesBought(id) + bought;
 
         ContentValues values = new ContentValues();
         values.put(ProductItemDbHelper.COLUMN_PRODUCT, newProduct);
         values.put(ProductItemDbHelper.COLUMN_CATEGORY, newCategory);
-        values.put(ProductItemDbHelper.COLUMN_BOUGHT, newBought);
+        values.put(ProductItemDbHelper.COLUMN_BOUGHT, bought);
         values.put(ProductItemDbHelper.COLUMN_CHECKED, intValueChecked);
         values.put(ProductItemDbHelper.COLUMN_FAVOURITE, intValueFavourite);
 
@@ -187,17 +200,6 @@ public class ProductItemDataSource {
                 values,
                 ProductItemDbHelper.COLUMN_ID + "=" + id,
                 null);
-
-        //return of edited value
-        Cursor cursor = database.query(ProductItemDbHelper.TABLE_SHOPPING_LIST,
-                columns, ProductItemDbHelper.COLUMN_ID + "=" + id,
-                null, null, null, null);
-
-        cursor.moveToFirst();
-        ProductItem productItem = cursorToProductItem(cursor);
-        cursor.close();
-
-        return productItem;
     }
 
     //get the highest id from database and return

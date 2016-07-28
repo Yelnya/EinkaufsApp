@@ -352,13 +352,14 @@ public class CurrentListFragment extends BaseFragment implements ChangeToolbarIn
 
     @Override
     public void showEditAndDeleteIcon(boolean show) {
-        // change Toolbar
-        Log.d(LOG_TAG, "Show Edit and Delete Icons in Toolbar: " + show);
         toolbarTitle = show ? TOOLBAR_TITLE_EDIT : TOOLBAR_TITLE_FRAGMENT;
         showEditAndDeleteIconInToolbar = show;
         setToolbarEditAndDeleteIcon(show);
         setToolbar();
     }
+
+
+
     //---------------------------------------------------------------
     // ALERT DIALOGS
     //---------------------------------------------------------------
@@ -442,13 +443,13 @@ public class CurrentListFragment extends BaseFragment implements ChangeToolbarIn
                         String product = editTextNewProduct.getText().toString();
                         int bought = 0;
                         // update SQLite Entry
-                        ProductItem updatedProductItem = dataSource.updateProductItem(itemToChange.getId(), product, selectedCategory, bought, itemToChange.isDone(), itemToChange.isFavourite());
+                        dataSource.updateProductItem(itemToChange.getId(), product, selectedCategory, bought, itemToChange.isDone(), itemToChange.isFavourite());
+                        ProductItem updatedProductItem = dataSource.getProductItemFromDB(itemToChange.getId());
                         currentList.remove(itemToChange); // update local list
                         currentList.add(updatedProductItem);
                         currentList = sortListCategoryAndAlphabetical(currentList);
                         sharedPreferencesManager.saveCurrentShoppingListToLocalStore(currentList); //store to SP
                         Log.d(LOG_TAG, "Alter Eintrag - ID: " + itemToChange.getId() + " Inhalt: " + itemToChange.toString());
-                        Log.d(LOG_TAG, "Neuer Eintrag - ID: " + updatedProductItem.getId() + " Inhalt: " + updatedProductItem.toString());
                         sharedPreferencesManager.saveCurrentShoppingListToLocalStore(currentList); //save changed list to SP
                         currentListAdapter.notifyDataSetChanged();  //refresh Adapter View
                         toolbarBackToNormal();

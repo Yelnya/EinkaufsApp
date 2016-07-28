@@ -2,8 +2,6 @@ package com.examples.pj.einkaufsapp.fragments;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Color;
-import android.graphics.Paint;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -205,14 +203,6 @@ public class StatisticFragment extends BaseFragment {
 
                 textView.setText(productItem.toNiceString());
 
-                // Hier prüfen, ob Eintrag abgehakt ist. Falls ja, Text durchstreichen
-                if (productItem.isDone()) {
-                    textView.setPaintFlags(textView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-                    textView.setTextColor(Color.rgb(175, 175, 175));
-                } else {
-                    textView.setPaintFlags(textView.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
-                    textView.setTextColor(Color.DKGRAY);
-                }
                 return view;
             }
         };
@@ -226,8 +216,7 @@ public class StatisticFragment extends BaseFragment {
 
                 // Hier den checked-Wert des ProductItem-Objekts umkehren, bspw. von true auf false
                 // Dann ListView neu zeichnen mit showAllListEntries()
-                ProductItem updatedProductItem = dataSource.updateProductItem(productItem.getId(), productItem.getProduct(), productItem.getCategory(), productItem.getBought(), !productItem.isDone(), productItem.isFavourite());
-                Log.d(LOG_TAG, "Eintrag: " + updatedProductItem.toString());
+                dataSource.updateProductItem(productItem.getId(), productItem.getProduct(), productItem.getCategory(), productItem.getBought(), !productItem.isDone(), productItem.isFavourite());
                 showAllListEntries();
             }
         });

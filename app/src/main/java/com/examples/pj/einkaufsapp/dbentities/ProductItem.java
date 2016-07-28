@@ -108,6 +108,6 @@ public class ProductItem {
      * @return String
      */
     public String toNiceString() {
-        return product + " (" + category + ")";
+        return product + " (gekauft: " + bought + "x)";
     }
 }

@@ -277,6 +277,7 @@ public class HistoricListsFragment extends BaseFragment {
                         }
                         listAdapter.notifyDataSetChanged();
                         setToolbarShoppingCartIcon(false);
+                        noSelected = 0;
 
                         dialog.dismiss();
                     }

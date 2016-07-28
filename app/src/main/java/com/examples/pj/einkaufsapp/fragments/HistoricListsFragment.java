@@ -1,7 +1,9 @@
 package com.examples.pj.einkaufsapp.fragments;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ExpandableListView;
@@ -15,8 +17,11 @@ import com.examples.pj.einkaufsapp.adapters.HistoricListsAdapter;
 import com.examples.pj.einkaufsapp.dbentities.ProductItem;
 import com.examples.pj.einkaufsapp.dbentities.ShoppingTrip;
 import com.examples.pj.einkaufsapp.util.SharedPreferencesManager;
+import com.examples.pj.einkaufsapp.util.StringUtils;
+import com.examples.pj.einkaufsapp.util.ViewUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import butterknife.Bind;
@@ -189,8 +194,6 @@ public class HistoricListsFragment extends BaseFragment {
                 removeItemFromSelectedList(productItem); //remove deselected product if it is in list
             }
 
-            //TODO: Output delete -> AlertDialog for Click on ShoppingCartIcon, then transfer of products of selected List into CurrentList
-
             //Output
             for (ProductItem product : selectedProductItemsList) {
                 System.out.println("Item in selectedProductItemsList: " + product.getProduct());
@@ -220,6 +223,74 @@ public class HistoricListsFragment extends BaseFragment {
     public void onArrowUpClick() {
         collapseAll();
     }
+
+    @OnClick(R.id.toolbarShoppingCartIv)
+    public void onShoppingCartClick() {
+        makeFinishAlertDialog();
+    }
+
+    //---------------------------------------------------------------
+    // ALERT DIALOGS
+    //---------------------------------------------------------------
+
+    private void makeFinishAlertDialog() {
+
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+        // set title and message
+        alertDialogBuilder.setTitle(context.getResources().getText(R.string.dialog_button_historic_finish_title))
+                .setMessage(context.getResources().getText(R.string.dialog_button_historic_finish_message));
+        //set yes no fields
+        alertDialogBuilder
+                .setCancelable(false)
+                .setPositiveButton(R.string.dialog_button_historic_add_positive, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+
+                        //transfer of selected List to currentList
+                        List<ProductItem> currentList = sharedPreferencesManager.loadCurrentShoppingListFromLocalStore();
+                        List<ProductItem> productsToAdd = new ArrayList<ProductItem>();
+
+                        for (ProductItem selectedProduct : selectedProductItemsList) {
+                            boolean productFound = false;
+                            for (ProductItem currentListProduct : currentList) {
+                                if (selectedProduct.getId() == currentListProduct.getId()) {
+                                    productFound = true;
+                                    break;
+                                }
+                            }
+                            if (!productFound) {
+                                productsToAdd.add(selectedProduct);
+                            }
+                        }
+                        for (ProductItem productToAdd : productsToAdd) {
+                            currentList.add(productToAdd);
+                        }
+                        currentList = sortListCategoryAndAlphabetical(currentList);
+                        sharedPreferencesManager.saveCurrentShoppingListToLocalStore(currentList);
+
+                        //set all clicked children to un-selected
+                        for (ShoppingTrip historicShoppingTrip : historicShoppingTripsList) {
+                            List<ProductItem> childItemsList = historicShoppingTrip.getBoughtProductsList();
+                            for (ProductItem childItem : childItemsList) {
+                                childItem.setCurrentClicked(false);
+                            }
+                            historicShoppingTrip.setBoughtProductsList(childItemsList); //refresh product list of shoppingtrip
+                        }
+                        listAdapter.notifyDataSetChanged();
+                        setToolbarShoppingCartIcon(false);
+
+                        dialog.dismiss();
+                    }
+                })
+                .setNegativeButton(R.string.dialog_button_negative, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.dismiss();
+                    }
+                });
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
+        ViewUtils.hideKeyboard((Activity) context);
+    }
+
 
     //================================================================================
     // Other Methods
@@ -279,5 +350,17 @@ public class HistoricListsFragment extends BaseFragment {
         System.out.println("No. of Selected Items (after): " + noSelected);
         toolbarShoppingCartIv.setVisibility(noSelected == 0 ? View.GONE : View.VISIBLE);
         showShoppingCartIconInToolbar = !(noSelected == 0);
+    }
+
+    /**
+     * sortListCategoryAndAlphabetical: sort items from currentList alphabetically
+     *
+     * @param list: currentList
+     * @return currentList, sorted alphabetically and referring to categories
+     */
+    public List<ProductItem> sortListCategoryAndAlphabetical(List<ProductItem> list) {
+        Collections.sort(list, new StringUtils.CurrentListAlphabeticalComparator());
+        Collections.sort(list, new StringUtils.CurrentListCategoryComparator());
+        return list;
     }
 }

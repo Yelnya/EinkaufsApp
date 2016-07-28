@@ -325,6 +325,9 @@ public class CurrentListAdapter extends BaseAdapter<CurrentListAdapter.Arraylist
             makeFinishAlertDialog();
         }
 
+        //-----------------------------------------------------------
+        // ALERT DIALOGS
+        //-----------------------------------------------------------
 
         private void makeFinishAlertDialog() {
 

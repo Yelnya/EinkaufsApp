@@ -241,7 +241,6 @@ public class CurrentListFragment extends BaseFragment implements ChangeToolbarIn
                 //check if entered productName (lower case) already is stored in SQLiteDB
                 searchListForProductThenDecideToUpdate(currentProductName);
 
-
                 multiAutoCompleteTextView.setText("");        //reset textView to blank
                 ViewUtils.hideKeyboard((Activity) context);
                 currentListAdapter.notifyDataSetChanged();   //refresh ListView
@@ -330,8 +329,6 @@ public class CurrentListFragment extends BaseFragment implements ChangeToolbarIn
                 } else {
                     toast("Produkt befindet sich schon in der Liste");  //found duplicate in list: inform user, but do nothing
                 }
-
-                Log.d(LOG_TAG, "Added existing product to list: " + currentProductName);
                 existingProductFound = true;
                 break;
             }
@@ -346,13 +343,6 @@ public class CurrentListFragment extends BaseFragment implements ChangeToolbarIn
             sharedPreferencesManager.saveCurrentShoppingListToLocalStore(currentList);  //store locally
 
             dataSource.createProductItem(currentProductName, selectedCategory);    //add product to database
-            Log.d(LOG_TAG, "Added new product to list: " + currentProductName);
-        }
-
-        //LOG output
-        Log.d(LOG_TAG, "-------------------LOCAL LIST ENTRIES -----------------------");
-        for (ProductItem product : currentList) {
-            Log.d(LOG_TAG, "LocalProduct: " + product.toString());
         }
     }
 

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -26,7 +25,8 @@ public class StatisticFragment extends BaseFragment {
     private Context context;
     private static final String TOOLBAR_TITLE = "Statistiken";
     private ProductItemDataSource dataSource;
-    private ListView mProductItemListView;
+    private ListView generalShoppingListLv;
+    List<ProductItem> generalShoppingList;
     private boolean showEditAndDeleteIconInToolbar;
     private boolean showShoppingCartIconInToolbar;
     //================================================================================
@@ -92,9 +92,8 @@ public class StatisticFragment extends BaseFragment {
         context = this.getActivity();
         showShoppingCartIconInToolbar = false;
         showEditAndDeleteIconInToolbar = false;
+        setToolbarEditAndDeleteIcon(showEditAndDeleteIconInToolbar);
         dataSource = new ProductItemDataSource(context);
-
-        initializeProductItemsListView();
     }
 
     @Override
@@ -107,57 +106,35 @@ public class StatisticFragment extends BaseFragment {
     public void onResume() {
         super.onResume();
         dataSource.open();  //open db connection
+
+        generalShoppingList = new ArrayList<>();
+        generalShoppingList = dataSource.getAllProductItems();
+
+        initializeProductItemsListView();
+
     }
-
-    //
-    private void showAllListEntries() {
-        List<ProductItem> productItemList = dataSource.getAllProductItems();
-
-        ArrayAdapter<ProductItem> adapter = (ArrayAdapter<ProductItem>) mProductItemListView.getAdapter();
-
-        adapter.clear();
-        adapter.addAll(productItemList);
-        adapter.notifyDataSetChanged();
-    }
-
 
     //initialization of list view
     private void initializeProductItemsListView() {
-        List<ProductItem> emptyListForInitialization = new ArrayList<>();
 
-        mProductItemListView = (ListView) getActivity().findViewById(R.id.listview_product_items);
+        generalShoppingListLv = (ListView) getActivity().findViewById(R.id.listview_product_items);
 
         // create array adapter for list view
         ArrayAdapter<ProductItem> productItemArrayAdapter = new ArrayAdapter<ProductItem>(
                 getActivity(),
                 android.R.layout.simple_list_item_multiple_choice,
-                emptyListForInitialization) {
+                generalShoppingList) {
 
             // call if line has to be drawn new
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
-
                 View view = super.getView(position, convertView, parent);
                 TextView textView = (TextView) view;
-                ProductItem productItem = (ProductItem) mProductItemListView.getItemAtPosition(position);
-
+                ProductItem productItem = (ProductItem) generalShoppingListLv.getItemAtPosition(position);
                 textView.setText(productItem.toNiceString());
-
                 return view;
             }
         };
-
-        mProductItemListView.setAdapter(productItemArrayAdapter);
-
-        mProductItemListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                ProductItem productItem = (ProductItem) adapterView.getItemAtPosition(position);
-
-                // invert checked value for productItem, then draw list new
-                dataSource.updateProductItem(productItem.getId(), productItem.getProduct(), productItem.getCategory(), productItem.getBought(), !productItem.isDone(), productItem.isFavourite());
-                showAllListEntries();
-            }
-        });
+        generalShoppingListLv.setAdapter(productItemArrayAdapter);
     }
 }

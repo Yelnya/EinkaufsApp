@@ -32,4 +32,6 @@ dependencies {
     compile 'com.google.code.gson:gson:2.4'
     compile 'com.jakewharton.rxbinding:rxbinding:0.2.0'
     compile 'io.reactivex:rxandroid:1.0.1'
+
+    compile group: 'org.achartengine', name: 'achartengine', version: '1.2.0'
 }

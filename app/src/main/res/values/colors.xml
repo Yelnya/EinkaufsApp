@@ -24,4 +24,6 @@
     <color name="tin_can">#1A00b69e</color>
     <color name="winter">#1A98f1fd</color>
     <color name="year_of_the_pig">#1Acc94a8</color>
+
+    <color name="transparent_background">#00FF0000</color>
 </resources>

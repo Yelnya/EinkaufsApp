@@ -85,7 +85,7 @@ public class HistoricListsFragment extends BaseFragment {
 
     @Override
     protected int getLayoutId() {
-        return R.layout.fragment_test;
+        return R.layout.fragment_historic_lists;
     }
 
     @Override

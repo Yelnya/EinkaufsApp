@@ -31,9 +31,6 @@ public class TestFragment extends BaseFragment {
     public static final String LOG_TAG = TestFragment.class.getSimpleName();
 
     Context context;
-//    private boolean showEditAndDeleteIconInToolbar;
-//    private boolean showShoppingCartIconInToolbar;
-//    private static final String TOOLBAR_TITLE = "Test";
 
     protected HorizontalBarChart mChart;
 
@@ -68,16 +65,6 @@ public class TestFragment extends BaseFragment {
     protected int getLayoutId() {
         return R.layout.fragment_test;
     }
-
-//    @Override
-//    protected void setToolbar() {
-//        getAttachedActivity().setToolbar(toolbar, true, TOOLBAR_TITLE, showEditAndDeleteIconInToolbar, showShoppingCartIconInToolbar); //Icon displayed, Titel of Toolbar
-//    }
-
-//    @Override
-//    protected void setToolbarEditAndDeleteIcon(boolean showEditAndDeleteIconInToolbar) {
-//        toolbarTv.setText(TOOLBAR_TITLE);
-//    }
 
     @Override
     public boolean canGoBack() {
@@ -121,7 +108,6 @@ public class TestFragment extends BaseFragment {
         xl.setGranularity(10f);
 
         YAxis yl = mChart.getAxisLeft();
-        //yl.setTypeface(mTfLight);
         yl.setDrawAxisLine(true);
         yl.setDrawGridLines(true);
         yl.setAxisMinValue(0f);
@@ -148,10 +134,6 @@ public class TestFragment extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
-
-//        showShoppingCartIconInToolbar = false;
-//        showEditAndDeleteIconInToolbar = false;
-//        setToolbarEditAndDeleteIcon(showEditAndDeleteIconInToolbar);
     }
 
     private void setData(int count, float range) {
@@ -187,15 +169,15 @@ public class TestFragment extends BaseFragment {
         if (mChart.getData() != null &&
                 mChart.getData().getDataSetCount() > 0) {
             set1 = (BarDataSet)mChart.getData().getDataSetByIndex(0);
-            set1.setValueFormatter(new MyValueFormatter("produkt"));
+//            set1.setValueFormatter(new MyValueFormatter("produkt"));
             set1.setValues(yVals1);
 
             mChart.getData().notifyDataChanged();
             mChart.notifyDataSetChanged();
         } else {
             set1 = new BarDataSet(yVals1, "Gekaufte Produkte");
-            ProductItem productItem = (ProductItem) set1.getValues().get(0).getData();
-            set1.setValueFormatter(new MyValueFormatter(productItem.getProduct()));
+
+            set1.setValueFormatter(new MyValueFormatter(productItemsList));
 
             ArrayList<IBarDataSet> dataSets = new ArrayList<IBarDataSet>();
             dataSets.add(set1);

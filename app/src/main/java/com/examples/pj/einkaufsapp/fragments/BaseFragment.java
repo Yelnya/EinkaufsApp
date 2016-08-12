@@ -34,6 +34,7 @@ public abstract class BaseFragment extends Fragment {
     @Nullable
     @Bind(R.id.my_toolbar)
     Toolbar toolbar;
+    @Nullable
     @Bind(R.id.toolbarTv)
     TextView toolbarTv;
 

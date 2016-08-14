@@ -131,6 +131,7 @@ public class CurrentListFragment extends BaseFragment implements ChangeToolbarIn
         showEditAndDeleteIconInToolbar = false;
 
         context = getActivity();
+
         if (sharedPreferencesManager == null) {
             sharedPreferencesManager = SharedPreferencesManager.initSharedPreferences((Activity) context);
         }

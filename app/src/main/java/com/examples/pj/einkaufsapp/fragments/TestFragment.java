@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 
 import com.examples.pj.einkaufsapp.R;
 import com.examples.pj.einkaufsapp.dbentities.ProductItem;
@@ -31,9 +30,6 @@ public class TestFragment extends BaseFragment {
     public static final String LOG_TAG = TestFragment.class.getSimpleName();
 
     Context context;
-//    private boolean showEditAndDeleteIconInToolbar;
-//    private boolean showShoppingCartIconInToolbar;
-//    private static final String TOOLBAR_TITLE = "Test";
 
     protected HorizontalBarChart mChart;
 
@@ -45,7 +41,7 @@ public class TestFragment extends BaseFragment {
      * Constructor
      */
     public TestFragment() {
-        super(LOG_TAG, true);   //influences Hamburger Icon HomeUp in Toolbar
+        super(LOG_TAG, false);   //influences Hamburger Icon HomeUp in Toolbar
     }
 
     /**
@@ -69,16 +65,6 @@ public class TestFragment extends BaseFragment {
         return R.layout.fragment_test;
     }
 
-//    @Override
-//    protected void setToolbar() {
-//        getAttachedActivity().setToolbar(toolbar, true, TOOLBAR_TITLE, showEditAndDeleteIconInToolbar, showShoppingCartIconInToolbar); //Icon displayed, Titel of Toolbar
-//    }
-
-//    @Override
-//    protected void setToolbarEditAndDeleteIcon(boolean showEditAndDeleteIconInToolbar) {
-//        toolbarTv.setText(TOOLBAR_TITLE);
-//    }
-
     @Override
     public boolean canGoBack() {
         return true;
@@ -97,14 +83,16 @@ public class TestFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(getLayoutId(), container, false);
         ButterKnife.bind(this, view);
-        setToolbar();
-        context = super.getActivity();
+        context = getActivity();
 
-        getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        getActivity().setContentView(R.layout.fragment_test);
+        return view;
+    }
 
-        mChart = (HorizontalBarChart) getActivity().findViewById(R.id.chart);
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        mChart = (HorizontalBarChart) getView().findViewById(R.id.chart);
         mChart.setDrawBarShadow(false);
         mChart.setDrawValueAboveBar(true);
         mChart.setDescription("");
@@ -121,7 +109,6 @@ public class TestFragment extends BaseFragment {
         xl.setGranularity(10f);
 
         YAxis yl = mChart.getAxisLeft();
-        //yl.setTypeface(mTfLight);
         yl.setDrawAxisLine(true);
         yl.setDrawGridLines(true);
         yl.setAxisMinValue(0f);
@@ -140,19 +127,12 @@ public class TestFragment extends BaseFragment {
         l.setPosition(Legend.LegendPosition.BELOW_CHART_LEFT);
         l.setFormSize(8f);
         l.setXEntrySpace(4f);
-
-
-        return view;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
 
-//        showShoppingCartIconInToolbar = false;
-//        showEditAndDeleteIconInToolbar = false;
-//        setToolbarEditAndDeleteIcon(showEditAndDeleteIconInToolbar);
-    }
+    //================================================================================
+    // Other Methods
+    //================================================================================
 
     private void setData(int count, float range) {
 
@@ -207,5 +187,4 @@ public class TestFragment extends BaseFragment {
             mChart.setData(data);
         }
     }
-
 }

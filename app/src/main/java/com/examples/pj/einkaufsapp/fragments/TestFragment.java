@@ -154,7 +154,7 @@ public class TestFragment extends BaseFragment {
 
         float barWidth = 9f;
         float spaceForBar = 10f;
-        ArrayList<BarEntry> yVals1 = new ArrayList<BarEntry>();
+        List<BarEntry> yVals1 = new ArrayList<BarEntry>();
 
         List<ProductItem> productItemsList = new ArrayList<ProductItem>();
 
@@ -183,7 +183,7 @@ public class TestFragment extends BaseFragment {
         if (mChart.getData() != null &&
                 mChart.getData().getDataSetCount() > 0) {
             set1 = (BarDataSet)mChart.getData().getDataSetByIndex(0);
-            set1.setValueFormatter(new MyValueFormatter("produkt"));
+            set1.setValueFormatter(new MyValueFormatter(productItemsList));
             set1.setValues(yVals1);
 
             mChart.getData().notifyDataChanged();
@@ -191,7 +191,7 @@ public class TestFragment extends BaseFragment {
         } else {
             set1 = new BarDataSet(yVals1, "Gekaufte Produkte");
             ProductItem productItem = (ProductItem) set1.getValues().get(0).getData();
-            set1.setValueFormatter(new MyValueFormatter(productItem.getProduct()));
+            set1.setValueFormatter(new MyValueFormatter(productItemsList));
 
             ArrayList<IBarDataSet> dataSets = new ArrayList<IBarDataSet>();
             dataSets.add(set1);

@@ -21,6 +21,7 @@ import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.Bind;
 import butterknife.ButterKnife;
 
 /**
@@ -30,8 +31,13 @@ public class TestFragment extends BaseFragment {
     public static final String LOG_TAG = TestFragment.class.getSimpleName();
 
     Context context;
+    private String toolbarTitle = "";
+    private static final String TOOLBAR_TITLE_FRAGMENT = "Statistik";
+    private boolean showEditAndDeleteIconInToolbar;
+    private boolean showShoppingCartIconInToolbar;
 
-    protected HorizontalBarChart mChart;
+    @Bind(R.id.chart)
+    HorizontalBarChart mChart;
 
     //================================================================================
     // Fragment Instantiation
@@ -41,7 +47,7 @@ public class TestFragment extends BaseFragment {
      * Constructor
      */
     public TestFragment() {
-        super(LOG_TAG, false);   //influences Hamburger Icon HomeUp in Toolbar
+        super(LOG_TAG, true);   //influences Hamburger Icon HomeUp in Toolbar
     }
 
     /**
@@ -66,6 +72,11 @@ public class TestFragment extends BaseFragment {
     }
 
     @Override
+    protected void setToolbar() {
+        getAttachedActivity().setToolbar(toolbar, true, toolbarTitle, showEditAndDeleteIconInToolbar, showShoppingCartIconInToolbar); //Icon displayed, Titel of Toolbar
+    }
+
+    @Override
     public boolean canGoBack() {
         return true;
     }
@@ -84,7 +95,6 @@ public class TestFragment extends BaseFragment {
         View view = inflater.inflate(getLayoutId(), container, false);
         ButterKnife.bind(this, view);
         context = getActivity();
-
         return view;
     }
 
@@ -92,7 +102,13 @@ public class TestFragment extends BaseFragment {
     public void onResume() {
         super.onResume();
 
-        mChart = (HorizontalBarChart) getView().findViewById(R.id.chart);
+        showShoppingCartIconInToolbar = false;
+        showEditAndDeleteIconInToolbar = false;
+        toolbarTitle = TOOLBAR_TITLE_FRAGMENT;
+        setToolbar();
+        toolbarTv.setText(toolbarTitle);
+
+        //Draw Chart
         mChart.setDrawBarShadow(false);
         mChart.setDrawValueAboveBar(true);
         mChart.setDescription("");

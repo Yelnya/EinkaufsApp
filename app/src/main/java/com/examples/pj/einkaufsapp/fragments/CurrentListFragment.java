@@ -358,8 +358,6 @@ public class CurrentListFragment extends BaseFragment implements ChangeToolbarIn
         setToolbar();
     }
 
-
-
     //---------------------------------------------------------------
     // ALERT DIALOGS
     //---------------------------------------------------------------

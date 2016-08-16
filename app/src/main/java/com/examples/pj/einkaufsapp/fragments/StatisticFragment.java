@@ -26,7 +26,7 @@ public class StatisticFragment extends BaseFragment {
     private static final String TOOLBAR_TITLE = "Statistiken";
     private ProductItemDataSource dataSource;
     private ListView generalShoppingListLv;
-    List<ProductItem> generalShoppingList;
+    private List<ProductItem> generalShoppingList;
     private boolean showEditAndDeleteIconInToolbar;
     private boolean showShoppingCartIconInToolbar;
     //================================================================================

@@ -169,7 +169,7 @@ public class TestFragment extends BaseFragment {
         if (mChart.getData() != null &&
                 mChart.getData().getDataSetCount() > 0) {
             set1 = (BarDataSet)mChart.getData().getDataSetByIndex(0);
-//            set1.setValueFormatter(new MyValueFormatter("produkt"));
+            set1.setValueFormatter(new MyValueFormatter(productItemsList));
             set1.setValues(yVals1);
 
             mChart.getData().notifyDataChanged();

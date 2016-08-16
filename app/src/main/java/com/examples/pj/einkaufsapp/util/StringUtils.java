@@ -56,4 +56,16 @@ public class StringUtils {
             return left.getCategory().compareTo(right.getCategory());
         }
     }
+
+    /**
+     * Helper Class for Sorting List referring to Categories
+     */
+    public static class GeneralListBoughtComparator implements Comparator<ProductItem> {
+        @Override
+        public int compare(ProductItem left, ProductItem right) {
+            String leftBought = String.valueOf(left.getBought());
+            String rightBought = String.valueOf(right.getBought());
+            return leftBought.compareTo(rightBought);
+        }
+    }
 }

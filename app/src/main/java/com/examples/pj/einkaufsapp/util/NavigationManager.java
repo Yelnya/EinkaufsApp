@@ -6,6 +6,7 @@ import com.examples.pj.einkaufsapp.fragments.BaseFragment;
 import com.examples.pj.einkaufsapp.fragments.CurrentListFragment;
 import com.examples.pj.einkaufsapp.fragments.HistoricListsFragment;
 import com.examples.pj.einkaufsapp.fragments.StatisticFragment;
+import com.examples.pj.einkaufsapp.fragments.Test2Fragment;
 import com.examples.pj.einkaufsapp.fragments.TestFragment;
 
 import java.util.ArrayList;
@@ -82,6 +83,9 @@ public class NavigationManager {
             case R.id.sidebar_test_screen:
                 moveToTestFragment();
                 break;
+            case R.id.sidebar_test2_screen:
+                moveToTest2Fragment();
+                break;
             case R.id.sidebar_exit:
                 System.exit(0);
                 break;
@@ -119,6 +123,10 @@ public class NavigationManager {
 
     public static void moveToTestFragment() {
         showFragment(TestFragment.createInstance());
+    }
+
+    public static void moveToTest2Fragment() {
+        showFragment(Test2Fragment.createInstance());
     }
 
     //================================================================================

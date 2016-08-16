@@ -36,6 +36,11 @@
             style="@style/SidebarItem"
             android:text="Test" />
 
+        <TextView
+            android:id="@+id/sidebar_test2_screen"
+            style="@style/SidebarItem"
+            android:text="Test 2" />
+
         <Space
             android:layout_width="1dp"
             android:layout_height="@dimen/leftsidemenu_line_heigth"/>

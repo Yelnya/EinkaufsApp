@@ -2,33 +2,42 @@ package com.examples.pj.einkaufsapp.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import android.widget.TextView;
 
 import com.examples.pj.einkaufsapp.R;
+import com.examples.pj.einkaufsapp.adapters.StatisticAdapter;
 import com.examples.pj.einkaufsapp.dbentities.ProductItem;
 import com.examples.pj.einkaufsapp.dbentities.ProductItemDataSource;
+import com.examples.pj.einkaufsapp.util.StringUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 /**
- * Overview for all done shopping events with statistic function
+ * Class as Container for Test Information
  */
 public class StatisticFragment extends BaseFragment {
-
     public static final String LOG_TAG = StatisticFragment.class.getSimpleName();
 
+    @Bind(R.id.generallist_recycler_view)
+    RecyclerView generalItemsRv;
+
     private Context context;
-    private static final String TOOLBAR_TITLE = "Statistiken";
+    private static final String TOOLBAR_TITLE = "Statistik";
     private ProductItemDataSource dataSource;
-    private ListView generalShoppingListLv;
     private List<ProductItem> generalShoppingList;
     private boolean showEditAndDeleteIconInToolbar;
     private boolean showShoppingCartIconInToolbar;
+    private StatisticAdapter statisticAdapter;
+
     //================================================================================
     // Fragment Instantiation
     //================================================================================
@@ -41,7 +50,7 @@ public class StatisticFragment extends BaseFragment {
     }
 
     /**
-     * createInstance contains arguments in bundle
+     * createInstance as container for bundle arguments
      *
      * @return fragment
      */
@@ -96,6 +105,15 @@ public class StatisticFragment extends BaseFragment {
         dataSource = new ProductItemDataSource(context);
     }
 
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(getLayoutId(), container, false);
+        ButterKnife.bind(this, view);
+
+        return view;
+    }
+
     @Override
     public void onPause() {
         super.onPause();
@@ -110,31 +128,56 @@ public class StatisticFragment extends BaseFragment {
         generalShoppingList = new ArrayList<>();
         generalShoppingList = dataSource.getAllProductItems();
 
-        initializeProductItemsListView();
+        //sort List referring to number bought
+        if (generalShoppingList != null && !generalShoppingList.isEmpty()) {
+            generalShoppingList = sortListNumberBought(generalShoppingList);
+        }
 
+        printItemsInList();
+        drawItemsInList();
     }
 
-    //initialization of list view
-    private void initializeProductItemsListView() {
+    //================================================================================
+    // Other Methods
+    //================================================================================
 
-        generalShoppingListLv = (ListView) getActivity().findViewById(R.id.listview_product_items);
-
-        // create array adapter for list view
-        ArrayAdapter<ProductItem> productItemArrayAdapter = new ArrayAdapter<ProductItem>(
-                getActivity(),
-                android.R.layout.simple_list_item_multiple_choice,
-                generalShoppingList) {
-
-            // call if line has to be drawn new
-            @Override
-            public View getView(int position, View convertView, ViewGroup parent) {
-                View view = super.getView(position, convertView, parent);
-                TextView textView = (TextView) view;
-                ProductItem productItem = (ProductItem) generalShoppingListLv.getItemAtPosition(position);
-                textView.setText(productItem.toNiceString());
-                return view;
+    public void printItemsInList() {
+        System.out.println("-------- ITEMS IN GENERAL LIST -----------");
+        if (generalShoppingList.size() > 0) {
+            for (ProductItem productItem : generalShoppingList) {
+                System.out.println("Produkt: " + productItem.getProduct() + ", " + productItem.getBought());
             }
-        };
-        generalShoppingListLv.setAdapter(productItemArrayAdapter);
+        } else {
+            System.out.println("Keine Einträge vorhanden");
+        }
     }
+
+    public void drawItemsInList() {
+
+        int numberHighestBought = 0;
+        //add numberHighestBought to Adapter
+        if (generalShoppingList != null && !generalShoppingList.isEmpty()) {
+            numberHighestBought = generalShoppingList.get(0).getBought();
+        }
+
+        statisticAdapter = new StatisticAdapter(generalShoppingList, context, numberHighestBought);
+        final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        generalItemsRv.setLayoutManager(linearLayoutManager);
+        generalItemsRv.setAdapter(statisticAdapter);
+        generalItemsRv.setHasFixedSize(true);
+        generalItemsRv.setVisibility(View.VISIBLE);
+    }
+
+    /**
+     * method to sort list alphabetically and referring to category
+     *
+     * @param listToSort list
+     * @return list
+     */
+    public List<ProductItem> sortListNumberBought(List<ProductItem> listToSort) {
+        Collections.sort(listToSort, Collections.reverseOrder(new StringUtils.GeneralListBoughtComparator()));
+        return listToSort;
+    }
+
 }

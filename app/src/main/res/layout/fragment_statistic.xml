@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".fragments.StatisticFragment">
+    android:background="@drawable/bg_color_selector"
+    android:orientation="vertical">
 
     <include layout="@layout/toolbar"/>
 
-    <ListView
-        android:id="@+id/listview_product_items"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/generallist_recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal" />
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/activity_vertical_margin_small"
+        android:visibility="gone"/>
 
 </LinearLayout>

@@ -30,7 +30,7 @@ public class MyValueFormatter implements ValueFormatter {
         ProductItem current = null;
 
         for (ProductItem productItem : productItemList) {
-            if (entryInt/10 == i) {
+            if (entryInt == i) {
                 current = productItem;
             }
             i++;

@@ -22,7 +22,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 
 /**
- * Class as Container for Test Information
+ * Class as Container for Statistic Information
  */
 public class StatisticFragment extends BaseFragment {
     public static final String LOG_TAG = StatisticFragment.class.getSimpleName();
@@ -36,7 +36,6 @@ public class StatisticFragment extends BaseFragment {
     private List<ProductItem> generalShoppingList;
     private boolean showEditAndDeleteIconInToolbar;
     private boolean showShoppingCartIconInToolbar;
-    private StatisticAdapter statisticAdapter;
 
     //================================================================================
     // Fragment Instantiation
@@ -77,7 +76,9 @@ public class StatisticFragment extends BaseFragment {
 
     @Override
     protected void setToolbarEditAndDeleteIcon(boolean showEditAndDeleteIconInToolbar) {
-        toolbarTv.setText(TOOLBAR_TITLE);
+        if (toolbarTv != null) {
+            toolbarTv.setText(TOOLBAR_TITLE);
+        }
     }
 
     @Override
@@ -99,9 +100,6 @@ public class StatisticFragment extends BaseFragment {
         super.onActivityCreated(savedInstanceState);
 
         context = this.getActivity();
-        showShoppingCartIconInToolbar = false;
-        showEditAndDeleteIconInToolbar = false;
-        setToolbarEditAndDeleteIcon(showEditAndDeleteIconInToolbar);
         dataSource = new ProductItemDataSource(context);
     }
 
@@ -123,6 +121,12 @@ public class StatisticFragment extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
+
+        showShoppingCartIconInToolbar = false;
+        showEditAndDeleteIconInToolbar = false;
+        setToolbarEditAndDeleteIcon(showEditAndDeleteIconInToolbar);
+        setToolbar();
+
         dataSource.open();  //open db connection
 
         generalShoppingList = new ArrayList<>();
@@ -155,12 +159,11 @@ public class StatisticFragment extends BaseFragment {
     public void drawItemsInList() {
 
         int numberHighestBought = 0;
-        //add numberHighestBought to Adapter
         if (generalShoppingList != null && !generalShoppingList.isEmpty()) {
             numberHighestBought = generalShoppingList.get(0).getBought();
         }
 
-        statisticAdapter = new StatisticAdapter(generalShoppingList, context, numberHighestBought);
+        StatisticAdapter statisticAdapter = new StatisticAdapter(generalShoppingList, context, numberHighestBought);
         final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         generalItemsRv.setLayoutManager(linearLayoutManager);

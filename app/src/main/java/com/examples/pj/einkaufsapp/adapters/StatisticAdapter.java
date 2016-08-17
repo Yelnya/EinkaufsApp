@@ -2,6 +2,7 @@ package com.examples.pj.einkaufsapp.adapters;
 
 import android.app.Activity;
 import android.content.Context;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,10 +15,12 @@ import android.widget.TextView;
 import com.examples.pj.einkaufsapp.R;
 import com.examples.pj.einkaufsapp.dbentities.ProductItem;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 /**
  * Adapter for CurrentListFragment
@@ -36,18 +39,20 @@ public class StatisticAdapter extends BaseAdapter<StatisticAdapter.ArraylistView
     private int numberHighestBought;
     float dpWidthOfScreen;
     int pixelWidthOfScreen;
+    protected List<ProductItem> productsToAddToCurrentList;
 
     /**
      * Constructor
      *
-     * @param context                  from MainActivity
-     * @param generalList              currentList from Fragment
+     * @param context     from MainActivity
+     * @param generalList currentList from Fragment
      */
     public StatisticAdapter(List<ProductItem> generalList, Context context, int numberHighestBought) {
         this.generalList = generalList;
         this.context = context;
         this.numberHighestBought = numberHighestBought;
         contextActivity = (Activity) context;
+        productsToAddToCurrentList = new ArrayList<>();
     }
 
     //---------------------------------------------------------------
@@ -87,7 +92,7 @@ public class StatisticAdapter extends BaseAdapter<StatisticAdapter.ArraylistView
             viewHolder.productPercentInvisibleTv.setLayoutParams(llPercentInvisibleTvParams);
 
             String bought = String.valueOf(item.getBought());
-            if (item.getBought() < numberHighestBought/2) {
+            if (item.getBought() < numberHighestBought / 2) {
                 //TEXT RIGHT OF BAR
                 viewHolder.productPercentInvisibleTv.setText(" " + item.getProduct() + " (" + bought + ")");
                 runAnimationTextViews(viewHolder.productPercentInvisibleTv);
@@ -149,6 +154,8 @@ public class StatisticAdapter extends BaseAdapter<StatisticAdapter.ArraylistView
         @Bind(R.id.product_percent_invisible_tv)
         TextView productPercentInvisibleTv;
 
+//        List<ProductItem> productsToAddToCurrentList = new ArrayList<>();
+
         /**
          * Constructor
          *
@@ -162,12 +169,49 @@ public class StatisticAdapter extends BaseAdapter<StatisticAdapter.ArraylistView
         /**
          * Simple Click Behaviour of Recycler View Item
          */
-//        @OnClick(R.id.item_container)
-//        public void onProductClick() {
-//            int pos = getAdapterPosition();
-//            ProductItem product = generalList.get(pos);
-////            changeProductChecked(product);
-//        }
+        @OnClick(R.id.item_container)
+        public void onProductClick() {
+            int pos = getAdapterPosition();
+            ProductItem product = generalList.get(pos);
+
+            if (productsToAddToCurrentList.size() > 0) {
+                boolean foundInList = false;
+                for (ProductItem productItem : productsToAddToCurrentList) {
+                    if (productItem.getId() == product.getId()) {
+                        foundInList = true;
+                        break;
+                    }
+                }
+                if (foundInList) {
+                    productPercentTv.setBackgroundColor(ContextCompat.getColor(context, R.color.dark_purple));
+                    //if in list, remove
+                    List<ProductItem> copyList = new ArrayList<>();
+                    copyList.addAll(productsToAddToCurrentList);
+                    productsToAddToCurrentList.clear();
+                    for (ProductItem productItem : copyList) {
+                        if (product.getId() != productItem.getId()) {
+                            productsToAddToCurrentList.add(productItem);
+                        }
+                    }
+                    //if not in list, add
+                    //TODO: Show Shopping Cart in Toolbar if > 0 products in productsToAddToCurrentList
+                    //TODO: Hide Shopping Cart in Toolbar if == 0 products in productsToAddToCurrentList
+                    //TODO: Click on Shopping Cart should place items from productsToAddToCurrentList into Current Fragment
+                } else {
+                    productPercentTv.setBackgroundColor(ContextCompat.getColor(context, R.color.purple));
+                    productsToAddToCurrentList.add(product);
+                }
+            } else {
+                productPercentTv.setBackgroundColor(ContextCompat.getColor(context, R.color.purple));
+                productsToAddToCurrentList.add(product);
+            }
+
+            //output
+//            System.out.println("------ PRODUCTS IN LIST TO ADD --------");
+//            for (ProductItem productItem : productsToAddToCurrentList) {
+//                System.out.println(productItem.getProduct());
+//            }
+        }
     }
 
     /**

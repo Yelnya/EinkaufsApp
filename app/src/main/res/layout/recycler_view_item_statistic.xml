@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
+    android:id="@+id/item_container"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="24dp"
-    android:paddingBottom="2dp"
+    android:layout_height="@dimen/rv_item_heigth"
+    android:paddingBottom="@dimen/padding_smallest"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="2dp">
+    android:paddingTop="@dimen/padding_smallest">
 
     <LinearLayout
         android:layout_width="match_parent"

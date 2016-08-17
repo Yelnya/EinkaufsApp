@@ -53,7 +53,9 @@ public class AboutFragment extends BaseFragment {
 
     @Override
     protected void setToolbarEditAndDeleteIcon(boolean showEditAndDeleteIconInToolbar) {
-        toolbarTv.setText(TOOLBAR_TITLE);
+        if (toolbarTv != null) {
+            toolbarTv.setText(TOOLBAR_TITLE);
+        }
     }
 
     @Override
@@ -63,7 +65,7 @@ public class AboutFragment extends BaseFragment {
 
     @Override
     protected void onCleanUp() {
-
+        // not needed
     }
 
     //================================================================================

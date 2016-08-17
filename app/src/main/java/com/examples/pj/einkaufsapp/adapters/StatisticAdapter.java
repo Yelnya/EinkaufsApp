@@ -3,11 +3,11 @@ package com.examples.pj.einkaufsapp.adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -48,16 +48,6 @@ public class StatisticAdapter extends BaseAdapter<StatisticAdapter.ArraylistView
         this.context = context;
         this.numberHighestBought = numberHighestBought;
         contextActivity = (Activity) context;
-
-        //Window size width with and without padding
-        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-        DisplayMetrics metrics = new DisplayMetrics();
-        wm.getDefaultDisplay().getMetrics(metrics);
-        pixelWidthOfScreen = metrics.widthPixels;
-        dpWidthOfScreen = convertPixelsToDp(pixelWidthOfScreen); //max width size
-        System.out.println(pixelWidthOfScreen);
-        System.out.println(dpWidthOfScreen);
-
     }
 
     //---------------------------------------------------------------
@@ -96,24 +86,16 @@ public class StatisticAdapter extends BaseAdapter<StatisticAdapter.ArraylistView
             viewHolder.productPercentTv.setLayoutParams(llPercentTvParams);
             viewHolder.productPercentInvisibleTv.setLayoutParams(llPercentInvisibleTvParams);
 
-            //set and place Text on percentage bar
-            //TODO offset of text is percentage of bar in relation to dpWidthOfScreenWithoutLeftPadding = 100%
-
+            String bought = String.valueOf(item.getBought());
             if (item.getBought() < numberHighestBought/2) {
                 //TEXT RIGHT OF BAR
-                int offset = Math.round(pixelWidthOfScreen * widthInvisible);
-                viewHolder.productNameTv.setPadding(offset, -1, 0, -1);
+                viewHolder.productPercentInvisibleTv.setText(" " + item.getProduct() + " (" + bought + ")");
+                runAnimationTextViews(viewHolder.productPercentInvisibleTv);
             } else {
                 //TEXT LEFT OF BAR
-                int offset = Math.round(pixelWidthOfScreen * widthInvisible-500);
-                viewHolder.productNameTv.setPadding(offset, -1, 0, -1);
+                viewHolder.productPercentTv.setText(item.getProduct() + " (" + bought + ")" + " ");
+                runAnimationTextViews(viewHolder.productPercentTv);
             }
-
-
-            String bought = String.valueOf(item.getBought());
-            viewHolder.productNameTv.setText(item.getProduct() + " (" + bought + ")");
-
-
         } else {
             BottomElementViewHolder viewHolder = (BottomElementViewHolder) holder;
 
@@ -166,8 +148,6 @@ public class StatisticAdapter extends BaseAdapter<StatisticAdapter.ArraylistView
         TextView productPercentTv;
         @Bind(R.id.product_percent_invisible_tv)
         TextView productPercentInvisibleTv;
-        @Bind(R.id.product_name_tv)
-        TextView productNameTv;
 
         /**
          * Constructor
@@ -213,10 +193,12 @@ public class StatisticAdapter extends BaseAdapter<StatisticAdapter.ArraylistView
     // OTHER METHODS
     //---------------------------------------------------------------
 
-    public float convertPixelsToDp(float px){
-        DisplayMetrics metrics = context.getResources().getSystem().getDisplayMetrics();
-        float dp = px / (metrics.densityDpi / 160f);
-        return Math.round(dp);
+    private void runAnimationTextViews(TextView tv) {
+        Animation a = AnimationUtils.loadAnimation(context, R.anim.scale);
+        a.reset();
+        tv.clearAnimation();
+        tv.startAnimation(a);
+
     }
 
 

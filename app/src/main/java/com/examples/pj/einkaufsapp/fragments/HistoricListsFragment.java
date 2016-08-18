@@ -229,9 +229,9 @@ public class HistoricListsFragment extends BaseFragment {
         makeFinishAlertDialog();
     }
 
-    //---------------------------------------------------------------
+    //================================================================================
     // ALERT DIALOGS
-    //---------------------------------------------------------------
+    //================================================================================
 
     private void makeFinishAlertDialog() {
 
@@ -291,7 +291,6 @@ public class HistoricListsFragment extends BaseFragment {
         alertDialog.show();
         ViewUtils.hideKeyboard((Activity) context);
     }
-
 
     //================================================================================
     // Other Methods

@@ -21,7 +21,7 @@
             android:layout_weight="0.7"
             android:background="@color/dark_purple"
             android:gravity="end"
-            android:textColor="@color/light_purple"
+            android:textColor="@color/lightest_purple"
             android:textSize="@dimen/font_smallest"/>
 
         <TextView

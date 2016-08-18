@@ -43,7 +43,7 @@ public class HistoricListsAdapter extends BaseExpandableListAdapter {
         headingBoughtItems.setText(context.getResources().getString(R.string.header_bought_items, getChildrenCount(groupPosition)));
         headingBoughtItems.setTextColor(ContextCompat.getColor(context, shoppingTrip.isExpanded() ? R.color.dark_purple : R.color.grey_dark));
         headingIv.setImageResource(shoppingTrip.isExpanded() ? R.drawable.circle_minus : R.drawable.circle_plus);
-        headingLl.setBackgroundColor(ContextCompat.getColor(context, shoppingTrip.isExpanded() ? R.color.light_purple : R.color.grey));
+        headingLl.setBackgroundColor(ContextCompat.getColor(context, shoppingTrip.isExpanded() ? R.color.lightest_purple : R.color.grey));
         return view;
     }
 

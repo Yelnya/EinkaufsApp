@@ -11,7 +11,8 @@
     <color name="black">#000</color>
     <color name="dark_purple">#612c5f</color>
     <color name="purple">#ba66b7</color>
-    <color name="light_purple">#dccee6</color>
+    <color name="light_purple">#dfb1dd</color>
+    <color name="lightest_purple">#dccee6</color>
 
     <!--categories-->
     <color name="bread">#1Afdbf07</color>

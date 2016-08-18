@@ -359,6 +359,16 @@ public class CurrentListFragment extends BaseFragment implements ChangeToolbarIn
         setToolbar();
     }
 
+    @Override
+    public void showShoppingCartIcon(boolean show) {
+        //shopping cart icon is never shown in this view
+    }
+
+    @Override
+    public void handOverProductsToAddToCurrentShoppingList(List<ProductItem> productsToAddToCurrentShoppingList) {
+        //not needed in this view
+    }
+
     //---------------------------------------------------------------
     // ALERT DIALOGS
     //---------------------------------------------------------------
@@ -465,4 +475,9 @@ public class CurrentListFragment extends BaseFragment implements ChangeToolbarIn
         alertDialog.show();
         ViewUtils.hideKeyboard((Activity) context);
     }
+
+    //TODO possibility to send current shopping list to email receiver
+    //TODO possibility to send current shopping list as importable file to email receiver - import only possible if receiver also has App installed
+    //TODO button: saving of current list and historical shopping list to server
+    //TODO button: loading of current list and historical shopping list from server
 }

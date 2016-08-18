@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import com.examples.pj.einkaufsapp.R;
 import com.examples.pj.einkaufsapp.dbentities.ProductItem;
+import com.examples.pj.einkaufsapp.interfaces.ChangeToolbarInterface;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,12 +35,10 @@ public class StatisticAdapter extends BaseAdapter<StatisticAdapter.ArraylistView
 
     private final Context context;
     Activity contextActivity;
-    private boolean editDeleteToolbarActive;
     private List<ProductItem> generalList;
     private int numberHighestBought;
-    float dpWidthOfScreen;
-    int pixelWidthOfScreen;
     protected List<ProductItem> productsToAddToCurrentList;
+    ChangeToolbarInterface changeToolbarInterface;
 
     /**
      * Constructor
@@ -47,9 +46,10 @@ public class StatisticAdapter extends BaseAdapter<StatisticAdapter.ArraylistView
      * @param context     from MainActivity
      * @param generalList currentList from Fragment
      */
-    public StatisticAdapter(List<ProductItem> generalList, Context context, int numberHighestBought) {
+    public StatisticAdapter(List<ProductItem> generalList, Context context, ChangeToolbarInterface changeToolbarInterface, int numberHighestBought) {
         this.generalList = generalList;
         this.context = context;
+        this.changeToolbarInterface = changeToolbarInterface;
         this.numberHighestBought = numberHighestBought;
         contextActivity = (Activity) context;
         productsToAddToCurrentList = new ArrayList<>();
@@ -194,9 +194,6 @@ public class StatisticAdapter extends BaseAdapter<StatisticAdapter.ArraylistView
                         }
                     }
                     //if not in list, add
-                    //TODO: Show Shopping Cart in Toolbar if > 0 products in productsToAddToCurrentList
-                    //TODO: Hide Shopping Cart in Toolbar if == 0 products in productsToAddToCurrentList
-                    //TODO: Click on Shopping Cart should place items from productsToAddToCurrentList into Current Fragment
                 } else {
                     productPercentTv.setBackgroundColor(ContextCompat.getColor(context, R.color.purple));
                     productsToAddToCurrentList.add(product);
@@ -211,6 +208,12 @@ public class StatisticAdapter extends BaseAdapter<StatisticAdapter.ArraylistView
 //            for (ProductItem productItem : productsToAddToCurrentList) {
 //                System.out.println(productItem.getProduct());
 //            }
+            //Show Shopping Cart in Toolbar if > 0 products in productsToAddToCurrentList, otherwise hide
+            changeToolbarInterface.showShoppingCartIcon(productsToAddToCurrentList.size() > 0);
+            changeToolbarInterface.handOverProductsToAddToCurrentShoppingList(productsToAddToCurrentList);
+
+            //TODO: Click on Shopping Cart should place items from productsToAddToCurrentList into Current Fragment
+
         }
     }
 

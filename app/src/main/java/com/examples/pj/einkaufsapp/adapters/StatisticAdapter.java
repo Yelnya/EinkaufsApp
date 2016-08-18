@@ -94,12 +94,12 @@ public class StatisticAdapter extends BaseAdapter<StatisticAdapter.ArraylistView
             String bought = String.valueOf(item.getBought());
             if (item.getBought() < numberHighestBought / 2) {
                 //TEXT RIGHT OF BAR
-                viewHolder.productPercentInvisibleTv.setText(" " + item.getProduct() + " (" + bought + ")");
+                viewHolder.productPercentInvisibleTv.setText(context.getString(R.string.statistic_product_text_right, item.getProduct(), bought));
                 viewHolder.productPercentTv.setText("");
                 runAnimationTextViews(viewHolder.productPercentInvisibleTv);
             } else {
                 //TEXT LEFT OF BAR
-                viewHolder.productPercentTv.setText(item.getProduct() + " (" + bought + ")" + " ");
+                viewHolder.productPercentTv.setText(context.getString(R.string.statistic_product_text_left, item.getProduct(), bought));
                 viewHolder.productPercentInvisibleTv.setText("");
                 runAnimationTextViews(viewHolder.productPercentTv);
             }
@@ -249,6 +249,5 @@ public class StatisticAdapter extends BaseAdapter<StatisticAdapter.ArraylistView
         a.reset();
         tv.clearAnimation();
         tv.startAnimation(a);
-
     }
 }

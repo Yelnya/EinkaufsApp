@@ -34,6 +34,10 @@
     <string name="header_title_date">Einkauf vom %1$s</string>
     <string name="header_bought_items">(%1$d Artikel)</string>
 
+    <!--Statistic Fragment-->
+    <string name="statistic_product_text_right">&#160; %1$s (%2$s)</string>
+    <string name="statistic_product_text_left">%1$s (%2$s) &#160;</string>
+
     <!--About Fragment-->
     <string name="about_what_is">Diese Applikation soll den Ablauf Ihrer Einkäufe erleichtern.\n\nDie von Ihnen hinzugefügten Produkte werden nach Kategorien sortiert, können bearbeitet und bequem wieder entfernt werden.\n\nWenn Sie einen Einkauf abschliessen, so werden die Produkte in den "Erledigten Einkäufen" abgespeichert. Diese dienen nicht nur als Übersicht, sondern aus diesen heraus können Sie wiederum Produkte zur aktuellen Liste hinzufügen - so können Sie nichts mehr vergessen!\n\nUnd wenn Sie Ihr Einkaufsverhalten interessiert, so haben Sie in dieser App auch die Möglichkeit, eine Stastik über alle Einkäufe und Artikel einzusehen.\n</string>
     <string name="about_disclaimer">&#169; 2016 :: TripleJ :: Yelnya</string>

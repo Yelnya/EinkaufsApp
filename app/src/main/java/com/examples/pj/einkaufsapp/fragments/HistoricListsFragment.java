@@ -10,7 +10,6 @@ import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.examples.pj.einkaufsapp.R;
 import com.examples.pj.einkaufsapp.adapters.HistoricListsAdapter;
@@ -181,7 +180,7 @@ public class HistoricListsFragment extends BaseFragment {
             ShoppingTrip shoppingTrip = historicShoppingTripsList.get(groupPosition); //get the group header
             List<ProductItem> productItemList = historicShoppingTripsList.get(groupPosition).getBoughtProductsList();   //get children list of group header
             ProductItem productItem = productItemList.get(childPosition);//get the child info
-            Toast.makeText(context, "Click on " + productItem.getProduct(), Toast.LENGTH_LONG).show();
+//            Toast.makeText(context, "Click on " + productItem.getProduct(), Toast.LENGTH_LONG).show();
 
             productItem.setCurrentClicked(!productItem.isCurrentClicked());
             shoppingTrip.setBoughtProductsList(productItemList);    //refresh product list of shoppingtrip
@@ -206,7 +205,7 @@ public class HistoricListsFragment extends BaseFragment {
     private ExpandableListView.OnGroupClickListener myListGroupClicked = new ExpandableListView.OnGroupClickListener() {
         public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id) {
             ShoppingTrip shoppingTrip = historicShoppingTripsList.get(groupPosition); //get the group header
-            Toast.makeText(context, "Click on Einkauf: " + shoppingTrip.getDateCompleted(), Toast.LENGTH_LONG).show();
+//            Toast.makeText(context, "Click on Einkauf: " + shoppingTrip.getDateCompleted(), Toast.LENGTH_LONG).show();
 
             shoppingTrip.setExpanded(!shoppingTrip.isExpanded());
             listAdapter.notifyDataSetChanged();

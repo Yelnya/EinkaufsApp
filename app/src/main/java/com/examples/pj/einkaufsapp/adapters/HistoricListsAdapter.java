@@ -39,11 +39,12 @@ public class HistoricListsAdapter extends BaseExpandableListAdapter {
         final ImageView headingIv = (ImageView) view.findViewById(R.id.btn_expand_toggle);
 
         heading.setText(shoppingTrip.getNiceDateCompleted().trim());
-        heading.setTextColor(ContextCompat.getColor(context, shoppingTrip.isExpanded() ? R.color.dark_purple : R.color.grey_dark));
+        heading.setTextColor(ContextCompat.getColor(context, shoppingTrip.isExpanded() ? R.color.light_purple : R.color.dark_purple));
         headingBoughtItems.setText(context.getResources().getString(R.string.header_bought_items, getChildrenCount(groupPosition)));
-        headingBoughtItems.setTextColor(ContextCompat.getColor(context, shoppingTrip.isExpanded() ? R.color.dark_purple : R.color.grey_dark));
+        headingBoughtItems.setTextColor(ContextCompat.getColor(context, shoppingTrip.isExpanded() ? R.color.light_purple : R.color.dark_purple));
+        //TODO color circle change to purple
         headingIv.setImageResource(shoppingTrip.isExpanded() ? R.drawable.circle_minus : R.drawable.circle_plus);
-        headingLl.setBackgroundColor(ContextCompat.getColor(context, shoppingTrip.isExpanded() ? R.color.lightest_purple : R.color.grey));
+        headingLl.setBackgroundColor(ContextCompat.getColor(context, shoppingTrip.isExpanded() ? R.color.dark_purple : R.color.grey));
         return view;
     }
 
@@ -58,7 +59,8 @@ public class HistoricListsAdapter extends BaseExpandableListAdapter {
         final LinearLayout childItemLl = (LinearLayout) view.findViewById(R.id.list_child_container);
         childItem.setText(productItem.getProduct().trim());
 
-        childItemLl.setBackgroundColor(ContextCompat.getColor(context, productItem.isCurrentClicked() ? R.color.cheese : R.color.grey));
+        childItem.setTextColor(ContextCompat.getColor(context, productItem.isCurrentClicked() ? R.color.dark_purple : R.color.purple));
+        childItemLl.setBackgroundColor(ContextCompat.getColor(context, productItem.isCurrentClicked() ? R.color.lightest_purple : R.color.grey));
         return view;
     }
 

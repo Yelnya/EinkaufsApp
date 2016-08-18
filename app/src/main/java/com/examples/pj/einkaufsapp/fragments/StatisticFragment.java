@@ -44,6 +44,7 @@ public class StatisticFragment extends BaseFragment implements ChangeToolbarInte
     private SharedPreferencesManager sharedPreferencesManager;
     private static final String TOOLBAR_TITLE = "Statistik";
     private ProductItemDataSource dataSource;
+    StatisticAdapter statisticAdapter;
     private List<ProductItem> generalShoppingList;
     private List<ProductItem> productsToAddToCurrentShoppingList;
     private boolean showEditAndDeleteIconInToolbar;
@@ -230,23 +231,17 @@ public class StatisticFragment extends BaseFragment implements ChangeToolbarInte
                             }
                         }
                         for (ProductItem productToAdd : productsToAdd) {
+                            productToAdd.setCurrentClicked(false);
                             currentList.add(productToAdd);
                         }
                         currentList = sortListCategoryAndAlphabetical(currentList);
                         sharedPreferencesManager.saveCurrentShoppingListToLocalStore(currentList);
 
-                        //set all clicked items in statistic to un-selected
-//                        for (ShoppingTrip historicShoppingTrip : historicShoppingTripsList) {
-//                            List<ProductItem> childItemsList = historicShoppingTrip.getBoughtProductsList();
-//                            for (ProductItem childItem : childItemsList) {
-//                                childItem.setCurrentClicked(false);
-//                            }
-//                            historicShoppingTrip.setBoughtProductsList(childItemsList); //refresh product list of shoppingtrip
-//                        }
-//                        listAdapter.notifyDataSetChanged();
-//                        setToolbarShoppingCartIcon(false);
-//                        noSelected = 0;
-
+                        //reset all clicked states
+                        for (ProductItem productItem : generalShoppingList) {
+                            productItem.setCurrentClicked(false);
+                        }
+                        statisticAdapter.notifyDataSetChanged();
                         dialog.dismiss();
                     }
                 })
@@ -278,11 +273,14 @@ public class StatisticFragment extends BaseFragment implements ChangeToolbarInte
     public void drawItemsInList() {
 
         int numberHighestBought = 0;
+        //sort List
+        generalShoppingList = sortListNumberBought(generalShoppingList);
+
         if (generalShoppingList != null && !generalShoppingList.isEmpty()) {
             numberHighestBought = generalShoppingList.get(0).getBought();
         }
 
-        StatisticAdapter statisticAdapter = new StatisticAdapter(generalShoppingList, context, this, numberHighestBought);
+        statisticAdapter = new StatisticAdapter(generalShoppingList, context, this, numberHighestBought);
         final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         generalItemsRv.setLayoutManager(linearLayoutManager);
@@ -297,6 +295,8 @@ public class StatisticFragment extends BaseFragment implements ChangeToolbarInte
      * @param listToSort list
      * @return list
      */
+
+    //TODO must be sorted for integers, not Strings! -> 9 is higher than 10 otherwise
     public List<ProductItem> sortListNumberBought(List<ProductItem> listToSort) {
         Collections.sort(listToSort, Collections.reverseOrder(new StringUtils.GeneralListBoughtComparator()));
         return listToSort;

@@ -95,11 +95,20 @@ public class StatisticAdapter extends BaseAdapter<StatisticAdapter.ArraylistView
             if (item.getBought() < numberHighestBought / 2) {
                 //TEXT RIGHT OF BAR
                 viewHolder.productPercentInvisibleTv.setText(" " + item.getProduct() + " (" + bought + ")");
+                viewHolder.productPercentTv.setText("");
                 runAnimationTextViews(viewHolder.productPercentInvisibleTv);
             } else {
                 //TEXT LEFT OF BAR
                 viewHolder.productPercentTv.setText(item.getProduct() + " (" + bought + ")" + " ");
+                viewHolder.productPercentInvisibleTv.setText("");
                 runAnimationTextViews(viewHolder.productPercentTv);
+            }
+
+            //colors for bars
+            if (item.isCurrentClicked()) {
+                viewHolder.productPercentTv.setBackgroundColor(ContextCompat.getColor(context, R.color.purple));
+            } else {
+                viewHolder.productPercentTv.setBackgroundColor(ContextCompat.getColor(context, R.color.dark_purple));
             }
         } else {
             BottomElementViewHolder viewHolder = (BottomElementViewHolder) holder;
@@ -154,8 +163,6 @@ public class StatisticAdapter extends BaseAdapter<StatisticAdapter.ArraylistView
         @Bind(R.id.product_percent_invisible_tv)
         TextView productPercentInvisibleTv;
 
-//        List<ProductItem> productsToAddToCurrentList = new ArrayList<>();
-
         /**
          * Constructor
          *
@@ -191,29 +198,26 @@ public class StatisticAdapter extends BaseAdapter<StatisticAdapter.ArraylistView
                     for (ProductItem productItem : copyList) {
                         if (product.getId() != productItem.getId()) {
                             productsToAddToCurrentList.add(productItem);
+                            product.setCurrentClicked(true);
+                        } else {
+                            product.setCurrentClicked(false);
                         }
                     }
                     //if not in list, add
                 } else {
                     productPercentTv.setBackgroundColor(ContextCompat.getColor(context, R.color.purple));
                     productsToAddToCurrentList.add(product);
+                    product.setCurrentClicked(true);
                 }
             } else {
                 productPercentTv.setBackgroundColor(ContextCompat.getColor(context, R.color.purple));
                 productsToAddToCurrentList.add(product);
+                product.setCurrentClicked(true);
             }
 
-            //output
-//            System.out.println("------ PRODUCTS IN LIST TO ADD --------");
-//            for (ProductItem productItem : productsToAddToCurrentList) {
-//                System.out.println(productItem.getProduct());
-//            }
             //Show Shopping Cart in Toolbar if > 0 products in productsToAddToCurrentList, otherwise hide
             changeToolbarInterface.showShoppingCartIcon(productsToAddToCurrentList.size() > 0);
             changeToolbarInterface.handOverProductsToAddToCurrentShoppingList(productsToAddToCurrentList);
-
-            //TODO: Click on Shopping Cart should place items from productsToAddToCurrentList into Current Fragment
-
         }
     }
 
@@ -247,6 +251,4 @@ public class StatisticAdapter extends BaseAdapter<StatisticAdapter.ArraylistView
         tv.startAnimation(a);
 
     }
-
-
 }

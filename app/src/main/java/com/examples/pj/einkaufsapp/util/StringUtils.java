@@ -63,9 +63,7 @@ public class StringUtils {
     public static class GeneralListBoughtComparator implements Comparator<ProductItem> {
         @Override
         public int compare(ProductItem left, ProductItem right) {
-            String leftBought = String.valueOf(left.getBought());
-            String rightBought = String.valueOf(right.getBought());
-            return leftBought.compareTo(rightBought);
+            return (left.getBought() - right.getBought());
         }
     }
 }

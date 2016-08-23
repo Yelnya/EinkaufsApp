@@ -60,8 +60,8 @@ public class CurrentListFragment extends BaseFragment implements ChangeToolbarIn
     boolean existingProductInCurrentListFound;
     private CurrentListAdapter currentListAdapter;
     private String toolbarTitle = "";
-    private static final String TOOLBAR_TITLE_FRAGMENT = "Aktuelle Einkaufsliste";
-    private static final String TOOLBAR_TITLE_EDIT = "Löschen/Ändern";
+    private String TOOLBAR_TITLE_FRAGMENT;
+    private String TOOLBAR_TITLE_EDIT;
     private boolean showEditAndDeleteIconInToolbar;
     private boolean showShoppingCartIconInToolbar;
 
@@ -127,10 +127,13 @@ public class CurrentListFragment extends BaseFragment implements ChangeToolbarIn
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        context = getActivity();
+
+        TOOLBAR_TITLE_FRAGMENT = context.getResources().getString(R.string.toolbar_title_current_list);
+        TOOLBAR_TITLE_EDIT = context.getResources().getString(R.string.currentlist_change_delete);
+
         showShoppingCartIconInToolbar = false;
         showEditAndDeleteIconInToolbar = false;
-
-        context = getActivity();
 
         if (sharedPreferencesManager == null) {
             sharedPreferencesManager = SharedPreferencesManager.initSharedPreferences((Activity) context);

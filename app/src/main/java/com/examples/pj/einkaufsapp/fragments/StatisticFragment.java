@@ -42,7 +42,7 @@ public class StatisticFragment extends BaseFragment implements ChangeToolbarInte
 
     private Context context;
     private SharedPreferencesManager sharedPreferencesManager;
-    private static final String TOOLBAR_TITLE = "Statistik";
+    private String TOOLBAR_TITLE;
     private ProductItemDataSource dataSource;
     StatisticAdapter statisticAdapter;
     private List<ProductItem> generalShoppingList;
@@ -121,6 +121,7 @@ public class StatisticFragment extends BaseFragment implements ChangeToolbarInte
         super.onActivityCreated(savedInstanceState);
 
         context = this.getActivity();
+        TOOLBAR_TITLE = context.getResources().getString(R.string.toolbar_title_statistics);
         dataSource = new ProductItemDataSource(context);
 
         if (sharedPreferencesManager == null) {
@@ -164,7 +165,16 @@ public class StatisticFragment extends BaseFragment implements ChangeToolbarInte
             generalShoppingList = sortListNumberBought(generalShoppingList);
         }
 
-        printItemsInList();
+        //remove the products where bought == 0
+        List<ProductItem> generalListCopy = new ArrayList<>();
+        for (ProductItem productItem : generalShoppingList) {
+            if (productItem.getBought() != 0) {
+                generalListCopy.add(productItem);
+            }
+        }
+        generalShoppingList.clear();
+        generalShoppingList.addAll(generalListCopy);
+
         drawItemsInList();
     }
 
@@ -202,8 +212,10 @@ public class StatisticFragment extends BaseFragment implements ChangeToolbarInte
     // ALERT DIALOGS
     //================================================================================
 
+    /**
+     * Build Alert Dialog for Shopping Cart after clicking on one or more items in the list
+     */
     private void makeFinishAlertDialog() {
-
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
         // set title and message
         alertDialogBuilder.setTitle(context.getResources().getText(R.string.dialog_button_historic_finish_title))
@@ -259,17 +271,9 @@ public class StatisticFragment extends BaseFragment implements ChangeToolbarInte
     // Other Methods
     //================================================================================
 
-    public void printItemsInList() {
-        System.out.println("-------- ITEMS IN GENERAL LIST -----------");
-        if (generalShoppingList.size() > 0) {
-            for (ProductItem productItem : generalShoppingList) {
-                System.out.println("Produkt: " + productItem.getProduct() + ", " + productItem.getBought());
-            }
-        } else {
-            System.out.println("Keine Einträge vorhanden");
-        }
-    }
-
+    /**
+     * method to draw the RecyclerView for the product items
+     */
     public void drawItemsInList() {
 
         int numberHighestBought = 0;
@@ -296,7 +300,6 @@ public class StatisticFragment extends BaseFragment implements ChangeToolbarInte
      * @return list
      */
 
-    //TODO must be sorted for integers, not Strings! -> 9 is higher than 10 otherwise
     public List<ProductItem> sortListNumberBought(List<ProductItem> listToSort) {
         Collections.sort(listToSort, Collections.reverseOrder(new StringUtils.GeneralListBoughtComparator()));
         return listToSort;

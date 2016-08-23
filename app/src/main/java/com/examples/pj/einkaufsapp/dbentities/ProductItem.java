@@ -9,6 +9,7 @@ public class ProductItem {
     private String product;
     private String category;
     private int bought;
+    private Integer boughtNonPrimitive;
     private boolean done;
     private boolean favourite;
     private boolean currentClicked;
@@ -71,6 +72,14 @@ public class ProductItem {
 
     public void setBought(int bought) {
         this.bought = bought;
+    }
+
+    public Integer getBoughtNonPrimitive() {
+        return Integer.valueOf(bought);
+    }
+
+    public void setBoughtNonPrimitive(Integer boughtNonPrimitive) {
+        this.boughtNonPrimitive = boughtNonPrimitive;
     }
 
     public boolean isFavourite() {

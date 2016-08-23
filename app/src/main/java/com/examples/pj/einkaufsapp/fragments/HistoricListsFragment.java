@@ -35,7 +35,7 @@ public class HistoricListsFragment extends BaseFragment {
     private boolean showShoppingCartIconInToolbar;
     private boolean showEditAndDeleteIconInToolbar;
     private String toolbarTitle = "";
-    private static final String TOOLBAR_TITLE_FRAGMENT = "Einkauf vom ...";
+    private String TOOLBAR_TITLE_FRAGMENT;
 
     @Bind(R.id.expandable_list)
     ExpandableListView expandableListView;
@@ -128,6 +128,7 @@ public class HistoricListsFragment extends BaseFragment {
         super.onActivityCreated(savedInstanceState);
 
         context = super.getActivity();
+        TOOLBAR_TITLE_FRAGMENT = context.getResources().getString(R.string.toolbar_title_historic_list);
         noSelected = 0;
 
         showEditAndDeleteIconInToolbar = false;

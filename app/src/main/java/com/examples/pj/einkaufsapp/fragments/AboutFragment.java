@@ -1,5 +1,6 @@
 package com.examples.pj.einkaufsapp.fragments;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import com.examples.pj.einkaufsapp.R;
@@ -10,9 +11,10 @@ import com.examples.pj.einkaufsapp.R;
 public class AboutFragment extends BaseFragment {
     public static final String LOG_TAG = AboutFragment.class.getSimpleName();
 
+    private Context context;
     private boolean showEditAndDeleteIconInToolbar;
     private boolean showShoppingCartIconInToolbar;
-    private static final String TOOLBAR_TITLE = "Über";
+    private String TOOLBAR_TITLE;
 
     //================================================================================
     // Fragment Instantiation
@@ -76,6 +78,8 @@ public class AboutFragment extends BaseFragment {
     public void onResume() {
         super.onResume();
 
+        context = this.getActivity();
+        TOOLBAR_TITLE = context.getResources().getString(R.string.toolbar_title_about);
         showShoppingCartIconInToolbar = false;
         showEditAndDeleteIconInToolbar = false;
         setToolbarEditAndDeleteIcon(showEditAndDeleteIconInToolbar);

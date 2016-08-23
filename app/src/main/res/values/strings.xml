@@ -1,11 +1,11 @@
 <resources>
     <!--Base-->
-    <string name="app_name">EinkaufsApp</string>
-    <string name="action_settings">Settings</string>
+    <string name="app_name" translatable="false">Comfy Shopping</string>
+    <string name="action_settings" translatable="false">Settings</string>
 
     <!--Left Side Menu-->
-    <string name="leftsidemenu_open">Open Left Side Menu</string>
-    <string name="leftsidemenu_close">Close Left Side Menu</string>
+    <string name="leftsidemenu_open" translatable="false">Open Left Side Menu</string>
+    <string name="leftsidemenu_close" translatable="false">Close Left Side Menu</string>
     <string name="leftsidemenu_current_shoppinglist">Aktuelle Liste</string>
     <string name="leftsidemenu_historic_shoppinglists">Erledigte Einkäufe</string>
     <string name="leftsidemenu_statistics">Statistik</string>
@@ -13,21 +13,26 @@
     <string name="leftsidemenu_exit">Beenden</string>
 
     <!--Toolbar-->
-    <string name="toolbar_edit_iv_cd">Icon Edit</string>
-    <string name="toolbar_delete_iv_cd">Icon Delete</string>
-    <string name="toolbar_shopping_cart_iv_cd">Icon Shopping Cart</string>
+    <string name="toolbar_edit_iv_cd" translatable="false">Icon Edit</string>
+    <string name="toolbar_delete_iv_cd" translatable="false">Icon Delete</string>
+    <string name="toolbar_shopping_cart_iv_cd" translatable="false">Icon Shopping Cart</string>
     <string name="toolbar_arrow_up_iv_cd">Icon Pfeil nach oben</string>
     <string name="toolbar_arrow_down_iv_cd">Icon Pfeil nach unten</string>
+    <string name="toolbar_title_current_list">Aktuelle Einkaufsliste</string>
+    <string name="toolbar_title_historic_list">Historie</string>
+    <string name="toolbar_title_statistics">Statistik</string>
+    <string name="toolbar_title_about">Über</string>
 
     <!--Current List Fragment-->
     <string name="editText_hint_product">Produktname</string>
-    <string name="button_add_product">+</string>
+    <string name="button_add_product" translatable="false">+</string>
     <string name="editText_errorMessage">Das Feld darf nicht leer sein und keine Sonderzeichen enthalten.</string>
-    <string name="cab_delete">Einträge löschen</string>
+    <string name="currentlist_change_delete">Löschen/Ändern</string>
+    <string name="cab_delete">Eintrag löschen</string>
     <string name="cab_change">Eintrag ändern</string>
     <string name="cab_checked_string">ausgewählt</string>
-    <string name="currentList_noproductinlist_tv">HINWEIS: \nEs sind noch keine Einträge in Ihrer Einkaufsliste vorhanden. Fügen Sie ein Produkt hinzu, indem Sie oben den Namen und die Kategorie des Produkts eintragen und dann auf das + Symbol klicken. </string>
-    <string name="currentList_howtouse_tv">HINWEIS: \nWenn Sie kurz auf ein Produkt in Ihrer Liste klicken, markieren Sie es als erledigt. Klicken Sie lang auf ein Produkt, so können Sie es bearbeiten. Wenn Sie auf den Knopf \"Einkauf abschliessen\" klicken, speichern Sie den Einkauf in ihre \"Erledigten Einkäufe\" und beginnen eine neue Einkaufsliste. </string>
+    <string name="currentList_noproductinlist_tv">HINWEIS: \nEs sind noch keine Einträge in Ihrer Einkaufsliste vorhanden. Fügen Sie ein Produkt hinzu, indem Sie oben den Namen und die Kategorie des Produkts eintragen und dann auf das + Symbol klicken.</string>
+    <string name="currentList_howtouse_tv">HINWEIS: \nWenn Sie kurz auf ein Produkt in Ihrer Liste klicken, markieren Sie es als erledigt. Klicken Sie lang auf ein Produkt, so können Sie es bearbeiten. Wenn Sie auf den Knopf \"Einkauf abschliessen\" klicken, speichern Sie den Einkauf in ihre \"Erledigten Einkäufe\" und beginnen eine neue Einkaufsliste.</string>
 
     <!--Historic List Fragment-->
     <string name="top_hint_no_shopping_trips">HINWEIS: \nSie haben noch keine Einkäufe abgeschlossen.\nUm einen Einkauf abzuschliessen, markieren Sie in Ihrer aktuellen Einkaufsliste Produkte als erledigt und drücken Sie den Knopf \"Einkauf abschliessen\"</string>
@@ -35,12 +40,12 @@
     <string name="header_bought_items">(%1$d Artikel)</string>
 
     <!--Statistic Fragment-->
-    <string name="statistic_product_text_right">&#160; %1$s (%2$s)</string>
-    <string name="statistic_product_text_left">%1$s (%2$s) &#160;</string>
+    <string name="statistic_product_text_right" translatable="false">&#160; %1$s (%2$s)</string>
+    <string name="statistic_product_text_left" translatable="false">%1$s (%2$s) &#160;</string>
 
     <!--About Fragment-->
-    <string name="about_what_is">Diese Applikation soll den Ablauf Ihrer Einkäufe erleichtern.\n\nDie von Ihnen hinzugefügten Produkte werden nach Kategorien sortiert, können bearbeitet und bequem wieder entfernt werden.\n\nWenn Sie einen Einkauf abschliessen, so werden die Produkte in den "Erledigten Einkäufen" abgespeichert. Diese dienen nicht nur als Übersicht, sondern aus diesen heraus können Sie wiederum Produkte zur aktuellen Liste hinzufügen - so können Sie nichts mehr vergessen!\n\nUnd wenn Sie Ihr Einkaufsverhalten interessiert, so haben Sie in dieser App auch die Möglichkeit, eine Stastik über alle Einkäufe und Artikel einzusehen.\n</string>
-    <string name="about_disclaimer">&#169; 2016 :: TripleJ :: Yelnya</string>
+    <string name="about_what_is">Diese Applikation soll den Ablauf Ihrer Einkäufe erleichtern.\n\nDie von Ihnen hinzugefügten Produkte werden nach Kategorien sortiert, können bearbeitet und bequem wieder entfernt werden.\n\nWenn Sie einen Einkauf abschliessen, so werden die Produkte in den "Erledigten Einkäufen" abgespeichert. Diese dienen nicht nur als Übersicht, sondern aus diesen heraus können Sie wiederum Produkte zur aktuellen Liste hinzufügen - so können Sie nichts mehr vergessen!\n\nUnd wenn Sie Ihr Einkaufsverhalten interessiert, so haben Sie in dieser App auch die Möglichkeit, eine Stastik über alle Einkäufe und Artikel einzusehen. Auch von hier aus können Sie ein oder mehrere Produkte in den Aktuellen Warenkorb legen.\n\nViel Spass beim Benutzen der App!\n</string>
+    <string name="about_disclaimer" translatable="false">&#169; 2016 :: TripleJ :: Yelnya</string>
 
     <!--Buttons-->
     <string name="currentList_finish_currentlist_btn">Einkauf abschliessen</string>
@@ -62,7 +67,7 @@
 
     <!--Alert Dialogs-->
     <string name="dialog_title">Listeneintrag ändern</string>
-    <string name="dialog_title_product">Name:</string>
+    <string name="dialog_title_product" translatable="false">Name:</string>
     <string name="dialog_title_category">Kategorie:</string>
     <string name="dialog_title_delete">Löschen</string>
     <string name="dialog_message_delete">Wollen Sie das Produkt wirklich aus der Liste löschen?</string>

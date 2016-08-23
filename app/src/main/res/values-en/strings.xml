@@ -24,7 +24,6 @@
     <string name="toast_shopping_trip_closed">Purchase finished</string>
     <string name="toolbar_arrow_down_iv_cd">Icon arrow down</string>
     <string name="toolbar_arrow_up_iv_cd">Icon arrow up</string>
-    <string name="header_title_date">Purchase from %1$s</string>
     <string name="dialog_message_delete">Do you really want to delete the product from the list?</string>
     <string name="dialog_button_historic_finish_message">Do you want to add the selected products to your current list?</string>
     <string name="editText_errorMessage">Field must not be empty and must not contain special characters.</string>

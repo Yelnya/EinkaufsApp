@@ -49,9 +49,37 @@ public class DateUtils {
         String dateString =  dateFormatterDate.format(date);
         DateFormat dateFormatterHourMinute = new SimpleDateFormat("hh:mm", Locale.GERMAN);
         String hourMinuteString =  dateFormatterHourMinute.format(date);
-        return (dateString + ", " + hourMinuteString + " Uhr");
+        return (dateString + ", " + hourMinuteString);
     }
 
-    //TODO AM PM transfer
+    // input 27.07.2016 11:45 (string)
+    // output 2016-07-27, 11:45 AM / PM
+    public static String stringDateToHourMinuteStringENG (String stringDate) {
+        DateFormat format = new SimpleDateFormat("dd.MM.yyyy hh:mm", Locale.GERMAN);
+        Date date = null;
+        try {
+            date = format.parse(stringDate);
+        } catch (ParseException e) {
+            Log.d(LOG_TAG, e.toString());
+        }
+        if (date == null) {
+            date = getCurrentDate();
+        }
+        DateFormat dateFormatterDate = new SimpleDateFormat("yyyy-MM-dd", Locale.GERMAN);
+        String dateString =  dateFormatterDate.format(date);
 
+        //AM PM transfer
+        int timeHour = Integer.parseInt(stringDate.substring(11, 13));
+        String timeMinute = stringDate.substring(14, 16);
+        String AmPm = "";
+        if(timeHour > 11) {
+            if (timeHour > 12) {
+                timeHour =- 12;
+            }
+            AmPm = "PM";
+        } else if (timeHour < 12){
+            AmPm = "AM";
+        }
+        return (dateString + ", " + timeHour + ":" + timeMinute + " " + AmPm);
+    }
 }

@@ -30,6 +30,10 @@ public class ShoppingTrip {
         return DateUtils.stringDateToHourMinuteString(dateCompleted);
     }
 
+    public String getNiceDateCompletedENG() {
+        return DateUtils.stringDateToHourMinuteStringENG(dateCompleted);
+    }
+
     public void setDateCompleted(String dateCompleted) {
         this.dateCompleted = dateCompleted;
     }

@@ -2,6 +2,7 @@ package com.examples.pj.einkaufsapp.adapters;
 
 import android.content.Context;
 import android.support.v4.content.ContextCompat;
+import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,12 +38,16 @@ public class HistoricListsAdapter extends BaseExpandableListAdapter {
         final LinearLayout headingLl = (LinearLayout) view.findViewById(R.id.historiclist_header_container);
         final TextView headingBoughtItems = (TextView) view.findViewById(R.id.header_bought_items);
         final ImageView headingIv = (ImageView) view.findViewById(R.id.btn_expand_toggle);
+        //set date
+        if (!DateFormat.is24HourFormat(context)) {  //determine if smartphone uses 12h format
+            heading.setText(shoppingTrip.getNiceDateCompletedENG().trim());
+        } else {
+            heading.setText(shoppingTrip.getNiceDateCompleted().trim());
+        }
 
-        heading.setText(shoppingTrip.getNiceDateCompleted().trim());
         heading.setTextColor(ContextCompat.getColor(context, shoppingTrip.isExpanded() ? R.color.light_purple : R.color.dark_purple));
         headingBoughtItems.setText(context.getResources().getString(R.string.header_bought_items, getChildrenCount(groupPosition)));
         headingBoughtItems.setTextColor(ContextCompat.getColor(context, shoppingTrip.isExpanded() ? R.color.light_purple : R.color.dark_purple));
-        //TODO color circle change to purple
         headingIv.setImageResource(shoppingTrip.isExpanded() ? R.drawable.circle_minus : R.drawable.circle_plus);
         headingLl.setBackgroundColor(ContextCompat.getColor(context, shoppingTrip.isExpanded() ? R.color.dark_purple : R.color.grey));
         return view;

@@ -114,9 +114,9 @@ public class StatisticAdapter extends BaseAdapter<StatisticAdapter.ArraylistView
             BottomElementViewHolder viewHolder = (BottomElementViewHolder) holder;
 
             if (generalList == null || generalList.isEmpty()) {
-                viewHolder.noProductInListTv.setVisibility(View.VISIBLE);
+                viewHolder.noProductsInListLl.setVisibility(View.VISIBLE);
             } else {
-                viewHolder.noProductInListTv.setVisibility(View.GONE);
+                viewHolder.noProductsInListLl.setVisibility(View.GONE);
             }
         }
     }
@@ -226,8 +226,8 @@ public class StatisticAdapter extends BaseAdapter<StatisticAdapter.ArraylistView
      */
     public class BottomElementViewHolder extends BaseViewHolder {
 
-        @Bind(R.id.generallist_noproductinlist_tv)
-        TextView noProductInListTv;
+        @Bind(R.id.generallist_noproductinlist_ll)
+        LinearLayout noProductsInListLl;
 
         /**
          * Constructor

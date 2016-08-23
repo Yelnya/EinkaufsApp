@@ -68,7 +68,8 @@ public class CurrentListAdapter extends BaseAdapter<CurrentListAdapter.Arraylist
      * @param currentList              currentList from Fragment
      * @param sharedPreferencesManager to store data locally
      */
-    public CurrentListAdapter(List<ProductItem> currentList, Context context, ProductItemDataSource dataSource, SharedPreferencesManager sharedPreferencesManager, ChangeToolbarInterface changeToolbarInterface, boolean editDeleteToolbarActive) {
+    public CurrentListAdapter(List<ProductItem> currentList, Context context, ProductItemDataSource dataSource, SharedPreferencesManager sharedPreferencesManager,
+                              ChangeToolbarInterface changeToolbarInterface, boolean editDeleteToolbarActive) {
         this.currentList = currentList;
         this.context = context;
         this.dataSource = dataSource;
@@ -102,8 +103,18 @@ public class CurrentListAdapter extends BaseAdapter<CurrentListAdapter.Arraylist
         if (currentList != null) {
             currentList.clear();
             currentList = sharedPreferencesManager.loadCurrentShoppingListFromLocalStore();
-        } else {
+        }
+        if (currentList == null) {
             currentList = new ArrayList<>();
+        }
+
+        System.out.println("-----ENTRIES IN CURRENT LIST AFTER DELETE-----");
+        if (currentList.size() == 0) {
+            System.out.println("No products in list");
+        } else {
+            for (ProductItem productItem : currentList) {
+                System.out.println("Product: "+ productItem.getProduct());
+            }
         }
 
         if (viewType == LIST_ITEMS) {
@@ -111,7 +122,7 @@ public class CurrentListAdapter extends BaseAdapter<CurrentListAdapter.Arraylist
             ProductItem item = currentList.get(position);
             getIconMatchingCategory(item, viewHolder.categoryIconIv, viewHolder.itemContainerLl);
             viewHolder.productNameTv.setText(item.getProduct());
-            // Hier prüfen, ob Eintrag abgehakt ist. Falls ja, Text durchstreichen
+            // check if entry is checked, if yes, strike through
             if (item.isDone()) {
                 viewHolder.productNameTv.setPaintFlags(viewHolder.productNameTv.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
                 viewHolder.productNameTv.setTextColor(Color.rgb(175, 175, 175));

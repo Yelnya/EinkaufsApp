@@ -393,16 +393,13 @@ public class CurrentListFragment extends BaseFragment implements ChangeToolbarIn
                     public void onClick(DialogInterface dialog, int id) {
                         currentList.remove(itemToDelete);
                         sharedPreferencesManager.saveCurrentShoppingListToLocalStore(currentList); //save changed list to SP
-                        currentListAdapter.notifyDataSetChanged();  //refresh Adapter View
-
                         toolbarBackToNormal();
-                        dialog.dismiss();
+                        initializeProductItemsListView();
                     }
                 })
                 .setNegativeButton(R.string.dialog_button_negative, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         toolbarBackToNormal();
-                        dialog.dismiss();
                     }
                 });
         AlertDialog alertDialog = alertDialogBuilder.create();

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Comfy Shopping</string>
+    <string name="app_name">GrocS</string>
     <string name="cab_change">Change Entry</string>
     <string name="cab_checked_string">selected</string>
     <string name="cab_delete">Delete entry</string>

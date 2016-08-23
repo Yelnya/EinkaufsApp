@@ -181,7 +181,7 @@ public class StatisticAdapter extends BaseAdapter<StatisticAdapter.ArraylistView
             int pos = getAdapterPosition();
             ProductItem product = generalList.get(pos);
 
-            if (productsToAddToCurrentList.size() > 0) {
+            if (!productsToAddToCurrentList.isEmpty()) {
                 boolean foundInList = false;
                 for (ProductItem productItem : productsToAddToCurrentList) {
                     if (productItem.getId() == product.getId()) {
@@ -216,7 +216,7 @@ public class StatisticAdapter extends BaseAdapter<StatisticAdapter.ArraylistView
             }
 
             //Show Shopping Cart in Toolbar if > 0 products in productsToAddToCurrentList, otherwise hide
-            changeToolbarInterface.showShoppingCartIcon(productsToAddToCurrentList.size() > 0);
+            changeToolbarInterface.showShoppingCartIcon(!productsToAddToCurrentList.isEmpty());
             changeToolbarInterface.handOverProductsToAddToCurrentShoppingList(productsToAddToCurrentList);
         }
     }

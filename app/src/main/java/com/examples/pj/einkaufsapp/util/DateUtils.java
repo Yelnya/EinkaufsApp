@@ -9,7 +9,11 @@ import java.util.Date;
 import java.util.Locale;
 
 public class DateUtils {
-    private final static String LOG_TAG = "DateUtils";
+    private static final String LOG_TAG = "DateUtils";
+    private static final String DATE_FORMAT = "dd.MM.yyyy hh:mm";
+
+    private DateUtils() {
+    }
 
     public static Date getCurrentDate() {
         return new Date();
@@ -18,7 +22,7 @@ public class DateUtils {
     // input Date
     // output 27.07.2016 11:45
     public static String dateToString (Date date) {
-        DateFormat dateFormatter = new SimpleDateFormat("dd.MM.yyyy hh:mm", Locale.GERMAN);
+        DateFormat dateFormatter = new SimpleDateFormat(DATE_FORMAT, Locale.GERMAN);
         return dateFormatter.format(date);
     }
 
@@ -29,13 +33,13 @@ public class DateUtils {
         String dateString =  dateFormatterDate.format(date);
         DateFormat dateFormatterHourMinute = new SimpleDateFormat("hh:mm", Locale.GERMAN);
         String hourMinuteString =  dateFormatterHourMinute.format(date);
-        return (dateString + ", " + hourMinuteString + " Uhr");
+        return dateString + ", " + hourMinuteString + " Uhr";
     }
 
     // input 27.07.2016 11:45 (string)
     // output 27.07.2016, 11:45 Uhr
     public static String stringDateToHourMinuteString (String stringDate) {
-        DateFormat format = new SimpleDateFormat("dd.MM.yyyy hh:mm", Locale.GERMAN);
+        DateFormat format = new SimpleDateFormat(DATE_FORMAT, Locale.GERMAN);
         Date date = null;
         try {
             date = format.parse(stringDate);
@@ -49,13 +53,13 @@ public class DateUtils {
         String dateString =  dateFormatterDate.format(date);
         DateFormat dateFormatterHourMinute = new SimpleDateFormat("hh:mm", Locale.GERMAN);
         String hourMinuteString =  dateFormatterHourMinute.format(date);
-        return (dateString + ", " + hourMinuteString);
+        return dateString + ", " + hourMinuteString;
     }
 
     // input 27.07.2016 11:45 (string)
     // output 2016-07-27, 11:45 AM / PM
     public static String stringDateToHourMinuteStringENG (String stringDate) {
-        DateFormat format = new SimpleDateFormat("dd.MM.yyyy hh:mm", Locale.GERMAN);
+        DateFormat format = new SimpleDateFormat(DATE_FORMAT, Locale.GERMAN);
         Date date = null;
         try {
             date = format.parse(stringDate);
@@ -71,15 +75,15 @@ public class DateUtils {
         //AM PM transfer
         int timeHour = Integer.parseInt(stringDate.substring(11, 13));
         String timeMinute = stringDate.substring(14, 16);
-        String AmPm = "";
+        String amPm = "";
         if(timeHour > 11) {
             if (timeHour > 12) {
                 timeHour =- 12;
             }
-            AmPm = "PM";
+            amPm = "PM";
         } else if (timeHour < 12){
-            AmPm = "AM";
+            amPm = "AM";
         }
-        return (dateString + ", " + timeHour + ":" + timeMinute + " " + AmPm);
+        return dateString + ", " + timeHour + ":" + timeMinute + " " + amPm;
     }
 }

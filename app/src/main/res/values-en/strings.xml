@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">GrocS</string>
+    <string name="app_name">GrocSS</string>
     <string name="cab_change">Change Entry</string>
     <string name="cab_checked_string">selected</string>
     <string name="cab_delete">Delete entry</string>
@@ -29,11 +29,13 @@
     <string name="editText_errorMessage">Field must not be empty and must not contain special characters.</string>
     <string name="dialog_button_finish_message">Products marked as done will be removed from your current shopping list and saved to your shopping history. Unmarked products will remain in your current list.</string>
     <string name="header_bought_items">(%1$d products)</string>
-    <string name="about_what_is">This application will help to make your standard grocery shopping trips easier.\n\nThe products you add to your list will be sorted by categories, can be changed anytime, and can be easily removed.\n\nIf you finish your current shopping trip, the products marked as done are transferred into your shopping history. This history not only serves for overview purposes, but you also can select previously purchased products to be added to your current shopping list.\n\nAnd if you are interested in your shopping behaviour, this app provides a statistics module for your purchases. Again, you can select and add products from the statistics directly to your current shopping list.\n\nHave fun using this app!\n</string>
+    <string name="about_what_is">Welcome to GrocSS - Grocery Shopping Simple. This application will help to make your standard grocery shopping trips easier.\n\nThe products you add to your list will be sorted by categories, can be changed anytime, and can be easily removed.\n\nIf you finish your current shopping trip, the products marked as done are transferred into your shopping history. This history not only serves for overview purposes, but you also can select previously purchased products to be added to your current shopping list.\n\nAnd if you are interested in your shopping behaviour, this app provides a statistics module for your purchases. Again, you can select and add products from the statistics directly to your current shopping list.\n\nHave fun using this app!\n</string>
     <string name="currentList_howtouse_tv">HINT:\nWith a click on the product in your list it will be marked as done. By clicking long you can edit the chosen product. If you hit the button \"Finish purchase\" you will save all the products marked as done into your shopping history, while the others will remain in your current shopping list.</string>
     <string name="currentList_noproductinlist_tv">HINT:\nThere are no entries in your shopping list. Add a product by typing the name into the field above and selecting a category, then hit the + symbol.</string>
     <string name="top_hint_no_shopping_trips">HINT:\nYou did not finish a shopping trip yet.\nTo finish a shopping trip, mark some of your products in your current shopping list as done and hit the button \"Finish purchase\"</string>
     <string name="currentlist_change_delete">Change/Delete</string>
+    <string name="circle_plus_cd">Circle Plus</string>
+    <string name="circle_minus_cd">Circle Minus</string>
 
     <string name="toolbar_title_current_list">Current Shoppinglist</string>
     <string name="toolbar_title_historic_list">History</string>

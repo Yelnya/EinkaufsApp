@@ -1,6 +1,6 @@
 <resources>
     <!--Base-->
-    <string name="app_name" translatable="false">GrocS</string>
+    <string name="app_name" translatable="false">GrocSS</string>
     <string name="action_settings" translatable="false">Settings</string>
 
     <!--Left Side Menu-->
@@ -37,13 +37,15 @@
     <!--Historic List Fragment-->
     <string name="top_hint_no_shopping_trips">HINWEIS: \nSie haben noch keine Einkäufe abgeschlossen.\nUm einen Einkauf abzuschliessen, markieren Sie in Ihrer aktuellen Einkaufsliste Produkte als erledigt und drücken Sie den Knopf \"Einkauf abschliessen\"</string>
     <string name="header_bought_items">(%1$d Artikel)</string>
+    <string name="circle_plus_cd">Circle Plus</string>
+    <string name="circle_minus_cd">Circle Minus</string>
 
     <!--Statistic Fragment-->
     <string name="statistic_product_text_right" translatable="false">&#160; %1$s (%2$s)</string>
     <string name="statistic_product_text_left" translatable="false">%1$s (%2$s) &#160;</string>
 
     <!--About Fragment-->
-    <string name="about_what_is">Diese Applikation soll den Ablauf Ihrer Einkäufe erleichtern.\n\nDie von Ihnen hinzugefügten Produkte werden nach Kategorien sortiert, können bearbeitet und bequem wieder entfernt werden.\n\nWenn Sie einen Einkauf abschliessen, so werden die Produkte in den "Erledigten Einkäufen" abgespeichert. Diese dienen nicht nur als Übersicht, sondern aus diesen heraus können Sie wiederum Produkte zur aktuellen Liste hinzufügen - so können Sie nichts mehr vergessen!\n\nUnd wenn Sie Ihr Einkaufsverhalten interessiert, so haben Sie in dieser App auch die Möglichkeit, eine Stastik über alle Einkäufe und Artikel einzusehen. Auch von hier aus können Sie ein oder mehrere Produkte in den Aktuellen Warenkorb legen.\n\nViel Spass beim Benutzen der App!\n</string>
+    <string name="about_what_is">Willkommen bei GrocSS - Grocery Shopping Simple. Diese Applikation soll den Ablauf Ihrer Einkäufe erleichtern.\n\nDie von Ihnen hinzugefügten Produkte werden nach Kategorien sortiert, können bearbeitet und bequem wieder entfernt werden.\n\nWenn Sie einen Einkauf abschliessen, so werden die Produkte in den "Erledigten Einkäufen" abgespeichert. Diese dienen nicht nur als Übersicht, sondern aus diesen heraus können Sie wiederum Produkte zur aktuellen Liste hinzufügen - so können Sie nichts mehr vergessen!\n\nUnd wenn Sie Ihr Einkaufsverhalten interessiert, so haben Sie in dieser App auch die Möglichkeit, eine Statistik über alle Einkäufe und Artikel einzusehen. Auch von hier aus können Sie ein oder mehrere Produkte in den Aktuellen Warenkorb legen.\n\nViel Spass beim Benutzen der App!\n</string>
     <string name="about_disclaimer" translatable="false">&#169; 2016 :: TripleJ :: Yelnya</string>
 
     <!--Buttons-->

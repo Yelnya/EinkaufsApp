@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.Toolbar
+<android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/my_toolbar"
     style="@style/Toolbar"
-    xmlns:android="http://schemas.android.com/apk/res/android"
     android:minHeight="?attr/actionBarSize">
 
     <LinearLayout
@@ -22,35 +21,37 @@
             android:lines="1"
             android:textColor="@color/white"
             android:textSize="@dimen/font_big"
-            android:textStyle="bold"/>
+            android:textStyle="bold" />
 
         <ImageView
             android:id="@+id/toolbarShoppingCartIv"
             android:layout_width="@dimen/toolbar_iv_width"
             android:layout_height="match_parent"
+            android:layout_marginEnd="@dimen/padding_smaller"
             android:layout_marginRight="@dimen/padding_smaller"
             android:contentDescription="@string/toolbar_shopping_cart_iv_cd"
             android:src="@drawable/ic_shopping_cart_white_24dp"
-            android:visibility="gone"/>
+            android:visibility="gone" />
 
         <ImageView
             android:id="@+id/toolbarArrowUpIv"
             android:layout_width="@dimen/toolbar_iv_width"
             android:layout_height="match_parent"
+            android:layout_marginEnd="@dimen/padding_smaller"
             android:layout_marginRight="@dimen/padding_smaller"
             android:contentDescription="@string/toolbar_arrow_up_iv_cd"
             android:src="@drawable/ic_arrow_upward_white_24dp"
-            android:visibility="gone"/>
+            android:visibility="gone" />
 
         <ImageView
             android:id="@+id/toolbarArrowDownIv"
             android:layout_width="@dimen/toolbar_iv_width"
             android:layout_height="match_parent"
+            android:layout_marginEnd="@dimen/padding_smaller"
             android:layout_marginRight="@dimen/padding_smaller"
             android:contentDescription="@string/toolbar_arrow_down_iv_cd"
             android:src="@drawable/ic_arrow_downward_white_24dp"
-            android:visibility="gone"/>
-
+            android:visibility="gone" />
 
         <ImageView
             android:id="@+id/toolbarEditIv"
@@ -60,7 +61,7 @@
             android:layout_marginStart="@dimen/padding_smaller"
             android:contentDescription="@string/toolbar_edit_iv_cd"
             android:src="@drawable/icon_actionbar_edit"
-            android:visibility="gone"/>
+            android:visibility="gone" />
 
         <ImageView
             android:id="@+id/toolbarDeleteIv"
@@ -70,9 +71,8 @@
             android:layout_marginRight="@dimen/padding_smaller"
             android:contentDescription="@string/toolbar_delete_iv_cd"
             android:src="@drawable/trash_bin_white"
-            android:visibility="gone"/>
+            android:visibility="gone" />
 
     </LinearLayout>
-
 
 </android.support.v7.widget.Toolbar>

@@ -23,8 +23,10 @@
     <dimen name="toolbar_iv_width">25dp</dimen>
     <dimen name="iv_header_width">30dp</dimen>
     <dimen name="small_button_width">40dp</dimen>
+    <dimen name="dialog_edit_width">80dp</dimen>
 
     <!-- spacing -->
+    <dimen name="padding_one">1dp</dimen>
     <dimen name="padding_smallest">2dp</dimen>
     <dimen name="padding_little_smallest">3dp</dimen>
     <dimen name="padding_little">5dp</dimen>

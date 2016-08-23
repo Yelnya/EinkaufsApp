@@ -42,7 +42,7 @@ public class StatisticFragment extends BaseFragment implements ChangeToolbarInte
 
     private Context context;
     private SharedPreferencesManager sharedPreferencesManager;
-    private String TOOLBAR_TITLE;
+    private String toolbarTitle;
     private ProductItemDataSource dataSource;
     StatisticAdapter statisticAdapter;
     private List<ProductItem> generalShoppingList;
@@ -84,13 +84,13 @@ public class StatisticFragment extends BaseFragment implements ChangeToolbarInte
 
     @Override
     protected void setToolbar() {
-        getAttachedActivity().setToolbar(toolbar, true, TOOLBAR_TITLE, showEditAndDeleteIconInToolbar, showShoppingCartIconInToolbar); //Icon displayed, Titel of Toolbar
+        getAttachedActivity().setToolbar(toolbar, true, toolbarTitle, showEditAndDeleteIconInToolbar, showShoppingCartIconInToolbar); //Icon displayed, Titel of Toolbar
     }
 
     @Override
     protected void setToolbarEditAndDeleteIcon(boolean showEditAndDeleteIconInToolbar) {
         if (toolbarTv != null) {
-            toolbarTv.setText(TOOLBAR_TITLE);
+            toolbarTv.setText(toolbarTitle);
         }
     }
 
@@ -98,7 +98,7 @@ public class StatisticFragment extends BaseFragment implements ChangeToolbarInte
     protected void setToolbarShoppingCartIcon(boolean showShoppingCartIconInToolbar) {
         toolbarShoppingCartIv.setVisibility(showShoppingCartIconInToolbar ? View.VISIBLE : View.GONE);
         if (toolbarTv != null) {
-            toolbarTv.setText(TOOLBAR_TITLE);
+            toolbarTv.setText(toolbarTitle);
         }
     }
 
@@ -121,7 +121,7 @@ public class StatisticFragment extends BaseFragment implements ChangeToolbarInte
         super.onActivityCreated(savedInstanceState);
 
         context = this.getActivity();
-        TOOLBAR_TITLE = context.getResources().getString(R.string.toolbar_title_statistics);
+        toolbarTitle = context.getResources().getString(R.string.toolbar_title_statistics);
         dataSource = new ProductItemDataSource(context);
 
         if (sharedPreferencesManager == null) {
@@ -159,9 +159,11 @@ public class StatisticFragment extends BaseFragment implements ChangeToolbarInte
 
         generalShoppingList = new ArrayList<>();
         generalShoppingList = dataSource.getAllProductItems();
-
+        if (generalShoppingList == null) {
+            generalShoppingList = new ArrayList<>();
+        }
         //sort List referring to number bought
-        if (generalShoppingList != null && !generalShoppingList.isEmpty()) {
+        if (!generalShoppingList.isEmpty()) {
             generalShoppingList = sortListNumberBought(generalShoppingList);
         }
 
@@ -228,7 +230,7 @@ public class StatisticFragment extends BaseFragment implements ChangeToolbarInte
 
                         //transfer of selected List to currentList
                         List<ProductItem> currentList = sharedPreferencesManager.loadCurrentShoppingListFromLocalStore();
-                        List<ProductItem> productsToAdd = new ArrayList<ProductItem>();
+                        List<ProductItem> productsToAdd = new ArrayList<>();
 
                         for (ProductItem selectedProduct : productsToAddToCurrentShoppingList) {
                             boolean productFound = false;

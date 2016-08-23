@@ -63,7 +63,7 @@ public class StringUtils {
     public static class GeneralListBoughtComparator implements Comparator<ProductItem> {
         @Override
         public int compare(ProductItem left, ProductItem right) {
-            return (left.getBought() - right.getBought());
+            return left.getBought() - right.getBought();
         }
     }
 }

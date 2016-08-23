@@ -35,7 +35,7 @@ public class HistoricListsFragment extends BaseFragment {
     private boolean showShoppingCartIconInToolbar;
     private boolean showEditAndDeleteIconInToolbar;
     private String toolbarTitle = "";
-    private String TOOLBAR_TITLE_FRAGMENT;
+    private String toolbarTitleFragment;
 
     @Bind(R.id.expandable_list)
     ExpandableListView expandableListView;
@@ -117,6 +117,7 @@ public class HistoricListsFragment extends BaseFragment {
 
     @Override
     protected void onCleanUp() {
+        //not needed
     }
 
     //================================================================================
@@ -128,7 +129,7 @@ public class HistoricListsFragment extends BaseFragment {
         super.onActivityCreated(savedInstanceState);
 
         context = super.getActivity();
-        TOOLBAR_TITLE_FRAGMENT = context.getResources().getString(R.string.toolbar_title_historic_list);
+        toolbarTitleFragment = context.getResources().getString(R.string.toolbar_title_historic_list);
         noSelected = 0;
 
         showEditAndDeleteIconInToolbar = false;
@@ -155,7 +156,7 @@ public class HistoricListsFragment extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
-        toolbarTitle = TOOLBAR_TITLE_FRAGMENT;
+        toolbarTitle = toolbarTitleFragment;
         setToolbarEditAndDeleteIcon(showEditAndDeleteIconInToolbar);
         setToolbarShoppingCartIcon(showShoppingCartIconInToolbar);
 
@@ -181,7 +182,6 @@ public class HistoricListsFragment extends BaseFragment {
             ShoppingTrip shoppingTrip = historicShoppingTripsList.get(groupPosition); //get the group header
             List<ProductItem> productItemList = historicShoppingTripsList.get(groupPosition).getBoughtProductsList();   //get children list of group header
             ProductItem productItem = productItemList.get(childPosition);//get the child info
-//            Toast.makeText(context, "Click on " + productItem.getProduct(), Toast.LENGTH_LONG).show();
 
             productItem.setCurrentClicked(!productItem.isCurrentClicked());
             shoppingTrip.setBoughtProductsList(productItemList);    //refresh product list of shoppingtrip
@@ -193,11 +193,6 @@ public class HistoricListsFragment extends BaseFragment {
             } else {
                 removeItemFromSelectedList(productItem); //remove deselected product if it is in list
             }
-
-            //Output
-            for (ProductItem product : selectedProductItemsList) {
-                System.out.println("Item in selectedProductItemsList: " + product.getProduct());
-            }
             return false;
         }
     };
@@ -206,8 +201,6 @@ public class HistoricListsFragment extends BaseFragment {
     private ExpandableListView.OnGroupClickListener myListGroupClicked = new ExpandableListView.OnGroupClickListener() {
         public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id) {
             ShoppingTrip shoppingTrip = historicShoppingTripsList.get(groupPosition); //get the group header
-//            Toast.makeText(context, "Click on Einkauf: " + shoppingTrip.getDateCompleted(), Toast.LENGTH_LONG).show();
-
             shoppingTrip.setExpanded(!shoppingTrip.isExpanded());
             listAdapter.notifyDataSetChanged();
             return false;
@@ -247,7 +240,7 @@ public class HistoricListsFragment extends BaseFragment {
 
                         //transfer of selected List to currentList
                         List<ProductItem> currentList = sharedPreferencesManager.loadCurrentShoppingListFromLocalStore();
-                        List<ProductItem> productsToAdd = new ArrayList<ProductItem>();
+                        List<ProductItem> productsToAdd = new ArrayList<>();
 
                         for (ProductItem selectedProduct : selectedProductItemsList) {
                             boolean productFound = false;
@@ -320,15 +313,12 @@ public class HistoricListsFragment extends BaseFragment {
                 break;
             }
         }
-
-        System.out.println("No. of Selected Items (before): " + noSelected);
         if (!alreadyInList) {
             selectedProductItemsList.add(productItem);
             noSelected++;
         }
-        System.out.println("No. of Selected Items (after): " + noSelected);
         toolbarShoppingCartIv.setVisibility(noSelected == 0 ? View.GONE : View.VISIBLE);
-        showShoppingCartIconInToolbar = !(noSelected == 0);
+        showShoppingCartIconInToolbar = noSelected != 0;
     }
 
     private void removeItemFromSelectedList(ProductItem productItem) {
@@ -339,17 +329,13 @@ public class HistoricListsFragment extends BaseFragment {
                 copySelectedProductItemsList.add(product);
             }
         }
-        System.out.println("No. of Selected Items (before): " + noSelected);
-
         if (selectedProductItemsList.size() > copySelectedProductItemsList.size()) {
             noSelected--;
         }
         selectedProductItemsList.clear();
         selectedProductItemsList.addAll(copySelectedProductItemsList);
-
-        System.out.println("No. of Selected Items (after): " + noSelected);
         toolbarShoppingCartIv.setVisibility(noSelected == 0 ? View.GONE : View.VISIBLE);
-        showShoppingCartIconInToolbar = !(noSelected == 0);
+        showShoppingCartIconInToolbar = noSelected != 0;
     }
 
     /**

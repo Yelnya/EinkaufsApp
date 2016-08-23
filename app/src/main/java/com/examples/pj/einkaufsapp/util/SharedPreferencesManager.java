@@ -24,6 +24,17 @@ public class SharedPreferencesManager {
     private SharedPreferences.Editor editor;
 
     /**
+     * Constructor
+     *
+     * @param sharedPreferences
+     * @param editor
+     */
+    public SharedPreferencesManager(SharedPreferences sharedPreferences, SharedPreferences.Editor editor) {
+        this.sharedPreferences = sharedPreferences;
+        this.editor = editor;
+    }
+
+    /**
      * Initialization of Shared Preferences Manager
      *
      * @param activity MainActivity
@@ -33,17 +44,6 @@ public class SharedPreferencesManager {
         SharedPreferences sprFile = activity.getSharedPreferences("SLSPfile", 0);
         SharedPreferences.Editor editor = sprFile.edit();
         return new SharedPreferencesManager(sprFile, editor);
-    }
-
-    /**
-     * Constructor
-     *
-     * @param sharedPreferences
-     * @param editor
-     */
-    public SharedPreferencesManager(SharedPreferences sharedPreferences, SharedPreferences.Editor editor) {
-        this.sharedPreferences = sharedPreferences;
-        this.editor = editor;
     }
 
     //---------------------------------------------------------------

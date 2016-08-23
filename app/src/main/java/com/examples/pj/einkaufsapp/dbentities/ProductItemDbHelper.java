@@ -51,7 +51,7 @@ public class ProductItemDbHelper extends SQLiteOpenHelper {
             Log.d(LOG_TAG, "Die Tabelle wird mit SQL-Befehl: " + SQL_CREATE + " angelegt.");
             db.execSQL(SQL_CREATE); //create new db if none existing
         } catch (Exception ex) {
-            Log.e(LOG_TAG, "Fehler beim Anlegen der Tabelle: " + ex.getMessage());
+            Log.e(LOG_TAG, "Fehler beim Anlegen der Tabelle: " + ex.getMessage(), ex);
         }
     }
 

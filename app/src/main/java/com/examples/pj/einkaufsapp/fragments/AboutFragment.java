@@ -1,6 +1,5 @@
 package com.examples.pj.einkaufsapp.fragments;
 
-import android.content.Context;
 import android.os.Bundle;
 
 import com.examples.pj.einkaufsapp.R;
@@ -11,10 +10,9 @@ import com.examples.pj.einkaufsapp.R;
 public class AboutFragment extends BaseFragment {
     public static final String LOG_TAG = AboutFragment.class.getSimpleName();
 
-    private Context context;
     private boolean showEditAndDeleteIconInToolbar;
     private boolean showShoppingCartIconInToolbar;
-    private String TOOLBAR_TITLE;
+    private String toolbarTitle;
 
     //================================================================================
     // Fragment Instantiation
@@ -50,13 +48,13 @@ public class AboutFragment extends BaseFragment {
 
     @Override
     protected void setToolbar() {
-        getAttachedActivity().setToolbar(toolbar, true, TOOLBAR_TITLE, showEditAndDeleteIconInToolbar, showShoppingCartIconInToolbar); //Icon displayed, Titel of Toolbar
+        getAttachedActivity().setToolbar(toolbar, true, toolbarTitle, showEditAndDeleteIconInToolbar, showShoppingCartIconInToolbar); //Icon displayed, Titel of Toolbar
     }
 
     @Override
     protected void setToolbarEditAndDeleteIcon(boolean showEditAndDeleteIconInToolbar) {
         if (toolbarTv != null) {
-            toolbarTv.setText(TOOLBAR_TITLE);
+            toolbarTv.setText(toolbarTitle);
         }
     }
 
@@ -78,8 +76,7 @@ public class AboutFragment extends BaseFragment {
     public void onResume() {
         super.onResume();
 
-        context = this.getActivity();
-        TOOLBAR_TITLE = context.getResources().getString(R.string.toolbar_title_about);
+        toolbarTitle = this.getActivity().getResources().getString(R.string.toolbar_title_about);
         showShoppingCartIconInToolbar = false;
         showEditAndDeleteIconInToolbar = false;
         setToolbarEditAndDeleteIcon(showEditAndDeleteIconInToolbar);

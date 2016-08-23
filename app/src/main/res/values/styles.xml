@@ -1,14 +1,5 @@
 <resources>
 
-    <!-- action bar-->
-    <!--<style name="Theme.MyAppTheme" parent="Theme.AppCompat.Light">-->
-        <!--<item name="colorPrimary">@color/purple</item>-->
-        <!--<item name="android:actionBarItemBackground">@color/light_purple</item>-->
-        <!--<item name="android:background">@color/white</item>-->
-        <!--<item name="colorPrimaryDark">@color/black</item>-->
-        <!--<item name="colorAccent">@color/dark_purple</item>-->
-    <!--</style>-->
-
     <!--Toolbar-->
     <style name="Toolbar">
         <item name="android:layout_width">match_parent</item>

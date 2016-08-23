@@ -63,7 +63,6 @@ public abstract class BaseActivity extends AppCompatActivity implements Navigati
             drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.leftsidemenu_open, R.string.leftsidemenu_close);
             drawerLayout.addDrawerListener(drawerToggle);
             drawerLayout.setFocusableInTouchMode(false);
-            //drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
         }
 
         fragmentManager = getSupportFragmentManager();
@@ -182,7 +181,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Navigati
                 drawerLayout.openDrawer(GravityCompat.START);
             }
         } catch (IllegalArgumentException e) {
-            Log.e(LOG_TAG, e.toString());
+            Log.e(LOG_TAG, e.toString(), e);
         }
     }
 
@@ -195,7 +194,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Navigati
                 drawerLayout.closeDrawer(GravityCompat.START);
             }
         } catch (IllegalArgumentException e) {
-            Log.e(LOG_TAG, e.toString());
+            Log.e(LOG_TAG, e.toString(), e);
         }
     }
 
@@ -253,7 +252,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Navigati
 
     private void refreshDrawerIndicator() {
         if (drawerToggle != null) {
-            drawerToggle.setDrawerIndicatorEnabled(!(fragmentManager.getBackStackEntryCount() > 1));
+            drawerToggle.setDrawerIndicatorEnabled(fragmentManager.getBackStackEntryCount() <= 1);
         }
     }
 

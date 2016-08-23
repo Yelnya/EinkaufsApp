@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:orientation="vertical"
-              tools:context=".fragments.StatisticFragment">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".fragments.StatisticFragment">
 
-    <include layout="@layout/toolbar"/>
+    <include layout="@layout/toolbar" />
 
     <LinearLayout
         android:layout_width="fill_parent"
@@ -40,7 +40,7 @@
             android:paddingRight="@dimen/padding_smallest"
             android:paddingStart="@dimen/margin_normal"
             android:textColor="@color/white"
-            android:textColorHint="@color/grey"/>
+            android:textColorHint="@color/grey" />
 
         <Spinner
             android:id="@+id/spinner_category"
@@ -48,7 +48,7 @@
             android:layout_height="match_parent"
             android:layout_marginBottom="@dimen/activity_vertical_margin_small"
             android:layout_marginTop="@dimen/activity_vertical_margin_small"
-            android:layout_weight="2"/>
+            android:layout_weight="2" />
 
         <Button
             android:id="@+id/button_add_product"
@@ -59,7 +59,7 @@
             android:layout_marginStart="@dimen/margin_normal"
             android:layout_marginTop="@dimen/activity_vertical_margin_small"
             android:background="@color/purple"
-            android:text="@string/button_add_product"/>
+            android:text="@string/button_add_product" />
 
     </LinearLayout>
 
@@ -67,6 +67,6 @@
         android:id="@+id/currentlist_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="gone"/>
+        android:visibility="gone" />
 
 </LinearLayout>

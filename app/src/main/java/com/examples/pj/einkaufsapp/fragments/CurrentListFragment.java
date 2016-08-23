@@ -60,8 +60,8 @@ public class CurrentListFragment extends BaseFragment implements ChangeToolbarIn
     boolean existingProductInCurrentListFound;
     private CurrentListAdapter currentListAdapter;
     private String toolbarTitle = "";
-    private String TOOLBAR_TITLE_FRAGMENT;
-    private String TOOLBAR_TITLE_EDIT;
+    private String toolbartitleFragment;
+    private String toolbarTitleEdit;
     private boolean showEditAndDeleteIconInToolbar;
     private boolean showShoppingCartIconInToolbar;
 
@@ -116,7 +116,7 @@ public class CurrentListFragment extends BaseFragment implements ChangeToolbarIn
 
     @Override
     protected void onCleanUp() {
-
+        //not needed
     }
 
     //================================================================================
@@ -129,8 +129,8 @@ public class CurrentListFragment extends BaseFragment implements ChangeToolbarIn
 
         context = getActivity();
 
-        TOOLBAR_TITLE_FRAGMENT = context.getResources().getString(R.string.toolbar_title_current_list);
-        TOOLBAR_TITLE_EDIT = context.getResources().getString(R.string.currentlist_change_delete);
+        toolbartitleFragment = context.getResources().getString(R.string.toolbar_title_current_list);
+        toolbarTitleEdit = context.getResources().getString(R.string.currentlist_change_delete);
 
         showShoppingCartIconInToolbar = false;
         showEditAndDeleteIconInToolbar = false;
@@ -156,7 +156,7 @@ public class CurrentListFragment extends BaseFragment implements ChangeToolbarIn
     @Override
     public void onResume() {
         super.onResume();
-        toolbarTitle = TOOLBAR_TITLE_FRAGMENT;
+        toolbarTitle = toolbartitleFragment;
         setToolbarEditAndDeleteIcon(showEditAndDeleteIconInToolbar);
 
         dataSource.open(); //open db connection
@@ -262,7 +262,7 @@ public class CurrentListFragment extends BaseFragment implements ChangeToolbarIn
 
     private void toolbarBackToNormal() {
         showEditAndDeleteIconInToolbar = false;
-        toolbarTitle = TOOLBAR_TITLE_FRAGMENT;
+        toolbarTitle = toolbartitleFragment;
         setToolbarEditAndDeleteIcon(showEditAndDeleteIconInToolbar);
         currentListAdapter.setEditDeleteToolbarActive(false);
     }
@@ -356,7 +356,7 @@ public class CurrentListFragment extends BaseFragment implements ChangeToolbarIn
 
     @Override
     public void showEditAndDeleteIcon(boolean show) {
-        toolbarTitle = show ? TOOLBAR_TITLE_EDIT : TOOLBAR_TITLE_FRAGMENT;
+        toolbarTitle = show ? toolbarTitleEdit : toolbartitleFragment;
         showEditAndDeleteIconInToolbar = show;
         setToolbarEditAndDeleteIcon(show);
         setToolbar();

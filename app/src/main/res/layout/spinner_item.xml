@@ -3,10 +3,10 @@
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:gravity="start"
-    android:paddingRight="@dimen/padding_little_smallest"
-    android:paddingLeft="@dimen/padding_little_smallest"
-    android:textColor="@color/white"
     android:ellipsize="end"
+    android:gravity="start"
     android:lines="1"
-    android:textSize="18sp" />
+    android:paddingLeft="@dimen/padding_little_smallest"
+    android:paddingRight="@dimen/padding_little_smallest"
+    android:textColor="@color/white"
+    android:textSize="@dimen/font_big" />

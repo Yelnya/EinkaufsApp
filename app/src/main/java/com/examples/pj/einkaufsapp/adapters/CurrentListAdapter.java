@@ -108,15 +108,6 @@ public class CurrentListAdapter extends BaseAdapter<CurrentListAdapter.Arraylist
             currentList = new ArrayList<>();
         }
 
-        System.out.println("-----ENTRIES IN CURRENT LIST AFTER DELETE-----");
-        if (currentList.size() == 0) {
-            System.out.println("No products in list");
-        } else {
-            for (ProductItem productItem : currentList) {
-                System.out.println("Product: "+ productItem.getProduct());
-            }
-        }
-
         if (viewType == LIST_ITEMS) {
             ArraylistViewHolder viewHolder = (ArraylistViewHolder) holder;
             ProductItem item = currentList.get(position);

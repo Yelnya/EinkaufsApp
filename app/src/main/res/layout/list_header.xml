@@ -1,6 +1,5 @@
-<LinearLayout
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/historiclist_header_container"
-    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="@dimen/small_button_width"
     android:layout_marginTop="@dimen/padding_smaller"
@@ -21,7 +20,7 @@
         android:gravity="center_vertical"
         android:lines="1"
         android:textColor="@color/dark_purple"
-        android:textSize="@dimen/font_big"/>
+        android:textSize="@dimen/font_big" />
 
     <TextView
         android:id="@+id/header_bought_items"
@@ -35,14 +34,15 @@
         android:paddingRight="@dimen/margin_normal"
         android:paddingStart="@dimen/margin_normal"
         android:textColor="@color/dark_purple"
-        android:textSize="@dimen/font_middle"/>
+        android:textSize="@dimen/font_middle" />
 
     <ImageView
         android:id="@+id/btn_expand_toggle"
         android:layout_width="@dimen/iv_header_width"
         android:layout_height="match_parent"
         android:layout_weight="0"
+        android:contentDescription="@string/circle_plus_cd"
         android:scaleType="centerInside"
-        android:src="@drawable/circle_plus"/>
+        android:src="@drawable/circle_plus" />
 
 </LinearLayout>

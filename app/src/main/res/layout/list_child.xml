@@ -1,6 +1,5 @@
-<LinearLayout
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/list_child_container"
-    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="@dimen/iv_header_width"
     android:orientation="horizontal">
@@ -19,6 +18,6 @@
         android:paddingStart="@dimen/spacing_small"
         android:paddingTop="@dimen/padding_little"
         android:textColor="@color/purple"
-        android:textSize="@dimen/font_middle"/>
+        android:textSize="@dimen/font_middle" />
 
 </LinearLayout>
